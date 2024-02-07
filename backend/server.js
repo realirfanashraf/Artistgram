@@ -1,5 +1,10 @@
 import express from "express";
+import dotenv from "dotenv"
+import morgan from "morgan";
+import nocache from "nocache";
 
+
+dotenv.config()
 const app = express();
 
 app.get('/', (req, res) => {
@@ -7,8 +12,10 @@ app.get('/', (req, res) => {
     res.end(); 
 });
 
-
-
+app.use(nocache())
+app.use(morgan('dev'));
+app.use(express.json()); 
+app.use(express.urlencoded({extended : true}));
 
 
 
