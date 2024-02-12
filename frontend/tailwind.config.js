@@ -5,7 +5,16 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#519872',
+        secondary:'#875219'
+      },
+      fontFamily: {
+        'protest': ['"Protest Strike"', 'sans-serif']
+      }
+    },
+
   },
   plugins: [],
 }
