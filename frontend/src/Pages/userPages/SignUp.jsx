@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
 import { Axios } from '../../axios/userInstance';
+import swal from 'sweetalert'
+import { useNavigate } from 'react-router-dom';
+import { showErrorMessage,showSuccessMessage } from '../../helper/sweetalert';
 
 const SignUp = () => {
-
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,16 +22,17 @@ const SignUp = () => {
     console.log('Form submitted:', formData);
 
     if (formData.password !== formData.confirmPassword) {
-      return alert('Invalid password');
+      return swal('Invalid password', 'The passwords do not match.', 'error');
     }
 
     Axios.post('/signup', formData)
-    .then((response)=>{
-      console.log(response.data);
+    .then((response) => {
+      navigate('/login')
+      showSuccessMessage(response.data.message);
     })
-    .catch((error)=>{
-      console.log(error)
-    })
+    .catch((error) => {
+      showErrorMessage(error);
+    });
   };
   
   return (
