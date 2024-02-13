@@ -1,9 +1,28 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 const SignUp = () => {
+
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    console.log('Form submitted:', formData);
+  };
+  
   return (
+
 <>
-  <div className="flex mt-2 min-h-screen flex-1 flex-col justify-center px-6 py-6 lg:px-8">
+  <div className="flex mt-1 min-h-screen flex-1 flex-col justify-center px-6 py-6 lg:px-8">
     <h2 className=" text-center text-3xl font-protest leading-9 tracking-tight text-white">
       Sign Up
     </h2>
@@ -11,7 +30,7 @@ const SignUp = () => {
     <div className="mt-2 sm:mx-auto sm:w-full sm:max-w-sm">
       <form className="space-y-6" action="#" method="POST">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium font-protest leading-6 text-white">
+          <label htmlFor="name" className="authfont">
             Name
           </label>
           <div className="mt-1">
@@ -21,13 +40,15 @@ const SignUp = () => {
               type="text"
               autoComplete="name"
               required
-              className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 outline-none"
+              className="inputfield"
+              value={formData.name}
+              onChange={handleInputChange}
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium font-protest leading-6 text-white">
+          <label htmlFor="email" className="authfont">
             Email address
           </label>
           <div className="mt-1">
@@ -37,13 +58,15 @@ const SignUp = () => {
               type="email"
               autoComplete="email"
               required
-              className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 outline-none"
+              className="inputfield"
+              value={formData.email}
+              onChange={handleInputChange}
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="password" className="block font-protest text-sm font-medium leading-6 text-white">
+          <label htmlFor="password" className="authfont">
             Password
           </label>
           <div className="mt-1">
@@ -53,13 +76,15 @@ const SignUp = () => {
               type="password"
               autoComplete="new-password"
               required
-              className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 outline-none"
+              className="inputfield"
+              value={formData.password}
+              onChange={handleInputChange}
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block font-protest text-sm font-medium leading-6 text-white">
+          <label htmlFor="confirmPassword" className="authfont">
             Confirm Password
           </label>
           <div className="mt-1">
@@ -69,7 +94,9 @@ const SignUp = () => {
               type="password"
               autoComplete="new-password"
               required
-              className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 outline-none"
+              className="inputfield"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
             />
           </div>
         </div>
@@ -77,7 +104,7 @@ const SignUp = () => {
         <div>
           <button
             type="submit"
-            className="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className="authbtn"
           >
             Sign Up
           </button>
@@ -93,7 +120,8 @@ const SignUp = () => {
       <p className='text-center mb-2 font-protest'>OR</p>
       <button
         type="submit"
-        className="flex w-full  justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        className="authbtn"
+        onSubmit={handleSubmit}
       >
         Sign Up with Google
       </button>
