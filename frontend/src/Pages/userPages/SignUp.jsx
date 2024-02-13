@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Axios } from '../../axios/userInstance';
 
 const SignUp = () => {
 
@@ -15,8 +16,19 @@ const SignUp = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
     console.log('Form submitted:', formData);
+
+    if (formData.password !== formData.confirmPassword) {
+      return alert('Invalid password');
+    }
+
+    Axios.post('/signup', formData)
+    .then((response)=>{
+      console.log(response.data);
+    })
+    .catch((error)=>{
+      console.log(error)
+    })
   };
   
   return (
@@ -105,6 +117,7 @@ const SignUp = () => {
           <button
             type="submit"
             className="authbtn"
+            onClick={handleSubmit}
           >
             Sign Up
           </button>
@@ -121,7 +134,7 @@ const SignUp = () => {
       <button
         type="submit"
         className="authbtn"
-        onSubmit={handleSubmit}
+        
       >
         Sign Up with Google
       </button>

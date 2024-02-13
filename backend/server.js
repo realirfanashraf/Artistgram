@@ -6,6 +6,7 @@ import nocache from "nocache";
 import cors from "cors"
 const app = express();
 import {connectDB} from "./server/connection/database.js"
+import userRoute from './server/router/userRoutes/authRoutes.js'
 
 const corsOptions = {
     origin: 'http://localhost:5173',
@@ -19,18 +20,13 @@ app.use(cors(corsOptions));
 
 
 
-app.get('/', (req, res) => {
-    res.write("working");
-    res.end(); 
-});
-
 app.use(nocache())
 app.use(morgan('dev'));
 app.use(express.json()); 
 app.use(express.urlencoded({extended : true}));
 connectDB()
 
-
+app.use('/', userRoute)
 
 const PORT = 3000;
 
