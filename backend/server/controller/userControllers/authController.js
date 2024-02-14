@@ -9,7 +9,7 @@ export const signup = async(req,res) => {
         
         const exUser = await userSchema.findOne({ email });
         if (exUser) {
-            return res.json({ error: "User already exists" });
+            return res.status(400).json({ error: "User already exists" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -45,11 +45,12 @@ export const signin = async (req, res) => {
         if (passwordMatched) {
             await generateTokenUser(res, user._id);
             return res.status(200).json({
+                message: "Successfully Signed In",
                 _id: user._id,
                 name: user.name,
                 email: user.email,
             });
-        } else {
+        }else {
             return res.status(400).json({ error: "Invalid email or password" });
         }
     } catch (error) {

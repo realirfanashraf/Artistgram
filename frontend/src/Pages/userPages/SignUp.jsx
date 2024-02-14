@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Axios } from '../../axios/userInstance';
 import swal from 'sweetalert'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , Link } from 'react-router-dom';
 import { showErrorMessage,showSuccessMessage } from '../../helper/sweetalert';
 
 const SignUp = () => {
@@ -21,9 +21,29 @@ const SignUp = () => {
     e.preventDefault();
     console.log('Form submitted:', formData);
 
-    if (formData.password !== formData.confirmPassword) {
-      return swal('Invalid password', 'The passwords do not match.', 'error');
+        // validation
+
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const passwordRegex = /^.{8,}$/;
+
+    if (!formData.name.trim()) {
+      return swal('Invalid input', 'Please enter your name.', 'error');
     }
+
+    if (!emailRegex.test(formData.email.trim())) {
+      return swal('Invalid input', 'Please enter a valid email address.', 'error');
+    }
+
+    if (!passwordRegex.test(formData.password)) {
+      return swal('Invalid input', 'Password must be at least 8 characters long.', 'error');
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      return swal('Invalid input', 'The passwords do not match.', 'error');
+    }
+
+    // end validation
+
 
     Axios.post('/signup', formData)
     .then((response) => {
@@ -130,9 +150,9 @@ const SignUp = () => {
 
       <p className=" text-start text-sm text-black font-protest">
         Already a member?{' '}
-        <a href="#" className="leading-6 text-black hover:text-gray-600 font-protest">
-          Sign In
-        </a>
+        <Link to="/signin" className="leading-6 text-black hover:text-gray-600 font-protest">
+      Sign In
+    </Link>
       </p>
       <p className='text-center mb-2 font-protest'>OR</p>
       <button

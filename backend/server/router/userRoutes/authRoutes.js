@@ -4,7 +4,7 @@ const route = express.Router()
 
 
 route.post('/signup',signup)
-route.post('/login',signin)
+route.post('/signin',signin)
 
 
 export default route

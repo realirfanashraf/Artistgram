@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Axios } from '../../axios/userInstance';
 import { showErrorMessage,showSuccessMessage } from '../../helper/sweetalert';
 
@@ -22,9 +22,9 @@ const SignIn = () => {
 
    
 
-    Axios.post('/signin', formData)
+    Axios.post('/signin', formData,{withCredentials:true})
     .then((response) => {
-      navigate('/')
+      navigate('/home')
       showSuccessMessage(response.data.message);
     })
     .catch((error) => {
@@ -54,6 +54,7 @@ const SignIn = () => {
                   autoComplete="email"
                   required
                   className="inputfield"
+                  value={formData.email}
                   onChange={handleInputChange}
                 />
               </div>
@@ -78,6 +79,7 @@ const SignIn = () => {
                   autoComplete="current-password"
                   required
                   className="inputfield"
+                  value={formData.password}
                   onChange={handleInputChange}
                 />
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="absolute inset-y-0 right-0 w-6 h-6 m-2 pointer-events-none">
@@ -100,9 +102,9 @@ const SignIn = () => {
 
           <p className=" text-start text-sm text-black font-protest">
             Not a member?{' '}
-            <a href="#" className="leading-6 text-black hover:text-gray-600 font-protest">
-            Signup Now
-            </a>
+            <Link to="/signup" className="leading-6 text-black hover:text-gray-600 font-protest">
+              Signup Now
+            </Link>
           </p>
           <p className='text-center mb-2 font-protest'>OR</p>
           <button
