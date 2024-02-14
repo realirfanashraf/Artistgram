@@ -27,7 +27,7 @@ const SignUp = () => {
 
     Axios.post('/signup', formData)
     .then((response) => {
-      navigate('/login')
+      navigate('/signin')
       showSuccessMessage(response.data.message);
     })
     .catch((error) => {
