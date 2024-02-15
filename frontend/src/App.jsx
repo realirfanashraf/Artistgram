@@ -2,9 +2,7 @@ import {Routes,Route} from 'react-router-dom'
 import SignUp from './Pages/userPages/SignUp'
 import Home from './Pages/userPages/Home'
 import SignIn from './Pages/userPages/SignIn'
-import {PrivateRoute} from './Components/userSide/PrivateRoute'
-import {AuthRoute} from './Components/userSide/AuthRoute'
-import { checkJWTToken } from './helper/checkJwtToken'
+import { PrivateRoute,AuthRoute } from './Components/userSide/RouteHandler'
 
 
 function App() {
