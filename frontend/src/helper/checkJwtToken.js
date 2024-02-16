@@ -5,5 +5,4 @@ export function checkJWTToken() {
         } else {
             return false;
         }  
-    }
-
+    } 

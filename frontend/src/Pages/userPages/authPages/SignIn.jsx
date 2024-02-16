@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import  { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom';
-import { Axios } from '../../axios/userInstance';
-import { showErrorMessage,showSuccessMessage } from '../../helper/sweetalert';
+import { Axios } from '../../../axios/userInstance';
+import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert';
 
 
 const SignIn = () => {

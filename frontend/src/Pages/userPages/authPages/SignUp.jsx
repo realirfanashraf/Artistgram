@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { Axios } from '../../axios/userInstance';
+import { useState } from 'react'
+import { Axios } from '../../../axios/userInstance';
 import swal from 'sweetalert'
 import { useNavigate , Link } from 'react-router-dom';
-import { showErrorMessage,showSuccessMessage } from '../../helper/sweetalert';
+import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert';
 
 const SignUp = () => {
   const navigate = useNavigate()
