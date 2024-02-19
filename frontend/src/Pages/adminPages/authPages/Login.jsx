@@ -22,7 +22,7 @@ const Login = () => {
     
         Axios.post('/login', formData,{withCredentials:true})
         .then((response) => {
-          navigate('/dashboard')
+          navigate('/admin/dashboard')
           showSuccessMessage(response.data.message);
         })
         .catch((error) => {
@@ -73,7 +73,7 @@ const Login = () => {
                   autoComplete="current-password"
                   required
                   className="inputfield"
-                  value={formData.email}
+                  value={formData.password}
                   onChange={handleInputChange}
                 />
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"  stroke="currentColor" className="absolute inset-y-0 right-0 w-6 h-6 m-2 pointer-events-none">

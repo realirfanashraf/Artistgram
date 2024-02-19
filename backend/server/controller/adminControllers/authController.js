@@ -1,7 +1,7 @@
-import { generateTokenAdmin } from "../../helper/generateToken";
+import { generateTokenAdmin } from "../../helper/generateToken.js";
 
 export const Login = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body; 
 
     try {
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
