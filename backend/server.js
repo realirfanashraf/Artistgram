@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 const app = express();
 import {connectDB} from "./server/connection/database.js"
 import userRoute from './server/router/userRoutes/authRoutes.js'
+import adminRoute from './server/router/adminRoutes/authRoutes.js'
 
 const corsOptions = {
     origin: 'http://localhost:5173',
@@ -28,6 +29,7 @@ app.use(express.urlencoded({extended : true}));
 connectDB()
 
 app.use('/', userRoute)
+app.use('/admin',adminRoute)
 
 const PORT = 3000;
 

@@ -3,6 +3,7 @@ import SignUp from './Pages/userPages/authPages/SignUp'
 import Home from './Pages/userPages/Home'
 import SignIn from './Pages/userPages/authPages/SignIn'
 import { PrivateRoute,AuthRoute } from './Components/userSide/RouteHandler'
+import Login from './Pages/adminPages/authPages/Login'
 
 
 function App() {
@@ -12,7 +13,8 @@ function App() {
         <Route path ='/home' element={<PrivateRoute> <Home/> </PrivateRoute>}/>
         <Route path='/signin' element={<AuthRoute> <SignIn/> </AuthRoute>} />
         <Route path='/signup' element={<AuthRoute> <SignUp/> </AuthRoute>} />
-      </Routes>
+        <Route path='/admin' element={<Login/>}/>
+      </Routes>  
     </>
   )
 }
