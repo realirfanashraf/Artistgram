@@ -5,7 +5,7 @@ import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert'
 
 
 const SignIn = () => {
-
+  console.log("Hai");
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: '',
