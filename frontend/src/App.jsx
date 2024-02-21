@@ -1,4 +1,4 @@
-// App.js
+
 import { useEffect } from 'react';
 import { Routes, Route} from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,13 +35,19 @@ function App() {
 
   return (
     <Routes>
+
+            {/* user routes */}
       <Route path="/home" element={<PrivateRoute component={Home} isAuthenticated={isAuthenticated} />} />
       <Route path="/signin" element={<AuthRoute component={SignIn} isAuthenticated={isAuthenticated} />} />
       <Route path="/signup" element={<AuthRoute component={SignUp} isAuthenticated={isAuthenticated} />} />
+
+
+          {/* admin routes */}
       <Route path="/admin" element={<AdminAuthRoute component={Login} />} />
       <Route path="/admin/dashboard" element={<AdminPrivateRoute component={Dashboard} />} />
     </Routes>
   );
 }
+
 
 export default App;
