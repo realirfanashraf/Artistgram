@@ -2,8 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Axios } from "../../../axios/adminInstance.js";
 import { showErrorMessage, showSuccessMessage } from "../../../helper/sweetalert.js";
+import { useDispatch } from 'react-redux';
+import {setAdminAuthenticated} from '../../../redux/slices/adminSlices/adminAuthSlice.js'
 
 const Login = () => {
+  const dispatch = useDispatch();
     const navigate = useNavigate()
     const [formData, setFormData] = useState({
         email: '',
@@ -16,12 +19,9 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Form submitted:', formData);
-    
-       
-    
         Axios.post('/login', formData,{withCredentials:true})
         .then((response) => {
+          dispatch(setAdminAuthenticated(true))
           navigate('/admin/dashboard')
           showSuccessMessage(response.data.message);
         })

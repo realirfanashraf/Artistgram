@@ -7,7 +7,6 @@ import { setAuthenticated } from '../../../redux/slices/userSlices/authSlice.js'
 
 
 const SignIn = () => {
-  console.log("Hai");
   const dispatch = useDispatch();
   
   const navigate = useNavigate()
@@ -22,10 +21,6 @@ const SignIn = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-
-   
-
     Axios.post('/signin', formData,{withCredentials:true})
     .then((response) => {
       dispatch(setAuthenticated(true));

@@ -1,8 +1,8 @@
-import { Axios } from "../axios/userInstance";
+import { Axios } from "../axios/adminInstance.js";
 
-export async function checkJWTToken() {
+export async function checkAdminJWTToken() {
     const cookies = document.cookie;
-    if (cookies.includes('jwtuser=')) {
+    if (cookies.includes('jwtadmin=')) {
         try {
             const response = await Axios.get('/verifyToken', { withCredentials: true });
             if (response.status === 200) {
