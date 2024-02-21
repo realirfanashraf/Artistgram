@@ -3,34 +3,35 @@ import { Navigate } from 'react-router-dom';
 import { checkJWTToken, checkAdminJWTToken } from '../../helper/checkJwtToken';
 
 
-export const AuthRoute = ({ component: Component }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+export const AuthRoute = ({ component: Component ,isAuthenticated }) => {
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    console.log('authrout');
-    const fetchData = async () => {
-      const isAuthenticated = await checkJWTToken();
-      setIsAuthenticated(isAuthenticated);
-    };
+  // useEffect(() => {
+  //   console.log('authrout');
+  //   const fetchData = async () => {
+  //     const isAuthenticated = await checkJWTToken();
+  //     setIsAuthenticated(isAuthenticated);
+  //   };
 
-    fetchData();
-  }, []);
-
+  //   fetchData();
+  // }, []);
+console.log(isAuthenticated,"authrote")
   return isAuthenticated ? <Navigate to="/home" replace /> : <Component />;
 };
 
-export const PrivateRoute = ({ component: Component }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+export const PrivateRoute = ({ component: Component,isAuthenticated }) => {
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    console.log('privateroute');
-    const fetchData = async () => {
-      const isAuthenticated = await checkJWTToken();
-      setIsAuthenticated(isAuthenticated);
-    };
+  // useEffect(() => {
+  //   console.log('privateroute');
+  //   const fetchData = async () => {
+  //     const isAuthenticated = await checkJWTToken();
+  //     setIsAuthenticated(isAuthenticated);
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
+  console.log(isAuthenticated,"privaterote")
 
   return isAuthenticated ? <Component /> : <Navigate to="/signin" replace />;
 };
