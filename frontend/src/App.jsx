@@ -24,7 +24,7 @@ function App() {
     fetchData();
   }, []);
 
-  // Render loading indicator while authentication status is being determined
+
   if (isAuthenticated === null) {
     return <div>Loading...</div>;
   }
