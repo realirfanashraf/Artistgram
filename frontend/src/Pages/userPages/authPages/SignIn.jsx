@@ -2,10 +2,14 @@ import  { useState } from 'react'
 import { useNavigate, Link} from 'react-router-dom';
 import { Axios } from '../../../axios/userInstance';
 import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert';
+import { useDispatch } from 'react-redux';
+import { setAuthenticated } from '../../../redux/slices/userSlices/authSlice.js'
 
 
 const SignIn = () => {
   console.log("Hai");
+  const dispatch = useDispatch();
+  
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: '',
@@ -24,6 +28,7 @@ const SignIn = () => {
 
     Axios.post('/signin', formData,{withCredentials:true})
     .then((response) => {
+      dispatch(setAuthenticated(true));
       navigate('/home')
       showSuccessMessage(response.data.message);
     })
