@@ -35,7 +35,7 @@ const SignIn = () => {
   return (
     <>
     
-    <div className="flex max-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="flex max-h-full flex-1 flex-col justify-center  px-6 py-20 lg:px-8">
     <h2 className="mt-10 text-center text-3xl font-protest leading-9 tracking-tight text-white">
             Sign In
           </h2>
@@ -106,13 +106,7 @@ const SignIn = () => {
               Signup Now
             </Link>
           </p>
-          <p className='text-center mb-2 font-protest'>OR</p>
-          <button
-                type="submit"
-                className="authbtn"
-              >
-                Sign in with google
-              </button>
+          
         </div>
       </div>
     </>

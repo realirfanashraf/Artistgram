@@ -154,19 +154,9 @@ const SignUp = () => {
       Sign In
     </Link>
       </p>
-      <p className='text-center mb-2 font-protest'>OR</p>
-      <button
-        type="submit"
-        className="authbtn"
-        
-      >
-        Sign Up with Google
-      </button>
     </div>
   </div>
 </>
-
-  
   )
 }
 

@@ -1,6 +1,10 @@
+import Navbar from "../../Components/userSide/NavBar"
+
 const Home = () => {
   return (
-    <div>Homedfssdfsdfds</div>
+    <>
+    <Navbar/>
+    </>
   )
 }
 

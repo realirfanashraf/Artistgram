@@ -1,10 +1,7 @@
 import { IoIosCamera } from "react-icons/io";
 
 const ProfilePhoto = () => {
-  const handleUploadPhoto = () => {
-
-    console.log('Upload new photo clicked');
-  };
+ 
 
   return (
     <div className="relative inline-block">
@@ -14,7 +11,6 @@ const ProfilePhoto = () => {
         className="rounded-full w-32 h-32 object-cover"
       />
       <button
-        onClick={handleUploadPhoto}
         className="absolute bottom-0 right-0 p-2 bg-gray-400 rounded-full shadow-md"
       >
         <IoIosCamera
@@ -26,3 +22,4 @@ const ProfilePhoto = () => {
 };
 
 export default ProfilePhoto;
+

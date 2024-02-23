@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import {Link} from 'react-router-dom'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,10 +20,10 @@ const Navbar = () => {
           <div className="flex items-center">
             <div className="hidden md:block">
               {/* Desktop navigation links */}
-              <a href="#" className="navLinks">Home</a>
-              <a href="#" className="navLinks">About</a>
-              <a href="#" className="navLinks">Services</a>
-              <a href="#" className="navLinks">Contact</a>
+              <Link to='/home' className='navLinks'>Home</Link>
+              <a href="#" className="navLinks">Forum</a>
+              <a href="#" className="navLinks">Inbox</a>
+              <Link to='/profile' className='navLinks'>Profile</Link>
             </div>
             <div className="md:hidden">
               {/* Mobile menu button */}
@@ -46,10 +47,10 @@ const Navbar = () => {
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {/* Mobile navigation links */}
-            <a href="#" className="navLinks block">Home</a>
-            <a href="#" className="navLinks block">About</a>
-            <a href="#" className="navLinks block">Services</a>
-            <a href="#" className="navLinks block">Contact</a>
+            <Link to='/home' className='navLinks block'>Home</Link>
+            <a href="#" className="navLinks block">Forum</a>
+            <a href="#" className="navLinks block">Inbox</a>
+            <Link to='/profile' className='navLinks block'>Profile</Link>
           </div>
         </div>
       )}
