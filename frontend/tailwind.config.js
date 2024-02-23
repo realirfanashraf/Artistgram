@@ -7,8 +7,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#519872',
-        secondary:'#875219'
+        primary: '#6A8C48',
+        secondary:'#4E6E3B',
+        thirdShade:'#f5f5f5'
       },
       fontFamily: {
         'protest': ['"Protest Strike"', 'sans-serif']

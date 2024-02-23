@@ -22,3 +22,13 @@ body {
     @apply block text-sm font-medium font-protest leading-6 text-white
 }
 
+
+/* Navbar*/
+
+.h-17{
+    height: 7rem;
+}
+
+.navLinks {
+    @apply text-gray-300 hover:bg-secondary hover:text-white px-6 py-2 rounded-md  font-protest
+}

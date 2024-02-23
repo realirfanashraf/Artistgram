@@ -12,6 +12,7 @@ import Dashboard from './Pages/adminPages/Dashboard';
 import { PrivateRoute, AuthRoute, AdminAuthRoute, AdminPrivateRoute } from './Components/userSide/RouteHandler';
 import { checkJWTToken } from './helper/checkJwtToken';
 import {checkAdminJWTToken} from './helper/checkAdminJWTToken.js'
+import Profile from './Components/userSide/profile/Profile.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -48,6 +49,7 @@ function App() {
       <Route path="/home" element={<PrivateRoute component={Home} isAuthenticated={isAuthenticated} />} />
       <Route path="/signin" element={<AuthRoute component={SignIn} isAuthenticated={isAuthenticated} />} />
       <Route path="/signup" element={<AuthRoute component={SignUp} isAuthenticated={isAuthenticated} />} />
+      <Route path='/profile' element={<Profile/>}/>
 
       {/* admin routes */}
       <Route path="/admin" element={<AdminAuthRoute component={Login} isAdminAuthenticated={isAdminAuthenticated} />} />
