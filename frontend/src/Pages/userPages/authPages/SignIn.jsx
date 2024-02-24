@@ -66,9 +66,7 @@ const SignIn = () => {
                   Password
                 </label>
                 <div className="text-sm">
-                  <a href="#" className=" font-protest text-black hover:text-gray-500">
-                    Forgot password?
-                  </a>
+                  <Link to='/forgotpassword' className=" font-protest text-black hover:text-gray-500">Forgot Password?</Link>
                 </div>
               </div>
               <div className="relative">

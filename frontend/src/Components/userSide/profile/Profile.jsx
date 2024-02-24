@@ -3,10 +3,17 @@ import NavBar from "../NavBar"
 import ProfilePhoto from "./ProfilePhoto"
 import ProfileSection from "./ProfileSection"
 import { SlOptionsVertical } from "react-icons/sl";
+import {Axios} from '../../../axios/userInstance.js'
+import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert.js';
+import { setAuthenticated } from '../../../redux/slices/userSlices/authSlice.js'
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+
 
 const Profile = () => {
   const [showDropdown, setShowDropdown] = useState(false);
-
+  const navigate = useNavigate()
+  const dispatch = useDispatch();
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
@@ -17,8 +24,18 @@ const Profile = () => {
   };
 
   const handleLogout = () => {
-    
-  };
+    Axios.get('/logout', { withCredentials: true })
+    .then((response) => {
+        if (response.status === 200) {
+          dispatch(setAuthenticated(false));
+            navigate('/signin')
+            showSuccessMessage(response.data.message); 
+        }
+    }).catch((error) => {
+        showErrorMessage(error);
+    });
+};
+
 
   const handleEditProfile = () => {
     console.log("Edit profile clicked")

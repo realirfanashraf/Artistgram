@@ -14,6 +14,8 @@ import { checkJWTToken } from './helper/checkJwtToken';
 import {checkAdminJWTToken} from './helper/checkAdminJWTToken.js'
 import Profile from './Components/userSide/profile/Profile.jsx';
 import Intro from './Pages/userPages/Intro.jsx';
+import ForgotPassword from './Pages/userPages/authPages/ForgotPassword.jsx';
+
 
 function App() {
   const dispatch = useDispatch();
@@ -49,8 +51,10 @@ function App() {
       <Route path='/' element={<AuthRoute component={Intro} isAuthenticated={isAuthenticated} />}/>
       <Route path="/signin" element={<AuthRoute component={SignIn} isAuthenticated={isAuthenticated} />} />
       <Route path="/signup" element={<AuthRoute component={SignUp} isAuthenticated={isAuthenticated} />} />
+      <Route path='/forgotPassword' element={<AuthRoute component={ForgotPassword} isAuthenticated={isAuthenticated}/>}/>
       <Route path="/home" element={<PrivateRoute component={Home} isAuthenticated={isAuthenticated} />} />
       <Route path='/profile' element={<PrivateRoute component={Profile} isAuthenticated={isAuthenticated} />}/>
+
 
       {/* admin routes */}
       <Route path="/admin" element={<AdminAuthRoute component={Login} isAdminAuthenticated={isAdminAuthenticated} />} />

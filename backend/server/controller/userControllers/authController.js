@@ -67,7 +67,6 @@ export const signin = async (req, res) => {
 
 export const verifyToken = (req, res) => {
     const token = req.cookies.jwtuser;
-    console.log(token,"no token from the backend")
     if (!token) {
         return res.status(401).json({ message: "No token provided" });
     }
@@ -75,8 +74,6 @@ export const verifyToken = (req, res) => {
     try {
        
         const decoded = jwt.verify(token , process.env.JWT_secretKey)
-        console.log(decoded)
-
         if(decoded){
             res.status(200).json({ valid: true });
         }else{
@@ -84,5 +81,14 @@ export const verifyToken = (req, res) => {
         }
     } catch (err) {
         res.status(401).json({ message: "Invalid token" });
+    }
+};
+
+export const logout = async (req, res) => {
+    try {
+        res.clearCookie('jwtuser');
+        res.status(200).json({ message: 'user logout successfully' });
+    } catch (error) {
+        console.log("error", error);
     }
 };
