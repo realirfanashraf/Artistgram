@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import swal from 'sweetalert';
 import { useNavigate } from 'react-router-dom';
+import {Axios} from '../../../axios/userInstance.js'
 
 const ForgotPassword = () => {
     const navigate = useNavigate()
@@ -16,6 +17,9 @@ const ForgotPassword = () => {
     if (!emailRegex.test(email)) {
       return swal('Invalid input', 'Please enter a valid email address.', 'error');
     }
+    Axios.post('/forgotpassword',{email})
+    
+
     setShowOTPField(true);
   };
 
