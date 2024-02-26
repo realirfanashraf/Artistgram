@@ -2,6 +2,8 @@ import { useState } from 'react';
 import swal from 'sweetalert';
 import { useNavigate } from 'react-router-dom';
 import {Axios} from '../../../axios/userInstance.js'
+import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert.js';
+
 
 const ForgotPassword = () => {
     const navigate = useNavigate()
@@ -10,6 +12,7 @@ const ForgotPassword = () => {
   const [otp, setOTP] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [success, setSuccess] = useState(false);
+  const [codee , setCode] =useState('')
 
   const handleGetOTP = (e) => {
     e.preventDefault();
@@ -18,23 +21,37 @@ const ForgotPassword = () => {
       return swal('Invalid input', 'Please enter a valid email address.', 'error');
     }
     Axios.post('/forgotpassword',{email})
-    
-
+    .then((response)=>{
+      swal('OTP sent successfully','Please Check your Email','success')
+      setCode(response.data.code)
+    }).catch((error)=>{
+      showErrorMessage(error)
+    })
     setShowOTPField(true);
   };
 
   const handleVerifyOTP = (e) => {
     e.preventDefault();
-  
-    setSuccess(true); 
+    if(codee != undefined && otp == codee) {
+      setSuccess(true)
+      swal('Verified', 'Otp verification succesfull', 'success')
+    }else{
+      swal('Failed', 'Otp verification failed','error')
+    }
   };
 
-  const handleChangePassword = (e) => {
+  const handleChangePassword = async (e) => {
     e.preventDefault();
-  
-    swal('Password Changed!', 'Your password has been successfully changed.', 'success');
-    
-    navigate('/signin')
+    try {
+      const response = await Axios.post('/changePassword', { email, newPassword });
+      if (response.status === 200) {
+        swal('Password Changed!', 'Your password has been successfully changed.', 'success');
+        navigate('/signin');
+      }
+    } catch (error) {
+      console.error('Error:', error.response.data.message);
+      swal('Error', 'Failed to change password. Please try again later.', 'error');
+    }
   };
 
   return (

@@ -4,7 +4,7 @@ import { generateTokenUser } from "../../helper/generateToken.js";
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import nodemailer from 'nodemailer'
-import crypto from 'crypto'
+import { v4 as uuidv4 } from 'uuid';
 dotenv.config()
 
 
@@ -105,20 +105,21 @@ export const forgotPassword = async (req, res) => {
       }
   
       const code = Math.floor(100000 + Math.random() * 900000); 
-      user.resetPasswordCode = code;
-      user.resetPasswordExpires = Date.now() + 3600000; 
-      await user.save();
+
+     
+      const otpToken = uuidv4();
+    //   res.cookie('otp', code, { httpOnly: true, maxAge: 3600000 });
   
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'process.env.ADMIN_EMAIL',
-          pass: 'process.env.ADMIN_PASSWORD'
+          user: process.env.EMAIL,
+          pass: process.env.PASSWORD
         }
       });
   
       const mailOptions = {
-        from: 'process.env.ADMIN_EMAIL',
+        from: process.env.EMAIL,
         to: email,
         subject: 'Reset Password',
         text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n`
@@ -132,7 +133,7 @@ export const forgotPassword = async (req, res) => {
           return res.status(500).json({ message: 'Error sending email' });
         } else {
           console.log('Email sent: ' + info.response);
-          return res.status(200).json({ message: 'Email sent successfully' });
+          return res.status(200).json({ message: 'Email sent successfully', code });
         }
       });
     } catch (error) {
@@ -140,3 +141,26 @@ export const forgotPassword = async (req, res) => {
       res.status(500).json({ message: 'Server Error' });
     }
   };
+
+
+  export const changePassword = async (req, res) => {
+    try {
+      const { email, newPassword } = req.body;
+      const user = await userSchema.findOne({ email });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      const hashedPassword = await bcrypt.hash(newPassword, 10)
+  
+      user.password = hashedPassword;
+      await user.save();
+  
+      return res.status(200).json({ message: 'Password changed successfully' });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+  
