@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { Axios } from '../../../axios/userInstance.js';
 import { useNavigate, Link } from 'react-router-dom';
 import { showErrorMessage, showSuccessMessage } from '../../../helper/sweetalert';
+import swal from 'sweetalert';
 
 const SignUp = () => {
   const navigate = useNavigate();
 
   const [verificationCode, setVerificationCode] = useState('');
   const [verificationStep, setVerificationStep] = useState(false);
+  const [code,setCode]= useState('')
 
   const [formData, setFormData] = useState({
     name: '',
@@ -70,7 +72,16 @@ const SignUp = () => {
       return;
     }
 
-    setVerificationStep(true);
+    
+    Axios.post('/signUpMail',{email: formData.email})
+    .then((response)=>{
+    setCode(response.data.code)
+    console.log(response.data.code)
+     showSuccessMessage(response.data.message)
+     setVerificationStep(true);
+    }).catch((error)=>{
+      showErrorMessage(error)
+    })
     
 
     
@@ -78,16 +89,16 @@ const SignUp = () => {
 
   const handleVerify = (e)=>{
     e.preventDefault()
-    const requestData = { ...formData, verificationCode }; 
-   Axios.post('/signup', requestData)
+    console.log(code,verificationCode)
+    if(code != verificationCode){
+      return swal("Verification Failed", "The code you entered is not correct", "error");
+    }
+   Axios.post('/signup', formData)
      .then((response) => {
-
-      console.log("akjds")
-       navigate('/signin');
        showSuccessMessage(response.data.message);
+       navigate('/signin');
      })
      .catch((error) => {
-      console.log("frontend error adhfkjadf")
        showErrorMessage(error);
      });
    }
@@ -101,6 +112,7 @@ const SignUp = () => {
 
       <div className="mt-2 sm:mx-auto sm:w-full sm:max-w-sm">
         {!verificationStep ? (
+          <>
           <form className="space-y-6" action="#" method="POST">
             <div>
               <label htmlFor="name" className="authfont">
@@ -177,6 +189,9 @@ const SignUp = () => {
                 {formErrors.confirmPassword && (
                   <span className="text-black">{formErrors.confirmPassword}</span>
                 )}
+                <div className="text-sm">
+                  <Link to='/signin' className=" font-protest text-black hover:text-gray-500">Already have Account? Signin</Link>
+                </div>
               </div>
             </div>
 
@@ -186,6 +201,8 @@ const SignUp = () => {
               </button>
             </div>
           </form>
+          </>
+          
         ) : (
           <form className="space-y-6" action="#" method="POST">
             <div>

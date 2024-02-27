@@ -129,7 +129,6 @@ export const forgotPassword = async (req, res) => {
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
-  
       const hashedPassword = await bcrypt.hash(newPassword, 10)
   
       user.password = hashedPassword;
@@ -142,3 +141,26 @@ export const forgotPassword = async (req, res) => {
     }
   };
   
+
+  export const signUpMail = async(req,res)=>{
+    try {
+      const { email } = req.body;
+  
+      const code = Math.floor(100000 + Math.random() * 900000)
+  
+      const subject = 'Sign-in Verification';
+      const text = `You are receiving this because you (or someone else) have requested to sign in to your account.\n\n`
+        + `Your verification code is: ${code}\n\n`
+        + `If you did not request this, please ignore this email.\n`;
+  
+      const isEmailSent = await sendMail(email, subject, text);
+      if (isEmailSent) {
+        return res.status(200).json({ message: 'Email sent successfully', code });
+      } else {
+        return res.status(500).json({ message: 'Error sending email' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server Error' });
+    }
+  }

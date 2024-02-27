@@ -1,5 +1,5 @@
 import express from 'express'
-import { signup,signin,verifyToken,logout,forgotPassword,changePassword } from '../../controller/userControllers/authController.js'
+import { signup,signin,verifyToken,logout,forgotPassword,changePassword,signUpMail } from '../../controller/userControllers/authController.js'
 const route = express.Router()
 
 
@@ -9,6 +9,7 @@ route.get('/verifyToken',verifyToken)
 route.get('/logout',logout)
 route.post('/forgotPassword', forgotPassword)
 route.post('/changePassword',changePassword)
+route.post('/signUpMail',signUpMail)
 
 
 
