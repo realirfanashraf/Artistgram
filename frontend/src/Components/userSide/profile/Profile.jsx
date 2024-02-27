@@ -9,16 +9,24 @@ import { setAuthenticated } from '../../../redux/slices/userSlices/authSlice.js'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { userLogout } from '../../../redux/slices/userSlices/userInfoSlice.js';
+import ChangePasswordModal from '../../../modal/userModal/ChangePasswordModal.jsx';
 
 
 const Profile = () => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const navigate = useNavigate()
   const dispatch = useDispatch();
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
 
+
+
+
+  const handleCloseChangePasswordModal = () => {
+    setShowChangePasswordModal(false); // Close the modal
+  };
   const handleNewPost = () => {
 
     console.log("New Post clicked");
@@ -47,6 +55,8 @@ const Profile = () => {
 
   const handleChangePassword = ()=>{
     console.log("Change password clicked")
+    setShowDropdown(false)
+    setShowChangePasswordModal(true);
   }
 
 
@@ -55,7 +65,7 @@ const Profile = () => {
       <NavBar />
       <div className="flex flex-col items-center justify-center my-8 sm:mx-28 mx-4">
         <div className="bg-thirdShade rounded-lg shadow-md p-6 relative"> 
-          <div className="absolute top-0 right-0 mt-4 mr-4">
+          <div className="absolute top-0 right-0 mt-4 mr-4"> 
             <div className="relative">
               <SlOptionsVertical className="w-4 h-8 text-gray-600 cursor-pointer" onClick={toggleDropdown} />
               {showDropdown && (
@@ -74,6 +84,7 @@ const Profile = () => {
                   </button>
                 </div>
               )}
+              
             </div>
           </div>
           <div className="flex flex-col md:flex-row items-center">
@@ -100,6 +111,11 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      {showChangePasswordModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+        <div className=" rounded-lg shadow-md">
+          <ChangePasswordModal isOpen={showChangePasswordModal} onClose={handleCloseChangePasswordModal} />
+        </div>
+      </div>}
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice,createSelector } from "@reduxjs/toolkit";
 
  const userInfoSlice = createSlice({
     name:'userInfo',
@@ -17,6 +17,11 @@ import { createSlice } from "@reduxjs/toolkit";
     }
 })
 
+const selectUser = state => state.userInfo.user;
+export const selectUserEmail = createSelector(
+  selectUser,
+  user => user && user.email
+);
 export const {userLogin,userLogout} = userInfoSlice.actions
 export default userInfoSlice.reducer
 
