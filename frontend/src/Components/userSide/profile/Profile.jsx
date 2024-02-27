@@ -8,6 +8,7 @@ import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert.
 import { setAuthenticated } from '../../../redux/slices/userSlices/authSlice.js'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { userLogout } from '../../../redux/slices/userSlices/userInfoSlice.js';
 
 
 const Profile = () => {
@@ -19,7 +20,7 @@ const Profile = () => {
   };
 
   const handleNewPost = () => {
-    // Logic for adding a new post
+
     console.log("New Post clicked");
   };
 
@@ -27,7 +28,9 @@ const Profile = () => {
     Axios.get('/logout', { withCredentials: true })
     .then((response) => {
         if (response.status === 200) {
-          dispatch(setAuthenticated(false));
+          dispatch(setAuthenticated(false))
+          dispatch(userLogout())
+
             navigate('/signin')
             showSuccessMessage(response.data.message); 
         }
@@ -39,6 +42,11 @@ const Profile = () => {
 
   const handleEditProfile = () => {
     console.log("Edit profile clicked")
+    
+  }
+
+  const handleChangePassword = ()=>{
+    console.log("Change password clicked")
   }
 
 
@@ -57,6 +65,9 @@ const Profile = () => {
                   </button>
                   <button onClick={handleEditProfile} className="block w-full text-left px-4 py-2 font-protest text-gray-800 hover:bg-gray-100">
                     Edit Profile
+                  </button>
+                  <button onClick={handleChangePassword} className="block w-full text-left px-4 py-2 font-protest text-gray-800 hover:bg-gray-100">
+                    Change Password
                   </button>
                   <button onClick={handleLogout} className="block w-full text-left px-4 py-2 font-protest text-gray-800 hover:bg-gray-100">
                     Logout

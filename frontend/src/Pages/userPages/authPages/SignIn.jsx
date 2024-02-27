@@ -4,6 +4,7 @@ import { Axios } from '../../../axios/userInstance';
 import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert';
 import { useDispatch } from 'react-redux';
 import { setAuthenticated } from '../../../redux/slices/userSlices/authSlice.js'
+import { userLogin } from '../../../redux/slices/userSlices/userInfoSlice.js';
 
 
 const SignIn = () => {
@@ -24,6 +25,7 @@ const SignIn = () => {
     Axios.post('/signin', formData,{withCredentials:true})
     .then((response) => {
       dispatch(setAuthenticated(true));
+      dispatch(userLogin({...response.data}))
       navigate('/home')
       showSuccessMessage(response.data.message);
     })

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import swal from 'sweetalert';
 import { useNavigate } from 'react-router-dom';
 import {Axios} from '../../../axios/userInstance.js'
-import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert.js';
+import { showErrorMessage } from '../../../helper/sweetalert.js';
 
 
 const ForgotPassword = () => {
