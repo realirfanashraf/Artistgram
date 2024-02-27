@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { Axios } from '../../../axios/userInstance';
+import { Axios } from '../../../axios/userInstance.js';
 import { useNavigate, Link } from 'react-router-dom';
 import { showErrorMessage, showSuccessMessage } from '../../../helper/sweetalert';
 
 const SignUp = () => {
   const navigate = useNavigate();
+
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationStep, setVerificationStep] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -21,11 +24,16 @@ const SignUp = () => {
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    // Clear error message when user starts typing
+
     setFormErrors({ ...formErrors, [e.target.name]: '' });
 
   };
 
+  const handleInputCode = (e)=>{
+    setVerificationCode(e.target.value)
+  }
+
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
@@ -62,26 +70,37 @@ const SignUp = () => {
       return;
     }
 
-    // End validation
+    setVerificationStep(true);
+    
 
-    Axios.post('/signup', formData)
-      .then((response) => {
-        navigate('/signin');
-        showSuccessMessage(response.data.message);
-      })
-      .catch((error) => {
-        showErrorMessage(error);
-      });
+    
   };
+
+  const handleVerify = (e)=>{
+    e.preventDefault()
+    const requestData = { ...formData, verificationCode }; 
+   Axios.post('/signup', requestData)
+     .then((response) => {
+
+      console.log("akjds")
+       navigate('/signin');
+       showSuccessMessage(response.data.message);
+     })
+     .catch((error) => {
+      console.log("frontend error adhfkjadf")
+       showErrorMessage(error);
+     });
+   }
 
   return (
     <>
-      <div className="flex mt-1 min-h-screen flex-1 flex-col justify-center px-6 py-6 lg:px-8">
-        <h2 className="text-center text-3xl font-protest leading-9 tracking-tight text-white">
-          Sign Up
-        </h2>
+    <div className="flex mt-1 min-h-screen flex-1 flex-col justify-center px-6 py-6 lg:px-8">
+    <h2 className="text-center text-3xl font-protest leading-9 tracking-tight text-white">
+        {!verificationStep ? "SignUp" : "Verification"}
+      </h2>
 
-        <div className="mt-2 sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="mt-2 sm:mx-auto sm:w-full sm:max-w-sm">
+        {!verificationStep ? (
           <form className="space-y-6" action="#" method="POST">
             <div>
               <label htmlFor="name" className="authfont">
@@ -167,16 +186,35 @@ const SignUp = () => {
               </button>
             </div>
           </form>
-
-          <p className="text-start text-sm text-black font-protest">
-            Already a member?{' '}
-            <Link to="/signin" className="leading-6 text-black hover:text-gray-600 font-protest">
-              Sign In
-            </Link>
-          </p>
-        </div>
+        ) : (
+          <form className="space-y-6" action="#" method="POST">
+            <div>
+              <label htmlFor="Code" className="authfont">
+                Code
+              </label>
+              <div className="mt-1">
+                <input
+                  id="Code"
+                  name="Code"
+                  type="text"
+                  autoComplete="Code"
+                  required
+                  className="inputfield"
+                  value={verificationCode}
+                  onChange={handleInputCode}
+                />
+              </div>
+            </div>
+            <div>
+              <button type="submit" className="authbtn" onClick={handleVerify}>
+                Verify
+              </button>
+            </div>
+          </form>
+        )}
       </div>
-    </>
+    </div>
+  </>
   );
 };
 
