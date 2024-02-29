@@ -13,6 +13,13 @@ import { createSlice,createSelector } from "@reduxjs/toolkit";
         userLogout:(state)=>{
             state.user = null;
             localStorage.removeItem('userInfo');
+        },
+        updateProfilePicture:(state,action)=>{
+            if(state.user !== null && state.user.ProfilePicture){
+                state.user.ProfilePicture = action.payload
+            }else{
+                console.log("error in uploading")
+            }
         }
     }
 })
@@ -22,6 +29,10 @@ export const selectUserEmail = createSelector(
   selectUser,
   user => user && user.email
 );
-export const {userLogin,userLogout} = userInfoSlice.actions
+
+
+
+
+export const {userLogin,userLogout,updateProfilePicture} = userInfoSlice.actions
 export default userInfoSlice.reducer
 

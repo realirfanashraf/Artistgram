@@ -17,7 +17,8 @@ const userSchema = new mongoose.Schema({
         default: Date.now 
     },
     ProfilePicture:{
-        type:String
+        type:String,
+        default : 'https://static-00.iconduck.com/assets.00/profile-circle-icon-256x256-cm91gqm2.png'
     }
 })
 

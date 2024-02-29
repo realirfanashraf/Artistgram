@@ -1,10 +1,11 @@
 import { IoIosCamera } from "react-icons/io";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import axios from "axios";
 import { Axios } from "../../../axios/userInstance.js";
-import { selectUserEmail } from "../../../redux/slices/userSlices/userInfoSlice.js";
-import { useSelector } from "react-redux";
-import swal from 'sweetalert'
+import { selectUserEmail, updateProfilePicture } from "../../../redux/slices/userSlices/userInfoSlice.js";
+import { useDispatch, useSelector } from "react-redux";
+import { showSuccessMessage } from "../../../helper/sweetalert.js";
+
 
 
 
@@ -14,11 +15,13 @@ const ProfilePhoto = () => {
   const CLOUD_UPLOAD_URL = import.meta.env.VITE_CLOUD_UPLOAD_URL
   const email = useSelector(selectUserEmail)
   const fileInputRef = useRef(null);
-  const [imageUrl, setImageUrl] = useState("");
+  const dispatch = useDispatch();
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
   };
+  const userData = useSelector((state) => state.userInfo.user);
+  
 
   const handleFileInputChange = async (event) => {
     const file = event.target.files[0];
@@ -32,10 +35,11 @@ const ProfilePhoto = () => {
       
       if (response.status === 200) {
         const imageUrl = response.data.secure_url;
-        setImageUrl(imageUrl)
+       
         Axios.post('/upload/changeProfilePicture',{email,imageUrl})
         .then((response)=>{
-          swal(response.data.message)
+          dispatch(updateProfilePicture(imageUrl));
+          showSuccessMessage(response.data.message)
         }).catch((error)=>{
           console.log(error)
         })
@@ -48,7 +52,7 @@ const ProfilePhoto = () => {
   return (
     <div className="relative inline-block">
       <img
-         src={imageUrl || "/images/profile.jpg"}
+         src={userData?.ProfilePicture}
         alt="Profile"
         className="rounded-full w-32 h-32 object-cover"
       />

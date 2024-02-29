@@ -10,7 +10,7 @@ export const changeProfilePicture = async(req,res)=>{
             user.ProfilePicture = imageUrl
         }
         await user.save()
-        res.status(200).json({message:"Success , Profile Picture changed, success"})
+        res.status(200).json({message:"Profile Picture changed"})
     } catch (error) {
         console.log(error)
     }
