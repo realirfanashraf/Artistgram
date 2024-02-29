@@ -25,7 +25,7 @@ const Profile = () => {
 
 
   const handleCloseChangePasswordModal = () => {
-    setShowChangePasswordModal(false); // Close the modal
+    setShowChangePasswordModal(false); 
   };
   const handleNewPost = () => {
 
