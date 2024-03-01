@@ -1,12 +1,11 @@
 import  { useState } from 'react';
-import { selectUserEmail } from '../../redux/slices/userSlices/userInfoSlice';
 import { useSelector } from 'react-redux';
 import { Axios } from '../../axios/userInstance.js';
 import swal from 'sweetalert';
 
 const ChangePasswordModal = ({ isOpen, onClose }) => {
   const [newPassword, setNewPassword] = useState('');
-  const email = useSelector(selectUserEmail);
+  const userData = useSelector((state) => state.userInfo.user);
 
   const handleChange = (e) => {
     setNewPassword(e.target.value);
@@ -15,7 +14,7 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await Axios.post('/changePassword', { email, newPassword });
+      const response = await Axios.post('/changePassword', { email :userData.email, newPassword });
       if (response.status === 200) {
         swal('Password Changed!', 'Your password has been successfully changed.', 'success');
         onClose()

@@ -2,7 +2,7 @@ import { IoIosCamera } from "react-icons/io";
 import { useRef } from "react";
 import axios from "axios";
 import { Axios } from "../../../axios/userInstance.js";
-import { selectUserEmail, updateProfilePicture } from "../../../redux/slices/userSlices/userInfoSlice.js";
+import { updateProfilePicture } from "../../../redux/slices/userSlices/userInfoSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { showSuccessMessage } from "../../../helper/sweetalert.js";
 
@@ -13,7 +13,7 @@ const ProfilePhoto = () => {
   const PRESET_KEY= import.meta.env.VITE_PRESET_KEY
   const CLOUD_NAME = import.meta.env.VITE_CLOUD_NAME
   const CLOUD_UPLOAD_URL = import.meta.env.VITE_CLOUD_UPLOAD_URL
-  const email = useSelector(selectUserEmail)
+  
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
 
@@ -36,7 +36,7 @@ const ProfilePhoto = () => {
       if (response.status === 200) {
         const imageUrl = response.data.secure_url;
        
-        Axios.post('/upload/changeProfilePicture',{email,imageUrl})
+        Axios.post('/upload/changeProfilePicture',{email:userData.email,imageUrl})
         .then((response)=>{
           dispatch(updateProfilePicture(imageUrl));
           showSuccessMessage(response.data.message)
