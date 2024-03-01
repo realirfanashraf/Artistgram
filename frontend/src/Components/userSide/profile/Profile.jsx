@@ -11,12 +11,14 @@ import { useDispatch } from 'react-redux';
 import { userLogout } from '../../../redux/slices/userSlices/userInfoSlice.js';
 import ChangePasswordModal from '../../../modal/userModal/ChangePasswordModal.jsx';
 import EditProfileModal from '../../../modal/userModal/EditProfileModal.jsx';
+import NewPostModal from '../../../modal/userModal/NewPostModal.jsx';
 
 
 const Profile = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [showEditProfileModal, setShowEditProfileModal] = useState(false)
+  const [showNewPostModal, setShowNewPostModal] = useState(false)
   
   const navigate = useNavigate()
   const dispatch = useDispatch();
@@ -25,7 +27,9 @@ const Profile = () => {
   };
 
 
-
+const handleNewPostModal=()=>{
+  setShowNewPostModal(false)
+}
 
   const handleCloseChangePasswordModal = () => {
     setShowChangePasswordModal(false); 
@@ -36,7 +40,8 @@ const Profile = () => {
   }
   const handleNewPost = () => {
 
-    console.log("New Post clicked");
+    setShowNewPostModal(true)
+    setShowDropdown(false)
   };
 
   const handleLogout = () => {
@@ -128,6 +133,11 @@ const Profile = () => {
       {showEditProfileModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
       <div className=" rounded-lg shadow-md">
           <EditProfileModal isOpen={showEditProfileModal} onClose={handleCloseEditProfileModal} />
+        </div>
+        </div>}
+        {showNewPostModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+      <div className=" rounded-lg shadow-md">
+          <NewPostModal isOpen={showNewPostModal} onClose={handleNewPostModal} />
         </div>
         </div>}
     </>

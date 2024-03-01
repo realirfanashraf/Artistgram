@@ -39,3 +39,7 @@ export const editProfile = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+
+export const newPost = async(req,res)=>{
+    console.log(req.body);
+}
