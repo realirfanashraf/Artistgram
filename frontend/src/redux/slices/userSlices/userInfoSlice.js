@@ -20,7 +20,18 @@ import { createSlice,createSelector } from "@reduxjs/toolkit";
             }else{
                 console.log("error in uploading")
             }
-        }
+        },
+        updateUserProfileFields: (state, action) => {
+            const { name, bio, location } = action.payload;
+            if (state.user !== null) {
+              state.user.name = name;
+              state.user.bio = bio;
+              state.user.location = location;
+              localStorage.setItem('userInfo', JSON.stringify(state.user));
+            } else {
+              console.log("User information not found");
+            }
+          }
     }
 })
 
@@ -33,6 +44,6 @@ export const selectUserEmail = createSelector(
 
 
 
-export const {userLogin,userLogout,updateProfilePicture} = userInfoSlice.actions
+export const {userLogin,userLogout,updateProfilePicture,updateUserProfileFields} = userInfoSlice.actions
 export default userInfoSlice.reducer
 

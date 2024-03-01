@@ -19,6 +19,12 @@ const userSchema = new mongoose.Schema({
     ProfilePicture:{
         type:String,
         default : 'https://static-00.iconduck.com/assets.00/profile-circle-icon-256x256-cm91gqm2.png'
+    },
+    bio:{
+        type:String
+    },
+    location:{
+        type:String
     }
 })
 

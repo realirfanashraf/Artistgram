@@ -10,11 +10,14 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { userLogout } from '../../../redux/slices/userSlices/userInfoSlice.js';
 import ChangePasswordModal from '../../../modal/userModal/ChangePasswordModal.jsx';
+import EditProfileModal from '../../../modal/userModal/EditProfileModal.jsx';
 
 
 const Profile = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false)
+  
   const navigate = useNavigate()
   const dispatch = useDispatch();
   const toggleDropdown = () => {
@@ -27,6 +30,10 @@ const Profile = () => {
   const handleCloseChangePasswordModal = () => {
     setShowChangePasswordModal(false); 
   };
+
+  const handleCloseEditProfileModal = ()=>{
+    setShowEditProfileModal(false)
+  }
   const handleNewPost = () => {
 
     console.log("New Post clicked");
@@ -50,6 +57,8 @@ const Profile = () => {
 
   const handleEditProfile = () => {
     console.log("Edit profile clicked")
+    setShowDropdown(false)
+    setShowEditProfileModal(true);
     
   }
 
@@ -116,6 +125,11 @@ const Profile = () => {
           <ChangePasswordModal isOpen={showChangePasswordModal} onClose={handleCloseChangePasswordModal} />
         </div>
       </div>}
+      {showEditProfileModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+      <div className=" rounded-lg shadow-md">
+          <EditProfileModal isOpen={showEditProfileModal} onClose={handleCloseEditProfileModal} />
+        </div>
+        </div>}
     </>
   )
 }
