@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import  { useEffect, useState } from 'react';
 import NavBar from "../NavBar"
 import ProfilePhoto from "./ProfilePhoto"
 import ProfileSection from "./ProfileSection"
@@ -7,7 +7,7 @@ import {Axios} from '../../../axios/userInstance.js'
 import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert.js';
 import { setAuthenticated } from '../../../redux/slices/userSlices/authSlice.js'
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { userLogout } from '../../../redux/slices/userSlices/userInfoSlice.js';
 import ChangePasswordModal from '../../../modal/userModal/ChangePasswordModal.jsx';
 import EditProfileModal from '../../../modal/userModal/EditProfileModal.jsx';
@@ -19,12 +19,26 @@ const Profile = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [showEditProfileModal, setShowEditProfileModal] = useState(false)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
-  
+  const [posts, setPosts] = useState([]);
+  const userData = useSelector((state) => state.userInfo.user);
   const navigate = useNavigate()
   const dispatch = useDispatch();
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
+
+  useEffect(() => {
+    if (userData) {
+      Axios.get(`/upload/posts/${userData?._id}`) 
+        .then(response => {
+          console.log(response);
+          setPosts(response.data.posts);
+        })
+        .catch(error => {
+          console.error('Error fetching posts:', error);
+        });
+    }
+  });
 
 
 const handleNewPostModal=()=>{
@@ -72,6 +86,9 @@ const handleNewPostModal=()=>{
     setShowDropdown(false)
     setShowChangePasswordModal(true);
   }
+  const updatePosts = (newPost) => {
+    setPosts(prevPosts => [newPost, ...prevPosts]);
+  };
 
 
   return (
@@ -113,15 +130,15 @@ const handleNewPostModal=()=>{
             <p className="text-center font-protest text-white p-1">Gallery</p>
           </div>
           <div className="mt-2 grid grid-cols-3 gap-4">
-            <div className="bg-thirdShade rounded-lg shadow-lg p-2">
-              <img src="/images/profile.jpg" alt="" />
-            </div>
-            <div className="bg-thirdShade rounded-lg shadow-md p-2">
-              <img src="/images/profile.jpg" alt="" />
-            </div>
-            <div className="bg-thirdShade rounded-lg shadow-md p-2">
-              <img src="/images/profile.jpg" alt=""  />
-            </div>
+            {posts?.length > 0 ? (
+              posts?.map((post) => (
+                <div key={post?._id} className="bg-thirdShade rounded-lg shadow-md p-2">
+                  <img src={post?.image} alt="" className="w-full h-full object-cover" />
+                </div>
+              ))
+            ) : (
+              <p>No posts</p>
+            )}
           </div>
         </div>
       </div>
@@ -137,7 +154,7 @@ const handleNewPostModal=()=>{
         </div>}
         {showNewPostModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
       <div className=" rounded-lg shadow-md">
-          <NewPostModal isOpen={showNewPostModal} onClose={handleNewPostModal} />
+          <NewPostModal isOpen={showNewPostModal} onClose={handleNewPostModal} updatePosts={updatePosts} />
         </div>
         </div>}
     </>

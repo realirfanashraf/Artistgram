@@ -59,3 +59,22 @@ export const newPost = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+
+export const posts = async(req,res)=>{
+            
+    try {
+        const userId = req.params.id;
+
+        const posts = await postSchema.find({postedBy : userId});
+
+        console.log(posts , 'df');
+
+        if(posts) {
+            return res.json({posts});
+        }
+    } catch (error) {
+        console.log(error)
+        
+    }
+}

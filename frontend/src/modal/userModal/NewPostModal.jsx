@@ -4,7 +4,7 @@ import swal from 'sweetalert';
 import {useSelector} from 'react-redux'
 import { Axios } from '../../axios/userInstance.js';
 
-const NewPostModal = ({ isOpen, onClose }) => {
+const NewPostModal = ({ isOpen, onClose,updatePosts }) => {
   const PRESET_KEY= import.meta.env.VITE_PRESET_KEY
   const CLOUD_NAME = import.meta.env.VITE_CLOUD_NAME
   const CLOUD_UPLOAD_URL = import.meta.env.VITE_CLOUD_UPLOAD_URL
@@ -43,7 +43,11 @@ const NewPostModal = ({ isOpen, onClose }) => {
           imageUrl: response.data.url, 
           id :user?._id
         });
-        
+        updatePosts({
+          _id: response.data.postId, // Assuming your response contains the new post's ID
+          caption,
+          image: response.data.url // Assuming your response contains the new post's image URL
+        });
         swal('Post Created!', 'Your post has been successfully created.', 'success');
         onClose();
       } else {
