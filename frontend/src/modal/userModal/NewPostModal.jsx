@@ -34,8 +34,6 @@ const NewPostModal = ({ isOpen, onClose }) => {
       formData.append('file', image);
       formData.append('upload_preset',`${PRESET_KEY}`);
       formData.append('cloud_name', `${CLOUD_NAME}`);
-
-      console.log("response is here")
       const response = await axios.post(`${CLOUD_UPLOAD_URL}`, formData);
      
       if (response.status === 200) {
@@ -45,7 +43,7 @@ const NewPostModal = ({ isOpen, onClose }) => {
           imageUrl: response.data.url, 
           id :user?._id
         });
-
+        
         swal('Post Created!', 'Your post has been successfully created.', 'success');
         onClose();
       } else {

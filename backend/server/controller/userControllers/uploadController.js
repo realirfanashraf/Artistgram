@@ -1,5 +1,5 @@
 import userSchema from '../../model/userModels/userModel.js'
-
+import postSchema from '../../model/userModels/postModel.js'
 
 export const changeProfilePicture = async(req,res)=>{
     const {email , imageUrl} = req.body
@@ -40,6 +40,22 @@ export const editProfile = async (req, res) => {
     }
 };
 
-export const newPost = async(req,res)=>{
-    console.log(req.body);
-}
+
+export const newPost = async (req, res) => {
+    try {
+        const { caption, imageUrl, id } = req.body;
+
+        const newPost = new postSchema({
+            description: caption,
+            image: imageUrl,
+            postedBy: id
+        });
+
+        const savedPost = await newPost.save();
+
+        res.status(201).json({ message: 'Post created successfully', post: savedPost });
+    } catch (error) {
+        console.error('Error creating post:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
