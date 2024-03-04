@@ -7,15 +7,24 @@ const AdminNavbar = () => {
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
   };
- 
+
   return (
     <nav className="bg-primary shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            
+          <div className="flex">
+            <div className="flex-shrink-0 flex items-center">
+              <img src="/images/ArtistgramLogo.png" alt="Admin Logo" className="h-17 w-auto" />
+            </div>
           </div>
           <div className="flex items-center">
+            <div className="hidden md:block">
+              {/* Desktop navigation links */}
+              <Link to='/admin/dashboard' className='navLinks'>Dashboard</Link>
+              <Link to='/admin/users' className='navLinks'>User Management</Link>
+              <Link to='/admin/posts' className='navLinks'>Post Management</Link>
+              <Link to='/admin/profile' className='navLinks'>Profile</Link>
+            </div>
             <div className="md:hidden">
               {/* Mobile menu button */}
               <button onClick={toggleNavbar} className="text-gray-300 hover:text-white focus:outline-none focus:text-white px-4 py-2">
@@ -38,11 +47,10 @@ const AdminNavbar = () => {
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {/* Mobile navigation links */}
-            <Link to='/user-management' className='navLinks block'>User Management</Link>
-            <Link to='/dashboard' className='navLinks block'>Dashboard</Link>
-            <Link to='/post-management' className='navLinks block'>Post Management</Link>
-            <Link to='/other-page-1' className='navLinks block'>Other Page 1</Link>
-            <Link to='/other-page-2' className='navLinks block'>Other Page 2</Link>
+            <Link to='/admin/dashboard' className='navLinks block'>Dashboard</Link>
+            <Link to='/admin/users' className='navLinks block'>User Management</Link>
+            <Link to='/admin/posts' className='navLinks block'>Post Management</Link>
+            <Link to='/admin/profile' className='navLinks block'>Profile</Link>
           </div>
         </div>
       )}
