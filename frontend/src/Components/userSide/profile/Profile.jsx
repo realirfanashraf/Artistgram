@@ -28,7 +28,7 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (userData) {
+    
       Axios.get(`/upload/posts/${userData?._id}`) 
         .then(response => {
           console.log(response);
@@ -37,8 +37,7 @@ const Profile = () => {
         .catch(error => {
           console.error('Error fetching posts:', error);
         });
-    }
-  });
+  },[]);
 
 
 const handleNewPostModal=()=>{
