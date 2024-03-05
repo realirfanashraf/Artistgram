@@ -9,7 +9,6 @@ const SignUp = () => {
 
   const [verificationCode, setVerificationCode] = useState('');
   const [verificationStep, setVerificationStep] = useState(false);
-  const [code,setCode]= useState('')
 
   const [formData, setFormData] = useState({
     name: '',
@@ -75,8 +74,6 @@ const SignUp = () => {
     
     Axios.post('/signUpMail',{email: formData.email})
     .then((response)=>{
-    setCode(response.data.code)
-    console.log(response.data.code)
      showSuccessMessage(response.data.message)
      setVerificationStep(true);
     }).catch((error)=>{
@@ -89,11 +86,9 @@ const SignUp = () => {
 
   const handleVerify = (e)=>{
     e.preventDefault()
-    console.log(code,verificationCode)
-    if(code != verificationCode){
-      return swal("Verification Failed", "The code you entered is not correct", "error");
-    }
-   Axios.post('/signup', formData)
+    
+
+   Axios.post('/signup', formData,verificationCode)
      .then((response) => {
        showSuccessMessage(response.data.message);
        navigate('/signin');

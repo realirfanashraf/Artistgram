@@ -6,30 +6,33 @@ import sendMail from "../../helper/sendMail.js";
 
 
 
-export const signup = async(req,res) => {
-    const { name, email, password } = req.body;
+export const signup = async (req, res) => {
+  const { name, email, password, verificationCode } = req.body;
 
-    try {
-        const exUser = await userSchema.findOne({ email });
-        if (exUser) {
-            return res.status(400).json({ error: "User already exists" });
-        }
+  try {
+    const storedVerificationCode = req.cookies.verificationCode;
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+    res.clearCookie('verificationCode');
 
-        const user = await userSchema.create({
-            name: name,
-            email: email,
-            password: hashedPassword 
-        });
+    if (verificationCode === storedVerificationCode) {
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-        res.json({ message: "Signed up successfully" });
+      const user = await userSchema.create({
+        name: name,
+        email: email,
+        password: hashedPassword
+      });
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+      return res.json({ message: "Signed up successfully" });
+    } else {
+      return res.status(400).json({ error: 'Invalid verification code' });
     }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 };
+
 
 
 
@@ -148,8 +151,16 @@ export const forgotPassword = async (req, res) => {
   export const signUpMail = async(req,res)=>{
     try {
       const { email } = req.body;
+      
+      const user = await userSchema.findOne({ email });
+        if(user){
+          return res.status(404).json({ message: 'User Already Exists' });
+        }
   
       const code = Math.floor(100000 + Math.random() * 900000)
+      console.log(code,"code")
+      res.cookie('verificationCode', code, { httpOnly: true });
+
   
       const subject = 'Sign-in Verification';
       const text = `You are receiving this because you (or someone else) have requested to sign in to your account.\n\n`
@@ -158,7 +169,7 @@ export const forgotPassword = async (req, res) => {
   
       const isEmailSent = await sendMail(email, subject, text);
       if (isEmailSent) {
-        return res.status(200).json({ message: 'Email sent successfully', code });
+        return res.status(200).json({ message: 'Email sent successfully'});
       } else {
         return res.status(500).json({ message: 'Error sending email' });
       }
