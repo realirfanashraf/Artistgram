@@ -14,13 +14,16 @@ import { createSlice} from "@reduxjs/toolkit";
             state.user = null;
             localStorage.removeItem('userInfo');
         },
-        updateProfilePicture:(state,action)=>{
-            if(state.user !== null && state.user.ProfilePicture){
-                state.user.ProfilePicture = action.payload
-            }else{
-                console.log("error in uploading")
+        updateProfilePicture: (state, action) => {
+            if (state.user !== null && state.user.ProfilePicture) {
+              state.user.ProfilePicture = action.payload;
+              const updatedUser = { ...state.user, ProfilePicture: action.payload };
+              localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+            } else {
+              console.log("Error in uploading");
             }
-        },
+          }
+          ,
         updateUserProfileFields: (state, action) => {
             const { name, bio, location } = action.payload;
             if (state.user !== null) {
