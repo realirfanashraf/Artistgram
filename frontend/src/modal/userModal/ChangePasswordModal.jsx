@@ -4,8 +4,13 @@ import { Axios } from '../../axios/userInstance.js';
 import swal from 'sweetalert';
 
 const ChangePasswordModal = ({ isOpen, onClose }) => {
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const userData = useSelector((state) => state.userInfo.user);
+
+  const handleCurrentPasswordChange = (e) => {
+    setCurrentPassword(e.target.value);
+  };
 
   const handleChange = (e) => {
     setNewPassword(e.target.value);
@@ -14,10 +19,10 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await Axios.post('/changePassword', { email :userData.email, newPassword });
+      const response = await Axios.post('/changePassword', { email: userData.email, currentPassword, newPassword });
       if (response.status === 200) {
         swal('Password Changed!', 'Your password has been successfully changed.', 'success');
-        onClose()
+        onClose();
       }
     } catch (error) {
       console.error('Error:', error.response.data.message);
@@ -33,6 +38,16 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
         <h2 className="text-2xl font-protest mb-6">Change Password</h2>
         
         <section className="modal-body">
+          <div className="field mb-4">
+            <label className="block text-sm font-protest">Current Password</label>
+            <input
+              className="inputfield"
+              type="password"
+              placeholder="Enter current password"
+              value={currentPassword}
+              onChange={handleCurrentPasswordChange}
+            />
+          </div>
           <div className="field mb-4">
             <label className="block text-sm font-protest">New Password</label>
             <input

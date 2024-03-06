@@ -127,25 +127,31 @@ export const forgotPassword = async (req, res) => {
 };
 
 
-  export const changePassword = async (req, res) => {
-    try {
-      const { email, newPassword } = req.body;
-      const user = await userSchema.findOne({ email });
-  
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      const hashedPassword = await bcrypt.hash(newPassword, 10)
-  
-      user.password = hashedPassword;
-      await user.save();
-  
-      return res.status(200).json({ message: 'Password changed successfully' });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: 'Internal server error' });
+export const changePassword = async (req, res) => {
+  try {
+    const { email, currentPassword, newPassword } = req.body;
+    const user = await userSchema.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-  };
+
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
   
 
   export const signUpMail = async(req,res)=>{
