@@ -1,10 +1,10 @@
 import { IoIosCamera } from "react-icons/io";
 import { useRef } from "react";
 import axios from "axios";
-import { Axios } from "../../../axios/userInstance.js";
 import { updateProfilePicture } from "../../../redux/slices/userSlices/userInfoSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { showSuccessMessage } from "../../../helper/sweetalert.js";
+import { changeProfilePicture } from "../../../API/apiCalls.js";
 
 
 
@@ -35,8 +35,7 @@ const ProfilePhoto = () => {
       
       if (response.status === 200) {
         const imageUrl = response.data.secure_url;
-       
-        Axios.post('/upload/changeProfilePicture',{email:userData.email,imageUrl})
+        changeProfilePicture(userData.email,imageUrl)
         .then((response)=>{
           dispatch(updateProfilePicture(imageUrl));
           showSuccessMessage(response.data.message)

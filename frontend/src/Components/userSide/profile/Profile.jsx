@@ -3,7 +3,6 @@ import NavBar from "../NavBar"
 import ProfilePhoto from "./ProfilePhoto"
 import ProfileSection from "./ProfileSection"
 import { SlOptionsVertical } from "react-icons/sl";
-import {Axios} from '../../../axios/userInstance.js'
 import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert.js';
 import { setAuthenticated } from '../../../redux/slices/userSlices/authSlice.js'
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +11,7 @@ import { userLogout } from '../../../redux/slices/userSlices/userInfoSlice.js';
 import ChangePasswordModal from '../../../modal/userModal/ChangePasswordModal.jsx';
 import EditProfileModal from '../../../modal/userModal/EditProfileModal.jsx';
 import NewPostModal from '../../../modal/userModal/NewPostModal.jsx';
+import { getPosts, logout } from '../../../API/apiCalls.js';
 
 
 const Profile = () => {
@@ -28,8 +28,8 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    
-      Axios.get(`/upload/posts/${userData?._id}`) 
+    const userId = userData._id
+     getPosts(userId)
         .then(response => {
           console.log(response);
           setPosts(response.data.posts);
@@ -58,12 +58,11 @@ const handleNewPostModal=()=>{
   };
 
   const handleLogout = () => {
-    Axios.get('/logout', { withCredentials: true })
+    logout()
     .then((response) => {
         if (response.status === 200) {
           dispatch(setAuthenticated(false))
           dispatch(userLogout())
-
             navigate('/signin')
             showSuccessMessage(response.data.message); 
         }
