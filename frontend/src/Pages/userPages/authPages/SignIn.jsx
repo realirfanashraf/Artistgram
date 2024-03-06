@@ -1,10 +1,10 @@
 import  { useState } from 'react'
 import { useNavigate, Link} from 'react-router-dom';
-import { Axios } from '../../../axios/userInstance';
 import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert';
 import { useDispatch } from 'react-redux';
 import { setAuthenticated } from '../../../redux/slices/userSlices/authSlice.js'
 import { userLogin } from '../../../redux/slices/userSlices/userInfoSlice.js';
+import { signIn } from '../../../API/apiCalls.js';
 
 
 const SignIn = () => {
@@ -22,7 +22,7 @@ const SignIn = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    Axios.post('/signin', formData,{withCredentials:true})
+    signIn(formData)
     .then((response) => {
       dispatch(setAuthenticated(true));
       dispatch(userLogin({...response.data}))

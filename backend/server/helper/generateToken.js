@@ -18,7 +18,7 @@ export const generateTokenUser = async(res,userId) => {
 }
 
 export const generateTokenAdmin = async(res,adminId)=>{
-    const token = jwt.sign({adminId},process.env.JWT_secretKey,{
+    const token = jwt.sign({adminId},process.env.JWT_secretKey_ADMIN,{
         expiresIn:'30d'
     })
     res.cookie('jwtadmin', token, {

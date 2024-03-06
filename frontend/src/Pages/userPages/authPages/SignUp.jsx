@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Axios } from '../../../axios/userInstance.js';
 import { useNavigate, Link } from 'react-router-dom';
 import { showErrorMessage, showSuccessMessage } from '../../../helper/sweetalert';
-import swal from 'sweetalert';
+import { signUpMail, signup } from '../../../API/apiCalls.js';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -71,8 +70,8 @@ const SignUp = () => {
       return;
     }
 
-    
-    Axios.post('/signUpMail',{email: formData.email})
+    const email = formData.email
+    signUpMail(email)
     .then((response)=>{
      showSuccessMessage(response.data.message)
      setVerificationStep(true);
@@ -88,7 +87,7 @@ const SignUp = () => {
     e.preventDefault()
     
 
-   Axios.post('/signup', formData,verificationCode)
+    signup(formData,verificationCode)
      .then((response) => {
        showSuccessMessage(response.data.message);
        navigate('/signin');
