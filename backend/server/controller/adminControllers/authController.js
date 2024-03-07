@@ -29,7 +29,7 @@ export const verifyToken = (req, res) => {
 
     try {
        
-        const decoded = jwt.verify(token , process.env.JWT_secretKey)
+        const decoded = jwt.verify(token , process.env.JWT_secretKey_ADMIN)
         console.log(decoded)
 
         if(decoded){

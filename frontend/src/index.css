@@ -35,5 +35,9 @@ body {
 
 
 
-/* PopUp */
 
+/* Admin Dashboard */
+
+.btn{
+    @apply rounded-full py-2 px-3 uppercase text-xs font-bold tracking-wider cursor-pointer;
+  }

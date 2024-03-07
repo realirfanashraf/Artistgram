@@ -2,37 +2,37 @@ import userSchema from "../../model/userModels/userModel.js";
 import bcrypt from 'bcrypt';
 import { generateTokenUser } from "../../helper/generateToken.js";
 import jwt from 'jsonwebtoken'
-import dotenv from 'dotenv'
-import nodemailer from 'nodemailer'
-import { v4 as uuidv4 } from 'uuid';
-dotenv.config()
+import sendMail from "../../helper/sendMail.js";
 
 
-export const signup = async(req,res) => {
-    const { name, email, password } = req.body;
 
-    try {
-        
-        const exUser = await userSchema.findOne({ email });
-        if (exUser) {
-            return res.status(400).json({ error: "User already exists" });
-        }
+export const signup = async (req, res) => {
+  const { name, email, password, verificationCode } = req.body;
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+  try {
+    const storedVerificationCode = req.cookies.verificationCode;
 
-        const user = await userSchema.create({
-            name: name,
-            email: email,
-            password: hashedPassword 
-        });
+    res.clearCookie('verificationCode');
 
-        res.json({ message: "Signed up successfully" });
+    if (verificationCode === storedVerificationCode) {
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+      const user = await userSchema.create({
+        name: name,
+        email: email,
+        password: hashedPassword
+      });
+
+      return res.json({ message: "Signed up successfully" });
+    } else {
+      return res.status(400).json({ error: 'Invalid verification code' });
     }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 };
+
 
 
 
@@ -55,6 +55,9 @@ export const signin = async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                ProfilePicture: user.ProfilePicture || null ,
+                bio:user.bio || null,
+                location:user.location || null
             });
         }else {
             return res.status(400).json({ error: "Invalid email or password" });
@@ -96,71 +99,88 @@ export const logout = async (req, res) => {
 };
 
 export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await userSchema.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000)
+
+    const subject = 'Forgot Password Request';
+    const text = `You are receiving this because you (or someone else) have requested to reset the password for your account.\n\n`
+      + `Your verification code is: ${code}\n\n`
+      + `If you did not request this, please ignore this email.\n`;
+
+    const isEmailSent = await sendMail(email, subject, text);
+    if (isEmailSent) {
+      return res.status(200).json({ message: 'Email sent successfully', code });
+    } else {
+      return res.status(500).json({ message: 'Error sending email' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+
+export const changePassword = async (req, res) => {
+  try {
+    const { email, currentPassword, newPassword } = req.body;
+    const user = await userSchema.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+  
+
+  export const signUpMail = async(req,res)=>{
     try {
       const { email } = req.body;
-      const user = await userSchema.findOne({ email });
       
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
+      const user = await userSchema.findOne({ email });
+        if(user){
+          return res.status(404).json({ message: 'User Already Exists' });
+        }
   
-      const code = Math.floor(100000 + Math.random() * 900000); 
+      const code = Math.floor(100000 + Math.random() * 900000)
+      console.log(code,"code")
+      res.cookie('verificationCode', code, { httpOnly: true });
 
-     
-      const otpToken = uuidv4();
-    //   res.cookie('otp', code, { httpOnly: true, maxAge: 3600000 });
   
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASSWORD
-        }
-      });
+      const subject = 'Sign-in Verification';
+      const text = `You are receiving this because you (or someone else) have requested to sign in to your account.\n\n`
+        + `Your verification code is: ${code}\n\n`
+        + `If you did not request this, please ignore this email.\n`;
   
-      const mailOptions = {
-        from: process.env.EMAIL,
-        to: email,
-        subject: 'Reset Password',
-        text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n`
-              + `Your verification code is: ${code}\n\n`
-              + `If you did not request this, please ignore this email and your password will remain unchanged.\n`
-      };
-  
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error(error);
-          return res.status(500).json({ message: 'Error sending email' });
-        } else {
-          console.log('Email sent: ' + info.response);
-          return res.status(200).json({ message: 'Email sent successfully', code });
-        }
-      });
+      const isEmailSent = await sendMail(email, subject, text);
+      if (isEmailSent) {
+        return res.status(200).json({ message: 'Email sent successfully'});
+      } else {
+        return res.status(500).json({ message: 'Error sending email' });
+      }
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });
     }
-  };
-
-
-  export const changePassword = async (req, res) => {
-    try {
-      const { email, newPassword } = req.body;
-      const user = await userSchema.findOne({ email });
-  
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      const hashedPassword = await bcrypt.hash(newPassword, 10)
-  
-      user.password = hashedPassword;
-      await user.save();
-  
-      return res.status(200).json({ message: 'Password changed successfully' });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: 'Internal server error' });
-    }
-  };
-  
+  }

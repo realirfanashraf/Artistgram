@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import swal from 'sweetalert';
 import { useNavigate } from 'react-router-dom';
-import {Axios} from '../../../axios/userInstance.js'
-import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert.js';
+import { showErrorMessage } from '../../../helper/sweetalert.js';
+import { changePassword, forgotPassword } from '../../../API/apiCalls.js';
 
 
 const ForgotPassword = () => {
@@ -20,7 +20,7 @@ const ForgotPassword = () => {
     if (!emailRegex.test(email)) {
       return swal('Invalid input', 'Please enter a valid email address.', 'error');
     }
-    Axios.post('/forgotpassword',{email})
+    forgotPassword(email)
     .then((response)=>{
       swal('OTP sent successfully','Please Check your Email','success')
       setCode(response.data.code)
@@ -43,13 +43,12 @@ const ForgotPassword = () => {
   const handleChangePassword = async (e) => {
     e.preventDefault();
     try {
-      const response = await Axios.post('/changePassword', { email, newPassword });
+      const response = await changePassword(email, newPassword);
       if (response.status === 200) {
         swal('Password Changed!', 'Your password has been successfully changed.', 'success');
         navigate('/signin');
       }
     } catch (error) {
-      console.error('Error:', error.response.data.message);
       swal('Error', 'Failed to change password. Please try again later.', 'error');
     }
   };
