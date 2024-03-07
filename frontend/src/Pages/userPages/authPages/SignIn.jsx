@@ -25,7 +25,8 @@ const SignIn = () => {
     signIn(formData)
     .then((response) => {
       dispatch(setAuthenticated(true));
-      dispatch(userLogin({...response.data}))
+      const {user} = response.data
+      dispatch(userLogin(user))
       navigate('/home')
       showSuccessMessage(response.data.message);
     })

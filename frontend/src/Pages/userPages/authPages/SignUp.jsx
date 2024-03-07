@@ -31,6 +31,7 @@ const SignUp = () => {
 
   const handleInputCode = (e)=>{
     setVerificationCode(e.target.value)
+    console.log(verificationCode)
   }
 
   
@@ -85,8 +86,8 @@ const SignUp = () => {
   const handleVerify = (e)=>{
     e.preventDefault()
     
-
-    signup(formData,verificationCode)
+    formData.verificationCode = verificationCode;
+    signup(formData)
      .then((response) => {
        showSuccessMessage(response.data.message);
        navigate('/signin');

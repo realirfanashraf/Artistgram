@@ -3,71 +3,46 @@ import bcrypt from 'bcrypt';
 import { generateTokenUser } from "../../helper/generateToken.js";
 import jwt from 'jsonwebtoken'
 import sendMail from "../../helper/sendMail.js";
-
+import { authenticateUser, forgotPasswordService, getUserByEmail, hashPassword, sendVerificationEmail, signinUser, signupUser } from "../../services/userServices/authServices.js";
 
 
 export const signup = async (req, res) => {
   const { name, email, password, verificationCode } = req.body;
-
   try {
-    const storedVerificationCode = req.cookies.verificationCode;
+    const code = req.cookies.verificationCode;
+      const result = await signupUser(name, email, password, verificationCode, code);
 
-    res.clearCookie('verificationCode');
-
-    if (verificationCode === storedVerificationCode) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      const user = await userSchema.create({
-        name: name,
-        email: email,
-        password: hashedPassword
-      });
-
-      return res.json({ message: "Signed up successfully" });
-    } else {
-      return res.status(400).json({ error: 'Invalid verification code' });
-    }
+      if (result.success) {
+          res.clearCookie('verificationCode');
+          return res.json({ message: result.message });
+      } else {
+          return res.status(400).json({ error: result.error });
+      }
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal server error" });
+      console.error(error);
+      return res.status(500).json({ error: "Internal server error" });
   }
 };
 
 
-
-
 export const signin = async (req, res) => {
-    const { email, password } = req.body;
-
-    try {
-        const user = await userSchema.findOne({ email });
-
-        if (!user) {
-            return res.status(400).json({ error: "User not found"});
-        }
-
-        const passwordMatched = await bcrypt.compare(password, user.password);
-
-        if (passwordMatched) {
-            await generateTokenUser(res, user._id);
-            return res.status(200).json({
-                message: "Successfully Signed In",
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                ProfilePicture: user.ProfilePicture || null ,
-                bio:user.bio || null,
-                location:user.location || null
-            });
-        }else {
-            return res.status(400).json({ error: "Invalid email or password" });
-        }
-    } catch (error) {
-        console.error("Error signing in:", error);
-        return res.status(500).json({ error: "Internal server error" });
-    }
+  const { email, password } = req.body;
+  try {
+      const result = await signinUser(email, password);
+      if (result.success) {
+          await generateTokenUser(res, result.user._id);
+          return res.status(200).json({
+              message: "Successfully Signed In",
+              user: result.user
+          });
+      } else {
+          return res.status(400).json({ error: result.error });
+      }
+  } catch (error) {
+      console.error("Error signing in:", error);
+      return res.status(500).json({ error: "Internal server error" });
+  }
 };
-
 
 
 export const verifyToken = (req, res) => {
@@ -75,9 +50,7 @@ export const verifyToken = (req, res) => {
     if (!token) {
         return res.status(401).json({ message: "No token provided" });
     }
-
     try {
-       
         const decoded = jwt.verify(token , process.env.JWT_secretKey)
         if(decoded){
             res.status(200).json({ valid: true });
@@ -89,6 +62,7 @@ export const verifyToken = (req, res) => {
     }
 };
 
+
 export const logout = async (req, res) => {
     try {
         res.clearCookie('jwtuser');
@@ -98,27 +72,17 @@ export const logout = async (req, res) => {
     }
 };
 
+
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
-    const user = await userSchema.findOne({ email });
+    const result = await forgotPasswordService(email);
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const code = Math.floor(100000 + Math.random() * 900000)
-
-    const subject = 'Forgot Password Request';
-    const text = `You are receiving this because you (or someone else) have requested to reset the password for your account.\n\n`
-      + `Your verification code is: ${code}\n\n`
-      + `If you did not request this, please ignore this email.\n`;
-
-    const isEmailSent = await sendMail(email, subject, text);
-    if (isEmailSent) {
-      return res.status(200).json({ message: 'Email sent successfully', code });
+    if (result.success) {
+      res.cookie('forgotPasswordOtp', result.code, { httpOnly: true });
+      res.status(200).json({ message: result.message, code: result.code });
     } else {
-      return res.status(500).json({ message: 'Error sending email' });
+      res.status(404).json({ message: result.message });
     }
   } catch (error) {
     console.error(error);
@@ -130,57 +94,88 @@ export const forgotPassword = async (req, res) => {
 export const changePassword = async (req, res) => {
   try {
     const { email, currentPassword, newPassword } = req.body;
-    const user = await userSchema.findOne({ email });
+    const user = await getUserByEmail(email);
+    const authenticationResult = await authenticateUser(user, currentPassword);
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    if (authenticationResult.error) {
+      return res.status(401).json({ message: authenticationResult.error });
     }
 
-    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Current password is incorrect' });
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
+    const hashedPassword = await hashPassword(newPassword);
     user.password = hashedPassword;
     await user.save();
 
     return res.status(200).json({ message: 'Password changed successfully' });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: error.message || 'Internal server error' });
   }
 };
-  
-
-  export const signUpMail = async(req,res)=>{
-    try {
-      const { email } = req.body;
-      
-      const user = await userSchema.findOne({ email });
-        if(user){
-          return res.status(404).json({ message: 'User Already Exists' });
-        }
-  
-      const code = Math.floor(100000 + Math.random() * 900000)
-      console.log(code,"code")
-      res.cookie('verificationCode', code, { httpOnly: true });
 
   
-      const subject = 'Sign-in Verification';
-      const text = `You are receiving this because you (or someone else) have requested to sign in to your account.\n\n`
-        + `Your verification code is: ${code}\n\n`
-        + `If you did not request this, please ignore this email.\n`;
-  
-      const isEmailSent = await sendMail(email, subject, text);
-      if (isEmailSent) {
-        return res.status(200).json({ message: 'Email sent successfully'});
-      } else {
-        return res.status(500).json({ message: 'Error sending email' });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server Error' });
+
+export const signUpMail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await getUserByEmail(email);
+    if (user) {
+      return res.status(400).json({ message: 'User Already Exists' });
     }
+
+    const code = Math.floor(100000 + Math.random() * 900000);
+    const isEmailSent = await sendVerificationEmail(email, code);
+    if (isEmailSent) {
+      res.cookie('verificationCode', code, { httpOnly: true });
+      return res.status(200).json({ message: 'Email sent successfully' });
+    } else {
+      return res.status(500).json({ message: 'Error sending email' });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server Error' });
   }
+};
+
+
+
+  export const verifyOtp = async (req, res) => {
+    try {
+        const { otp } = req.body.otp;
+        const forgotPasswordOtp = req.cookies.forgotPasswordOtp;
+        res.clearCookie('forgotPasswordOtp')
+        
+        if (!forgotPasswordOtp) {
+            return res.status(404).json({ message: "Forgot password OTP cookie not found" });
+        }
+        
+        if (forgotPasswordOtp === otp) {
+            return res.status(200).json({ message: "Success: OTP verified" });
+        } else {
+            return res.status(400).json({ message: "Failed: OTP verification unsuccessful" });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
+
+  export const newPassword = async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+        const user = await getUserByEmail(email)
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const hashedPassword = await hashPassword(newPassword)
+        user.password = hashedPassword;
+        await user.save();
+
+        return res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};

@@ -1,11 +1,9 @@
 import { generateTokenAdmin } from "../../helper/generateToken.js";
 import jwt from 'jsonwebtoken'
-import dotenv from 'dotenv'
-dotenv.config()
+
 
 export const Login = async (req, res) => {
     const { email, password } = req.body; 
-
     try {
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
             const adminId = process.env.ADMIN_ID;
@@ -20,24 +18,20 @@ export const Login = async (req, res) => {
     }
 };
 
+
 export const verifyToken = (req, res) => {
     const token = req.cookies.jwtadmin;
-    console.log(token,"no token from the backend")
     if (!token) {
         return res.status(401).json({ message: "No token provided" });
     }
-
-    try {
-       
+        try {     
         const decoded = jwt.verify(token , process.env.JWT_secretKey_ADMIN)
-        console.log(decoded)
-
         if(decoded){
             res.status(200).json({ valid: true });
         }else{
             res.status(401).json({valid:false})
         }
-    } catch (err) {
+        } catch (err) {
         res.status(401).json({ message: "Invalid token" });
     }
 };

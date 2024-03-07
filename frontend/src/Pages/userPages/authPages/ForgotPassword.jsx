@@ -2,7 +2,7 @@ import { useState } from 'react';
 import swal from 'sweetalert';
 import { useNavigate } from 'react-router-dom';
 import { showErrorMessage } from '../../../helper/sweetalert.js';
-import { changePassword, forgotPassword } from '../../../API/apiCalls.js';
+import { changePassword, forgotPassword, verifyOtp } from '../../../API/apiCalls.js';
 
 
 const ForgotPassword = () => {
@@ -12,7 +12,6 @@ const ForgotPassword = () => {
   const [otp, setOTP] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [success, setSuccess] = useState(false);
-  const [codee , setCode] =useState('')
 
   const handleGetOTP = (e) => {
     e.preventDefault();
@@ -23,22 +22,28 @@ const ForgotPassword = () => {
     forgotPassword(email)
     .then((response)=>{
       swal('OTP sent successfully','Please Check your Email','success')
-      setCode(response.data.code)
     }).catch((error)=>{
       showErrorMessage(error)
     })
     setShowOTPField(true);
   };
 
-  const handleVerifyOTP = (e) => {
+  const handleVerifyOTP = async (e) => {
     e.preventDefault();
-    if(codee != undefined && otp == codee) {
-      setSuccess(true)
-      swal('Verified', 'Otp verification succesfull', 'success')
-    }else{
-      swal('Failed', 'Otp verification failed','error')
+    try {
+        const response = await verifyOtp({ otp }); // Assuming verifyOtp accepts an object with otp property
+        if (response.status === 200) {
+            setSuccess(true);
+            swal('Verified', 'OTP verification successful', 'success');
+        } else {
+            swal('Failed', 'OTP verification failed', 'error');
+        }
+    } catch (error) {
+        console.error('Error during OTP verification:', error);
+        swal('Error', 'An error occurred during OTP verification', 'error');
     }
-  };
+};
+
 
   const handleChangePassword = async (e) => {
     e.preventDefault();

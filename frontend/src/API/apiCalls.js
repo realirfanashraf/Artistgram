@@ -4,8 +4,8 @@ export const signIn =(formData)=>{
     return Axios.post('/signin', formData)
 }
 
-export const signup = (formData,verificationCode)=>{
-    return Axios.post('/signup', formData,verificationCode)
+export const signup = (formData)=>{
+    return Axios.post('/signup', formData)
 }
 
 export const signUpMail = (email)=>{
@@ -29,5 +29,9 @@ export const forgotPassword = (email) => {
 };
 
 export const changePassword = async (email, newPassword) => {
-   return await Axios.post('/changePassword', { email, newPassword });
+   return await Axios.post('/newPassword', { email, newPassword });
 };
+
+export const verifyOtp = async(otp)=>{
+    return await Axios.post('/verifyOtp',{otp})
+}
