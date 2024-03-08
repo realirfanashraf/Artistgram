@@ -6,7 +6,7 @@ import { changePassword, forgotPassword, verifyOtp } from '../../../API/apiCalls
 
 
 const ForgotPassword = () => {
-    const navigate = useNavigate()
+  const navigate = useNavigate()
   const [email, setEmail] = useState('');
   const [showOTPField, setShowOTPField] = useState(false);
   const [otp, setOTP] = useState('');
@@ -20,29 +20,29 @@ const ForgotPassword = () => {
       return swal('Invalid input', 'Please enter a valid email address.', 'error');
     }
     forgotPassword(email)
-    .then((response)=>{
-      swal('OTP sent successfully','Please Check your Email','success')
-    }).catch((error)=>{
-      showErrorMessage(error)
-    })
+      .then((response) => {
+        swal('OTP sent successfully', 'Please Check your Email', 'success')
+      }).catch((error) => {
+        showErrorMessage(error)
+      })
     setShowOTPField(true);
   };
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
     try {
-        const response = await verifyOtp({ otp }); // Assuming verifyOtp accepts an object with otp property
-        if (response.status === 200) {
-            setSuccess(true);
-            swal('Verified', 'OTP verification successful', 'success');
-        } else {
-            swal('Failed', 'OTP verification failed', 'error');
-        }
+      const response = await verifyOtp({ otp }); // Assuming verifyOtp accepts an object with otp property
+      if (response.status === 200) {
+        setSuccess(true);
+        swal('Verified', 'OTP verification successful', 'success');
+      } else {
+        swal('Failed', 'OTP verification failed', 'error');
+      }
     } catch (error) {
-        console.error('Error during OTP verification:', error);
-        swal('Error', 'An error occurred during OTP verification', 'error');
+      console.error('Error during OTP verification:', error);
+      swal('Error', 'An error occurred during OTP verification', 'error');
     }
-};
+  };
 
 
   const handleChangePassword = async (e) => {

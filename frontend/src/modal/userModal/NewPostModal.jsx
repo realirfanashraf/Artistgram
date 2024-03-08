@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import axios from 'axios';
 import swal from 'sweetalert';
-import {useSelector} from 'react-redux'
+import { useSelector } from 'react-redux'
 import { Axios } from '../../axios/userInstance.js';
 
-const NewPostModal = ({ isOpen, onClose,updatePosts }) => {
-  const PRESET_KEY= import.meta.env.VITE_PRESET_KEY
+const NewPostModal = ({ isOpen, onClose, updatePosts }) => {
+  const PRESET_KEY = import.meta.env.VITE_PRESET_KEY
   const CLOUD_NAME = import.meta.env.VITE_CLOUD_NAME
   const CLOUD_UPLOAD_URL = import.meta.env.VITE_CLOUD_UPLOAD_URL
   const [caption, setCaption] = useState('');
@@ -32,26 +32,26 @@ const NewPostModal = ({ isOpen, onClose,updatePosts }) => {
     try {
       const formData = new FormData();
       formData.append('file', image);
-      formData.append('upload_preset',`${PRESET_KEY}`);
+      formData.append('upload_preset', `${PRESET_KEY}`);
       formData.append('cloud_name', `${CLOUD_NAME}`);
       const response = await axios.post(`${CLOUD_UPLOAD_URL}`, formData);
-     
+
       if (response.status === 200) {
 
         await Axios.post('/upload/newPost', {
           caption,
-          imageUrl: response.data.url, 
-          id :user?._id
+          imageUrl: response.data.url,
+          id: user?._id
         });
         updatePosts({
-          _id: response.data.postId, // Assuming your response contains the new post's ID
+          _id: response.data.postId,
           caption,
-          image: response.data.url // Assuming your response contains the new post's image URL
+          image: response.data.url
         });
         swal('Post Created!', 'Your post has been successfully created.', 'success');
         onClose();
       } else {
-       
+
         console.error('Image upload failed:', response.statusText);
         swal('Error', 'Failed to upload image. Please try again later.', 'error');
       }

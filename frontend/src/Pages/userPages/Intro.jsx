@@ -1,4 +1,4 @@
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const Intro = () => {
   return (
@@ -8,7 +8,7 @@ const Intro = () => {
       </p>
       <p className="text-lg font-protest text-white opacity-75">- Artistgram -</p>
       <Link to='/signin' className="mt-12 px-6 py-3 font-protest bg-primary text-white rounded-full hover:bg-secondary transition duration-300 ease-in-out transform hover:scale-105">
-      Explore Now
+        Explore Now
       </Link>
     </div>
   );

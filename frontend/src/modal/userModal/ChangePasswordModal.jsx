@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Axios } from '../../axios/userInstance.js';
 import swal from 'sweetalert';
@@ -34,9 +34,9 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
     <div className={`modal ${isOpen ? 'is-active' : ''}`}>
       <div className="modal-background" onClick={onClose}></div>
       <div className="modal-content bg-thirdShade rounded-lg overflow-hidden p-20 max-w-3xl mx-auto"> {/* Adjusted max-w-3xl */}
-        
+
         <h2 className="text-2xl font-protest mb-6">Change Password</h2>
-        
+
         <section className="modal-body">
           <div className="field mb-4">
             <label className="block text-sm font-protest">Current Password</label>
@@ -64,7 +64,7 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
           <button className="authbtn block w-full" onClick={handleSubmit}>Submit</button>
         </footer>
 
-    
+
       </div>
     </div>
   );

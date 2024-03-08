@@ -13,5 +13,5 @@ export async function checkJWTToken() {
             return false;
         }
     }
-    return false; 
+    return false;
 }

@@ -5,7 +5,7 @@ import { getUserCountsByMonth } from "../../services/adminServices/adminServices
 
 export const getUserData = async (req, res) => {
     try {
-        const result = await getUserCountsByMonth(); 
+        const result = await getUserCountsByMonth();
         if (result.success) {
             const monthlyCounts = Array.from({ length: 12 }, (_, i) => 0);
             result.data.forEach((monthCount) => {

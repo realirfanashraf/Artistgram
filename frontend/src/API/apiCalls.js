@@ -28,7 +28,7 @@ export const forgotPassword = (email) => {
     return Axios.post('/forgotpassword', { email });
 };
 
-export const changePassword = async (email, newPassword) => {
+export const changePassword = async(email, newPassword) => {
    return await Axios.post('/newPassword', { email, newPassword });
 };
 

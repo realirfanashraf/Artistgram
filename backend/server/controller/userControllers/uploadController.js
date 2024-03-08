@@ -1,16 +1,16 @@
-import userSchema from '../../model/userModels/userModel.js'
 import postSchema from '../../model/userModels/postModel.js'
+import { getUserByEmail } from '../../services/userServices/authServices.js'
 
-export const changeProfilePicture = async(req,res)=>{
-    const {email , imageUrl} = req.body
+export const changeProfilePicture = async (req, res) => {
+    const { email, imageUrl } = req.body
     try {
-        const user = await userSchema.findOne({ email })
-        
-        if(user){
+        const user = await getUserByEmail(email)
+
+        if (user) {
             user.ProfilePicture = imageUrl
         }
         await user.save()
-        res.status(200).json({message:"Profile Picture changed"})
+        res.status(200).json({ message: "Profile Picture changed" })
     } catch (error) {
         console.log(error)
     }
@@ -21,7 +21,7 @@ export const editProfile = async (req, res) => {
     const { email, name, bio, location } = req.body;
 
     try {
-        const user = await userSchema.findOne({ email });
+        const user = getUserByEmail(email)
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -61,20 +61,16 @@ export const newPost = async (req, res) => {
 };
 
 
-export const posts = async(req,res)=>{
-            
+export const posts = async (req, res) => {
+
     try {
         const userId = req.params.id;
-
-        const posts = await postSchema.find({postedBy : userId});
-
-        console.log(posts , 'df');
-
-        if(posts) {
-            return res.json({posts});
+        const posts = await postSchema.find({ postedBy: userId });
+        if (posts) {
+            return res.json({ posts });
         }
     } catch (error) {
         console.log(error)
-        
+
     }
 }

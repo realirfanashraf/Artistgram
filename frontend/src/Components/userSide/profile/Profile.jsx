@@ -1,9 +1,9 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import NavBar from "../NavBar"
 import ProfilePhoto from "./ProfilePhoto"
 import ProfileSection from "./ProfileSection"
 import { SlOptionsVertical } from "react-icons/sl";
-import { showErrorMessage,showSuccessMessage } from '../../../helper/sweetalert.js';
+import { showErrorMessage, showSuccessMessage } from '../../../helper/sweetalert.js';
 import { setAuthenticated } from '../../../redux/slices/userSlices/authSlice.js'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,72 +29,70 @@ const Profile = () => {
 
   useEffect(() => {
     const userId = userData._id
-     getPosts(userId)
-        .then(response => {
-          console.log(response);
-          setPosts(response.data.posts);
-        })
-        .catch(error => {
-          console.error('Error fetching posts:', error);
-        });
-  },[]);
+    getPosts(userId)
+      .then(response => {
+        console.log(response);
+        setPosts(response.data.posts);
+      })
+      .catch(error => {
+        console.error('Error fetching posts:', error);
+      });
+  }, []);
 
 
-const handleNewPostModal=()=>{
-  setShowNewPostModal(false)
-}
+  const handleNewPostModal = () => {
+    setShowNewPostModal(false)
+  }
 
   const handleCloseChangePasswordModal = () => {
-    setShowChangePasswordModal(false); 
+    setShowChangePasswordModal(false);
   };
 
-  const handleCloseEditProfileModal = ()=>{
+  const handleCloseEditProfileModal = () => {
     setShowEditProfileModal(false)
   }
+ 
   const handleNewPost = () => {
-
     setShowNewPostModal(true)
     setShowDropdown(false)
   };
 
   const handleLogout = () => {
     logout()
-    .then((response) => {
+      .then((response) => {
         if (response.status === 200) {
           dispatch(setAuthenticated(false))
           dispatch(userLogout())
-            navigate('/signin')
-            showSuccessMessage(response.data.message); 
+          navigate('/signin')
+          showSuccessMessage(response.data.message);
         }
-    }).catch((error) => {
+      }).catch((error) => {
         showErrorMessage(error);
-    });
-};
+      });
+  };
 
 
   const handleEditProfile = () => {
-    console.log("Edit profile clicked")
     setShowDropdown(false)
     setShowEditProfileModal(true);
-    
+
   }
 
-  const handleChangePassword = ()=>{
-    console.log("Change password clicked")
+  const handleChangePassword = () => {
     setShowDropdown(false)
     setShowChangePasswordModal(true);
   }
+
   const updatePosts = (newPost) => {
     setPosts(prevPosts => [newPost, ...prevPosts]);
   };
-
 
   return (
     <>
       <NavBar />
       <div className="flex flex-col items-center justify-center my-8 sm:mx-28 mx-4">
-        <div className="bg-thirdShade rounded-lg shadow-md p-6 relative"> 
-          <div className="absolute top-0 right-0 mt-4 mr-4"> 
+        <div className="bg-thirdShade rounded-lg shadow-md p-6 relative">
+          <div className="absolute top-0 right-0 mt-4 mr-4">
             <div className="relative">
               <SlOptionsVertical className="w-4 h-8 text-gray-600 cursor-pointer" onClick={toggleDropdown} />
               {showDropdown && (
@@ -113,12 +111,12 @@ const handleNewPostModal=()=>{
                   </button>
                 </div>
               )}
-              
+
             </div>
           </div>
           <div className="flex flex-col md:flex-row items-center">
             <div className="flex-shrink-0 mb-4 md:mb-0">
-              <ProfilePhoto className="" /> 
+              <ProfilePhoto className="" />
             </div>
             <div className="flex-grow">
               <ProfileSection className="md:text-lg text-base" />
@@ -146,15 +144,15 @@ const handleNewPostModal=()=>{
         </div>
       </div>}
       {showEditProfileModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-      <div className=" rounded-lg shadow-md">
+        <div className=" rounded-lg shadow-md">
           <EditProfileModal isOpen={showEditProfileModal} onClose={handleCloseEditProfileModal} />
         </div>
-        </div>}
-        {showNewPostModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-      <div className=" rounded-lg shadow-md">
+      </div>}
+      {showNewPostModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+        <div className=" rounded-lg shadow-md">
           <NewPostModal isOpen={showNewPostModal} onClose={handleNewPostModal} updatePosts={updatePosts} />
         </div>
-        </div>}
+      </div>}
     </>
   )
 }

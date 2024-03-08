@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 
 
 export const Login = async (req, res) => {
-    const { email, password } = req.body; 
+    const { email, password } = req.body;
     try {
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
             const adminId = process.env.ADMIN_ID;
@@ -24,14 +24,14 @@ export const verifyToken = (req, res) => {
     if (!token) {
         return res.status(401).json({ message: "No token provided" });
     }
-        try {     
-        const decoded = jwt.verify(token , process.env.JWT_secretKey_ADMIN)
-        if(decoded){
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_secretKey_ADMIN)
+        if (decoded) {
             res.status(200).json({ valid: true });
-        }else{
-            res.status(401).json({valid:false})
+        } else {
+            res.status(401).json({ valid: false })
         }
-        } catch (err) {
+    } catch (err) {
         res.status(401).json({ message: "Invalid token" });
     }
 };

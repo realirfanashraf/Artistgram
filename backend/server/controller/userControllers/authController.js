@@ -10,17 +10,17 @@ export const signup = async (req, res) => {
   const { name, email, password, verificationCode } = req.body;
   try {
     const code = req.cookies.verificationCode;
-      const result = await signupUser(name, email, password, verificationCode, code);
+    const result = await signupUser(name, email, password, verificationCode, code);
 
-      if (result.success) {
-          res.clearCookie('verificationCode');
-          return res.json({ message: result.message });
-      } else {
-          return res.status(400).json({ error: result.error });
-      }
+    if (result.success) {
+      res.clearCookie('verificationCode');
+      return res.json({ message: result.message });
+    } else {
+      return res.status(400).json({ error: result.error });
+    }
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({ error: "Internal server error" });
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -28,48 +28,48 @@ export const signup = async (req, res) => {
 export const signin = async (req, res) => {
   const { email, password } = req.body;
   try {
-      const result = await signinUser(email, password);
-      if (result.success) {
-          await generateTokenUser(res, result.user._id);
-          return res.status(200).json({
-              message: "Successfully Signed In",
-              user: result.user
-          });
-      } else {
-          return res.status(400).json({ error: result.error });
-      }
+    const result = await signinUser(email, password);
+    if (result.success) {
+      await generateTokenUser(res, result.user._id);
+      return res.status(200).json({
+        message: "Successfully Signed In",
+        user: result.user
+      });
+    } else {
+      return res.status(400).json({ error: result.error });
+    }
   } catch (error) {
-      console.error("Error signing in:", error);
-      return res.status(500).json({ error: "Internal server error" });
+    console.error("Error signing in:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
 
 export const verifyToken = (req, res) => {
-    const token = req.cookies.jwtuser;
-    if (!token) {
-        return res.status(401).json({ message: "No token provided" });
+  const token = req.cookies.jwtuser;
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_secretKey)
+    if (decoded) {
+      res.status(200).json({ valid: true });
+    } else {
+      res.status(401).json({ valid: false })
     }
-    try {
-        const decoded = jwt.verify(token , process.env.JWT_secretKey)
-        if(decoded){
-            res.status(200).json({ valid: true });
-        }else{
-            res.status(401).json({valid:false})
-        }
-    } catch (err) {
-        res.status(401).json({ message: "Invalid token" });
-    }
+  } catch (err) {
+    res.status(401).json({ message: "Invalid token" });
+  }
 };
 
 
 export const logout = async (req, res) => {
-    try {
-        res.clearCookie('jwtuser');
-        res.status(200).json({ message: 'user logout successfully' });
-    } catch (error) {
-        console.log("error", error);
-    }
+  try {
+    res.clearCookie('jwtuser');
+    res.status(200).json({ message: 'user logout successfully' });
+  } catch (error) {
+    console.log("error", error);
+  }
 };
 
 
@@ -112,7 +112,7 @@ export const changePassword = async (req, res) => {
   }
 };
 
-  
+
 
 export const signUpMail = async (req, res) => {
   try {
@@ -138,44 +138,44 @@ export const signUpMail = async (req, res) => {
 
 
 
-  export const verifyOtp = async (req, res) => {
-    try {
-        const { otp } = req.body.otp;
-        const forgotPasswordOtp = req.cookies.forgotPasswordOtp;
-        res.clearCookie('forgotPasswordOtp')
-        
-        if (!forgotPasswordOtp) {
-            return res.status(404).json({ message: "Forgot password OTP cookie not found" });
-        }
-        
-        if (forgotPasswordOtp === otp) {
-            return res.status(200).json({ message: "Success: OTP verified" });
-        } else {
-            return res.status(400).json({ message: "Failed: OTP verification unsuccessful" });
-        }
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Internal server error" });
+export const verifyOtp = async (req, res) => {
+  try {
+    const { otp } = req.body.otp;
+    const forgotPasswordOtp = req.cookies.forgotPasswordOtp;
+    res.clearCookie('forgotPasswordOtp')
+
+    if (!forgotPasswordOtp) {
+      return res.status(404).json({ message: "Forgot password OTP cookie not found" });
     }
+
+    if (forgotPasswordOtp === otp) {
+      return res.status(200).json({ message: "Success: OTP verified" });
+    } else {
+      return res.status(400).json({ message: "Failed: OTP verification unsuccessful" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 
 
-  export const newPassword = async (req, res) => {
-    try {
-        const { email, newPassword } = req.body;
-        const user = await getUserByEmail(email)
+export const newPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    const user = await getUserByEmail(email)
 
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const hashedPassword = await hashPassword(newPassword)
-        user.password = hashedPassword;
-        await user.save();
-
-        return res.status(200).json({ message: "Password updated successfully" });
-    } catch (error) {
-        return res.status(500).json({ message: "Internal server error", error: error.message });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    const hashedPassword = await hashPassword(newPassword)
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error", error: error.message });
+  }
 };

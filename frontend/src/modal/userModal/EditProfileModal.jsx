@@ -10,7 +10,7 @@ const EditProfileModal = ({ isOpen, onClose }) => {
   const [bio, setBio] = useState('');
   const [location, setLocation] = useState('');
   const dispatch = useDispatch()
-  
+
 
   const userData = useSelector((state) => state.userInfo.user);
 
@@ -41,9 +41,9 @@ const EditProfileModal = ({ isOpen, onClose }) => {
       if (response.status === 200) {
         const updatedProfile = {
           ...userData,
-          name: name, 
+          name: name,
           bio: bio,
-          location: location 
+          location: location
         };
         dispatch(updateUserProfileFields(updatedProfile));
         swal('Profile Updated!', 'Your profile has been successfully updated.', 'success');
@@ -58,9 +58,9 @@ const EditProfileModal = ({ isOpen, onClose }) => {
     <div className={`modal ${isOpen ? 'is-active' : ''}`}>
       <div className="modal-background" onClick={onClose}></div>
       <div className="modal-content bg-thirdShade rounded-lg overflow-hidden p-20 max-w-3xl mx-auto">
-        
+
         <h2 className="text-2xl font-protest mb-6">Edit Profile</h2>
-        
+
         <section className="modal-body">
           <div className="field mb-4">
             <label className="block text-sm font-protest">Name</label>

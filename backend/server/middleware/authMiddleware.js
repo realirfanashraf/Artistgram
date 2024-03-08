@@ -8,7 +8,7 @@ export const authenticateUser = (req, res, next) => {
         console.log('No token provided');
         return res.status(401).json({ message: "No token provided" });
     }
-  
+
     try {
         const decoded = jwt.verify(token, process.env.JWT_secretKey);
         console.log('Decoded token:', decoded);

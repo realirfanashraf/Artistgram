@@ -13,5 +13,5 @@ export async function checkAdminJWTToken() {
             return false;
         }
     }
-    return false; 
+    return false;
 }
