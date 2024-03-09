@@ -21,7 +21,7 @@ export const editProfile = async (req, res) => {
     const { email, name, bio, location } = req.body;
 
     try {
-        const user = getUserByEmail(email)
+        const user = await getUserByEmail(email)
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -30,7 +30,6 @@ export const editProfile = async (req, res) => {
         user.name = name;
         user.bio = bio;
         user.location = location;
-
         await user.save();
 
         return res.status(200).json({ message: "Profile updated successfully" });

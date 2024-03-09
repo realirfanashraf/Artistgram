@@ -12,9 +12,9 @@ import Dashboard from './Pages/adminPages/Dashboard';
 import { PrivateRoute, AuthRoute, AdminAuthRoute, AdminPrivateRoute } from './Components/userSide/RouteHandler';
 import { checkJWTToken } from './helper/checkJwtToken';
 import { checkAdminJWTToken } from './helper/checkAdminJWTToken.js'
-import Profile from './Components/userSide/profile/Profile.jsx';
 import Intro from './Pages/userPages/Intro.jsx';
 import ForgotPassword from './Pages/userPages/authPages/ForgotPassword.jsx';
+import Profile from './Pages/userPages/Profile.jsx';
 
 
 function App() {

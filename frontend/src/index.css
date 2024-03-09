@@ -41,3 +41,15 @@ body {
 .btn{
     @apply rounded-full py-2 px-3 uppercase text-xs font-bold tracking-wider cursor-pointer;
   }
+
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}

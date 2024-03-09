@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
-import NavBar from "../NavBar"
-import ProfilePhoto from "./ProfilePhoto"
-import ProfileSection from "./ProfileSection"
+import NavBar from '../../Components/userSide/NavBar.jsx'
+import ProfilePhoto from "../../Components/userSide/profile/ProfilePhoto.jsx"
+import ProfileSection from "../../Components/userSide/profile/ProfileSection.jsx"
 import { SlOptionsVertical } from "react-icons/sl";
-import { showErrorMessage, showSuccessMessage } from '../../../helper/sweetalert.js';
-import { setAuthenticated } from '../../../redux/slices/userSlices/authSlice.js'
+import { showErrorMessage, showSuccessMessage } from '../../helper/sweetalert.js';
+import { setAuthenticated } from '../../redux/slices/userSlices/authSlice.js'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { userLogout } from '../../../redux/slices/userSlices/userInfoSlice.js';
-import ChangePasswordModal from '../../../modal/userModal/ChangePasswordModal.jsx';
-import EditProfileModal from '../../../modal/userModal/EditProfileModal.jsx';
-import NewPostModal from '../../../modal/userModal/NewPostModal.jsx';
-import { getPosts, logout } from '../../../API/apiCalls.js';
+import { userLogout } from '../../redux/slices/userSlices/userInfoSlice.js';
+import ChangePasswordModal from '../../modal/userModal/ChangePasswordModal.jsx';
+import EditProfileModal from '../../modal/userModal/EditProfileModal.jsx';
+import NewPostModal from '../../modal/userModal/NewPostModal.jsx';
+import { getPosts, logout } from '../../API/apiCalls.js';
 
 
 const Profile = () => {
