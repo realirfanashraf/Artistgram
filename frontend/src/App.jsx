@@ -15,6 +15,7 @@ import { checkAdminJWTToken } from './helper/checkAdminJWTToken.js'
 import Intro from './Pages/userPages/Intro.jsx';
 import ForgotPassword from './Pages/userPages/authPages/ForgotPassword.jsx';
 import Profile from './Pages/userPages/Profile.jsx';
+import UserManagement from './Pages/adminPages/management/UserManagement.jsx';
 
 
 function App() {
@@ -55,10 +56,10 @@ function App() {
       <Route path="/home" element={<PrivateRoute component={Home} isAuthenticated={isAuthenticated} />} />
       <Route path='/profile' element={<PrivateRoute component={Profile} isAuthenticated={isAuthenticated} />} />
 
-
       {/* admin routes */}
       <Route path="/admin" element={<AdminAuthRoute component={Login} isAdminAuthenticated={isAdminAuthenticated} />} />
       <Route path="/admin/dashboard" element={<AdminPrivateRoute component={Dashboard} isAdminAuthenticated={isAdminAuthenticated} />} />
+      <Route path="/admin/userManagement" element={<AdminPrivateRoute component={UserManagement} isAdminAuthenticated={isAdminAuthenticated} />} />
     </Routes>
   );
 }

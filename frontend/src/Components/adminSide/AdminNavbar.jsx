@@ -21,8 +21,8 @@ const AdminNavbar = () => {
             <div className="hidden md:block">
               {/* Desktop navigation links */}
               <Link to='/admin/dashboard' className='navLinks'>Dashboard</Link>
-              <Link to='/admin/users' className='navLinks'>User Management</Link>
-              <Link to='/admin/posts' className='navLinks'>Post Management</Link>
+              <Link to='/admin/userManagement' className='navLinks'>User Management</Link>
+              <Link to='/admin/postManagement' className='navLinks'>Post Management</Link>
               <Link to='/admin/profile' className='navLinks'>Profile</Link>
             </div>
             <div className="md:hidden">
@@ -30,11 +30,11 @@ const AdminNavbar = () => {
               <button onClick={toggleNavbar} className="text-gray-300 hover:text-white focus:outline-none focus:text-white px-4 py-2">
                 {isOpen ? (
                   <svg className="h-6 w-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path fillRule="evenodd" d="M3.293 4.293a1 1 0 0 1 1.414-1.414L12 10.586l7.293-7.293a1 1 0 0 1 1.414 1.414L13.414 12l7.293 7.293a1 1 0 1 1-1.414 1.414L12 13.414l-7.293 7.293a1 1 0 1 1-1.414-1.414L10.586 12 3.293 4.707a1 1 0 0 1 0-1.414z" clipRule="evenodd"/>
+                    <path fillRule="evenodd" d="M3.293 4.293a1 1 0 0 1 1.414-1.414L12 10.586l7.293-7.293a1 1 0 0 1 1.414 1.414L13.414 12l7.293 7.293a1 1 0 1 1-1.414 1.414L12 13.414l-7.293 7.293a1 1 0 1 1-1.414-1.414L10.586 12 3.293 4.707a1 1 0 0 1 0-1.414z" clipRule="evenodd" />
                   </svg>
                 ) : (
                   <svg className="h-6 w-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path fillRule="evenodd" d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" clipRule="evenodd"/>
+                    <path fillRule="evenodd" d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" clipRule="evenodd" />
                   </svg>
                 )}
               </button>
