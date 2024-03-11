@@ -9,14 +9,14 @@ body {
     background-size: cover;
 }
 
-  /* authPageCss */
+/* authPageCss */
 .inputfield {
     @apply block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 outline-none
 }
 
 .authbtn {
-    @apply flex w-full  justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 
-} 
+    @apply flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+}
 
 .authfont {
     @apply block text-sm font-medium font-protest leading-6 text-white
@@ -25,31 +25,39 @@ body {
 
 /* Navbar*/
 
-.h-17{
+.h-17 {
     height: 7rem;
 }
 
 .navLinks {
-    @apply text-gray-300 hover:bg-secondary hover:text-white px-6 py-2 rounded-md  font-protest
+    @apply text-gray-300 hover:bg-secondary hover:text-white px-6 py-2 rounded-md font-protest
 }
-
-
 
 
 /* Admin Dashboard */
 
-.btn{
+.btn {
     @apply rounded-full py-2 px-3 uppercase text-xs font-bold tracking-wider cursor-pointer;
-  }
+}
 
 
-  /* Hide scrollbar for Chrome, Safari and Opera */
+/* Hide scrollbar for Chrome, Safari and Opera */
 .no-scrollbar::-webkit-scrollbar {
     display: none;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+
+
+/* Admin UserManagement */
+
+.tableHeading {
+    @apply px-6 py-3 text-xs font-protest text-gray-500 uppercase tracking-wider
 }
