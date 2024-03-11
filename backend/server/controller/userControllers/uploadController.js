@@ -1,5 +1,6 @@
 import postSchema from '../../model/userModels/postModel.js'
 import { getUserByEmail } from '../../services/userServices/authServices.js'
+import followSchema from '../../model/userModels/followModel.js'
 
 export const changeProfilePicture = async (req, res) => {
     const { email, imageUrl } = req.body
@@ -73,3 +74,28 @@ export const posts = async (req, res) => {
 
     }
 }
+
+
+
+export const followUser = async (req, res) => {
+  try {
+    const { followingId } = req.body;
+    const { following, follower } = followingId;
+
+    const existingFollow = await followSchema.findOne({ followingId: following, followerId: follower });
+    if (existingFollow) {
+      return res.status(400).json({ error: "User is already being followed" });
+    }
+
+    const follow = new followSchema({
+      followingId: following,
+      followerId: follower
+    });
+    await follow.save();
+    res.status(200).json({ message: "User followed successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+  

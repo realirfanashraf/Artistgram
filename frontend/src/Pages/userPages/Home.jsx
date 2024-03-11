@@ -50,7 +50,7 @@ const Home = () => {
       <Navbar />
       <div className="flex flex-col items-center mt-3">
         <SearchBar />
-        <div className=" absolute top-40 right-40 w-52 border  h-64 border-gray-300 rounded-md bg-white p-4 overflow-y-auto no-scrollbar" onScroll={handleScroll}>
+        <div className=" absolute top-28 right-10 w-60 border shadow-xl h-72 border-gray-300 rounded-md bg-white p-4 overflow-y-auto no-scrollbar" onScroll={handleScroll}>
           <SuggestionBox users={users} loading={loading}  listFinished={listFinished} />
         </div>
       </div>
