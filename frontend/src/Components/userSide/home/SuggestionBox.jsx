@@ -26,15 +26,15 @@ const SuggestionBox = ({ users, loading, listFinished }) => {
   return (
 
    
-    <div className="bg-thirdhade ">
+    <div>
      <div className="flex justify-center items-center ">
-    <p className="font-protest mb-3 bg-thirdShade border border-black rounded-lg px-1">Connect with Artists</p>
+    <p className="font-protest mb-3 bg-inherit rounded-lg px-1">Connect with Artists</p>
   </div>
 
       {users.map((user,index) => (
         <div
           key={index}
-          className="suggestion-item flex items-center space-x-2 p-2 mb-2 border border-black rounded-lg bg-gray-100"
+          className="suggestion-item flex items-center space-x-2 p-2 mb-2 shadow-2xl rounded-lg bg-inherit"
         >
           <img
             src={user.ProfilePicture}
