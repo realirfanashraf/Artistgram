@@ -3,7 +3,7 @@ import { useRef } from "react";
 import axios from "axios";
 import { updateProfilePicture } from "../../../redux/slices/userSlices/userInfoSlice.js";
 import { useDispatch, useSelector } from "react-redux";
-import { showSuccessMessage } from "../../../helper/sweetalert.js";
+import { showErrorMessage, showSuccessMessage } from "../../../helper/sweetalert.js";
 import { changeProfilePicture } from "../../../API/apiCalls.js";
 
 
@@ -38,11 +38,12 @@ const ProfilePhoto = () => {
             dispatch(updateProfilePicture(imageUrl));
             showSuccessMessage(response.data.message)
           }).catch((error) => {
-            console.log(error)
+           showErrorMessage(error)
           })
       }
     } catch (error) {
       console.error("Error uploading image to Cloudinary:", error);
+      showErrorMessage(error.message)
     }
   };
 

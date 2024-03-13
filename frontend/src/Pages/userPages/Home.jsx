@@ -4,16 +4,20 @@ import SuggestionBox from "../../Components/userSide/home/SuggestionBox";
 import { useState, useEffect } from 'react';
 import { Axios } from '../../axios/userInstance.js';
 import PostContainer from "../../Components/userSide/home/PostContainer.jsx";
+import { useSelector } from "react-redux";
 
 const Home = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [listFinished, setListFinished] = useState(false)
+  const userData = useSelector((state) => state.userInfo.user);
+
+  
 
   const fetchData = () => {
     setLoading(true);
-    Axios.get(`/api/users?page=${page}`)
+    Axios.get(`/api/users?page=${page}`,{ params: { email: userData.email } })
       .then(response => {
         if (response.data.length === 0) {
           setUsers(prevUsers => [...prevUsers]);
