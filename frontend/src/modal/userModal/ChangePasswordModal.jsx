@@ -6,11 +6,16 @@ import swal from 'sweetalert';
 const ChangePasswordModal = ({ isOpen, onClose }) => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('')
   const userData = useSelector((state) => state.userInfo.user);
 
   const handleCurrentPasswordChange = (e) => {
     setCurrentPassword(e.target.value);
   };
+
+  const handleConfirmChange = (e) => {
+    setConfirmPassword(e.target.value)
+  }
 
   const handleChange = (e) => {
     setNewPassword(e.target.value);
@@ -19,6 +24,10 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+
+      if (newPassword !== confirmPassword) {
+        return swal('Password not matched', 'New and confirm password have to be the same', 'error');
+      }
       const response = await Axios.post('/changePassword', { email: userData.email, currentPassword, newPassword });
       if (response.status === 200) {
         swal('Password Changed!', 'Your password has been successfully changed.', 'success');
@@ -56,6 +65,16 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
               placeholder="Enter new password"
               value={newPassword}
               onChange={handleChange}
+            />
+          </div>
+          <div className="field mb-4">
+            <label className="block text-sm font-protest">Confirm New Password</label>
+            <input
+              className="inputfield"
+              type="password"
+              placeholder="Confirm new password"
+              value={confirmPassword}
+              onChange={handleConfirmChange}
             />
           </div>
         </section>
