@@ -34,7 +34,7 @@ const FollowingModal = ({ isOpen, onClose }) => {
                 </div>
                 <div>
                     {following.map((follow) => (
-                        <div key={follow._id} className="flex items-center mb-2">
+                        <div key={follow._id} className="flex items-center mb-2 hover:bg-gray-200 rounded-lg">
                             <img src={follow.followingId.ProfilePicture} alt={follow.followingId.name} className="w-8 h-8 rounded-full mr-2" />
                             <span className="text-sm">{follow.followingId.name}</span>
                         </div>
