@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import FollowerModal from "../../../modal/userModal/FollowerModal";
+import FollowingModal from "../../../modal/userModal/FollowingModal";
 
 const ProfileSection = () => {
   const userData = useSelector((state) => state.userInfo.user);
   const [showFollowerModal, setShowFollowerModal] = useState(false);
+  const [showFollowingModal, setShowFollowingModal] = useState(false)
 
   const handleFollowerModal = () => {
     setShowFollowerModal(true);
@@ -12,6 +14,14 @@ const ProfileSection = () => {
 
   const handleCloseFollowerModal = () => {
     setShowFollowerModal(false);
+  };
+
+  const handleFollowingModal = () => {
+    setShowFollowingModal(true);
+  };
+
+  const handleCloseFollowingModal = () => {
+    setShowFollowingModal(false);
   };
 
   return (
@@ -24,7 +34,7 @@ const ProfileSection = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between mb-2 sm:mb-4">
           <div className="text-gray-600 font-protest ml-3">
             <button className="mr-2 rounded-lg border bg-primary hover:bg-secondary text-white py-1 px-2" onClick={handleFollowerModal}>Followers</button>
-            <button className="ml-2 rounded-lg border bg-primary hover:bg-secondary text-white py-1 px-2">Following</button>
+            <button className="ml-2 rounded-lg border bg-primary hover:bg-secondary text-white py-1 px-2" onClick={handleFollowingModal}>Following</button>
           </div>
           <div className="text-gray-600 font-protest">{userData?.location}</div>
         </div>
@@ -33,6 +43,13 @@ const ProfileSection = () => {
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
           <div className="rounded-lg shadow-md">
             <FollowerModal isOpen={showFollowerModal} onClose={handleCloseFollowerModal} />
+          </div>
+        </div>
+      )}
+      {showFollowingModal && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="rounded-lg shadow-md">
+            <FollowingModal isOpen={showFollowingModal} onClose={handleCloseFollowingModal} />
           </div>
         </div>
       )}
