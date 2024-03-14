@@ -11,13 +11,12 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [listFinished, setListFinished] = useState(false)
-  const userData = useSelector((state) => state.userInfo.user);
 
   
 
   const fetchData = () => {
     setLoading(true);
-    Axios.get(`/api/users?page=${page}`,{ params: { email: userData.email } })
+    Axios.get(`/api/users?page=${page}`)
       .then(response => {
         if (response.data.length === 0) {
           setUsers(prevUsers => [...prevUsers]);
