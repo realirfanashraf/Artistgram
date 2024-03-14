@@ -30,3 +30,18 @@ export const followersList = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+export const followingList = async(req,res)=>{
+  const { email } = req.query;
+  const user = await getUserByEmail(email)
+  const userId = user._id
+
+  try {
+    const following = await followSchema.find({ followerId: userId }).populate('followingId');
+    
+    res.status(200).json(following)
+  } catch (error) {
+    console.error('Error fetching followers:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
