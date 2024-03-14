@@ -36,7 +36,7 @@ const FollowerModal = ({ isOpen, onClose }) => {
                 </div>
                 <div>
                     {followers.map((follower) => (
-                        <div key={follower._id} className="flex items-center mb-2">
+                        <div key={follower._id} className="flex items-center mb-2 hover:bg-gray-200 rounded-lg">
                             <img src={follower.followerId.ProfilePicture} alt={follower.followerId.name} className="w-8 h-8 rounded-full mr-2" />
                             <span className="text-sm">{follower.followerId.name}</span>
                         </div>
