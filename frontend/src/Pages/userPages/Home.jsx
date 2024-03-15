@@ -4,13 +4,18 @@ import SuggestionBox from "../../Components/userSide/home/SuggestionBox";
 import { useState, useEffect } from 'react';
 import { Axios } from '../../axios/userInstance.js';
 import PostContainer from "../../Components/userSide/home/PostContainer.jsx";
-import { useSelector } from "react-redux";
+
+
 
 const Home = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [listFinished, setListFinished] = useState(false)
+  const [postPage, setPostPage] = useState(1);
+  const [postLoading, setPostLoading] = useState(false)
+  const [posts, setPosts] = useState([])
+  const [postListFinished, setPostListFinished] = useState(false)
 
   
 
@@ -34,9 +39,33 @@ const Home = () => {
   };
 
 
+  const fetchPostData = () => {
+    setPostLoading(true);
+    Axios.get(`/api/posts?postPage=${postPage}`)
+      .then(response => {
+        if (response.data.length === 0) {
+          setPosts(prevPosts => [...prevPosts]);
+          setPostLoading(false);
+          setPostListFinished(true);
+        } else {
+          setPosts(prevPosts => [...prevPosts, ...response.data]);
+          setPostLoading(false);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        setPostLoading(false);
+      });
+  };
+
+
   useEffect(() => {
     fetchData();
   }, [page]);
+
+  useEffect(() => {
+    fetchPostData();
+  },[postPage])
 
   const handleScroll = event => {
     console.log("scrolling works")
@@ -45,6 +74,16 @@ const Home = () => {
 
     if (bottomOfBox && !loading && !listFinished) {
       setPage(prevPage => prevPage + 1);
+    }
+  };
+
+  const handleScrollPost = event => {
+    console.log("scrolling works for posts")
+    const { scrollTop, clientHeight, scrollHeight } = event.target;
+    const bottomOfBox = scrollTop + clientHeight >= scrollHeight - 10;
+
+    if (bottomOfBox && !postLoading && !postListFinished) {
+      setPostPage(prevPage => prevPage + 1);
     }
   };
 
@@ -57,8 +96,8 @@ const Home = () => {
         <div className=" absolute top-28 right-10 w-60  shadow-xl h-72 rounded-md bg-inherit p-4 overflow-y-auto no-scrollbar" onScroll={handleScroll}>
           <SuggestionBox users={users} loading={loading} listFinished={listFinished} />
         </div>
-        <div className="flex justify-center">
-          <PostContainer />
+        <div className="flex flex-col justify-center overflow-y-scroll h-[30rem] no-scrollbar mt-4"onScroll={handleScrollPost} >
+          <PostContainer posts = {posts} postLoading={postLoading} postListFinished={postListFinished}/>
         </div>
 
       </div>
