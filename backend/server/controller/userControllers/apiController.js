@@ -1,5 +1,6 @@
 import followSchema from '../../model/userModels/followModel.js';
 import userSchema from '../../model/userModels/userModel.js';
+import postSchema from '../../model/userModels/postModel.js'
 import { getUserByEmail } from '../../services/userServices/authServices.js';
 
 export const usersList = async (req, res) => {
@@ -15,6 +16,26 @@ export const usersList = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+export const postsList = async (req,res)=>{
+  const page = parseInt(req.query.postPage) || 1;
+  const limit = 5;
+  const skip = (page - 1) * limit;
+  try {
+    const posts = await postSchema.find().skip(skip).limit(limit).populate({
+      path:'postedBy'
+    })
+    res.json(posts)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+
+
+
+
 
 export const followersList = async (req, res) => {
   const { email } = req.query;
