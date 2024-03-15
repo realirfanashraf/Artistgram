@@ -2,6 +2,7 @@ import followSchema from '../../model/userModels/followModel.js';
 import userSchema from '../../model/userModels/userModel.js';
 import postSchema from '../../model/userModels/postModel.js'
 import { getUserByEmail } from '../../services/userServices/authServices.js';
+import reportSchema from '../../model/adminModels/reportModel.js'
 
 export const usersList = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
@@ -66,3 +67,19 @@ export const followingList = async(req,res)=>{
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
+
+export const reportPost = async (req, res) => {
+  const { postId, message } = req.body;
+  console.log(req.body,"sdjfkljas")
+  try {
+    const report = new reportSchema({
+      post: postId,
+      message: message
+    });
+    await report.save();
+    res.status(200).json({ message: 'success' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'error' });
+  }
+};
