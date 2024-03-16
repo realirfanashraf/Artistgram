@@ -12,6 +12,7 @@ import adminRoute from './server/router/adminRoutes/authRoutes.js'
 import uploadRoutes from './server/router/userRoutes/uploadRoutes.js'
 import apiRoutes from './server/router/adminRoutes/apiRoutes.js'
 import userApiRoute from './server/router/userRoutes/userApiRoute.js'
+import actionRoute from './server/router/adminRoutes/actionRoute.js'
 
 const corsOptions = {
     origin: 'http://localhost:5173',
@@ -32,10 +33,11 @@ app.use(express.urlencoded({ extended: true }));
 connectDB()
 
 app.use('/', userRoute)
-app.use('/api',userApiRoute)
+app.use('/api', userApiRoute)
 app.use('/upload', uploadRoutes)
 app.use('/admin', adminRoute)
 app.use('/admin/api', apiRoutes)
+app.use('/admin/action/', actionRoute)
 
 const PORT = 3000;
 

@@ -13,6 +13,14 @@ const postSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    isBlocked:{
+        type :Boolean,
+        default:false
+    },
     rating: [{
         userId: {
             type: mongoose.Schema.Types.ObjectId,

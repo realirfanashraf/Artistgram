@@ -4,6 +4,7 @@ import { Axios } from "../../../axios/adminInstance.js";
 import { showErrorMessage, showSuccessMessage } from "../../../helper/sweetalert.js";
 import { useDispatch } from 'react-redux';
 import { setAdminAuthenticated } from '../../../redux/slices/adminSlices/adminAuthSlice.js'
+import { adminLogin } from "../../../redux/slices/adminSlices/adminInfoSlice.js";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -22,6 +23,8 @@ const Login = () => {
     Axios.post('/login', formData, { withCredentials: true })
       .then((response) => {
         dispatch(setAdminAuthenticated(true))
+        const {email} = response.data
+        dispatch(adminLogin(email))
         navigate('/admin/dashboard')
         showSuccessMessage(response.data.message);
       })

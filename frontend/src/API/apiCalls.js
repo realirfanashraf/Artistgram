@@ -35,3 +35,11 @@ export const changePassword = async(email, newPassword) => {
 export const verifyOtp = async(otp)=>{
     return await Axios.post('/verifyOtp',{otp})
 }
+
+export const followUserRequest = (followingId, followerId) => {
+    return Axios.post('/upload/followUser', { followingId, followerId });
+  }
+  
+
+
+  

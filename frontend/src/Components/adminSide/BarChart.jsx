@@ -1,4 +1,3 @@
-import { Bar } from 'react-chartjs-2';
 import { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto'; // Import Chart from Chart.js
 
