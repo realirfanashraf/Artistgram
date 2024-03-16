@@ -16,6 +16,8 @@ import Intro from './Pages/userPages/Intro.jsx';
 import ForgotPassword from './Pages/userPages/authPages/ForgotPassword.jsx';
 import Profile from './Pages/userPages/Profile.jsx';
 import UserManagement from './Pages/adminPages/management/UserManagement.jsx';
+import AdminProfile from './Pages/adminPages/AdminProfile.jsx';
+import PostManagement from './Pages/adminPages/management/PostManagement.jsx';
 
 
 function App() {
@@ -60,6 +62,8 @@ function App() {
       <Route path="/admin" element={<AdminAuthRoute component={Login} isAdminAuthenticated={isAdminAuthenticated} />} />
       <Route path="/admin/dashboard" element={<AdminPrivateRoute component={Dashboard} isAdminAuthenticated={isAdminAuthenticated} />} />
       <Route path="/admin/userManagement" element={<AdminPrivateRoute component={UserManagement} isAdminAuthenticated={isAdminAuthenticated} />} />
+      <Route path="/admin/postManagement" element={<AdminPrivateRoute component={PostManagement} isAdminAuthenticated={isAdminAuthenticated} />} />
+      <Route path="/admin/adminProfile" element={<AdminPrivateRoute component={AdminProfile} isAdminAuthenticated={isAdminAuthenticated} />} />
     </Routes>
   );
 }

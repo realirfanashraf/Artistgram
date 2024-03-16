@@ -6,15 +6,17 @@ const PostContainer = ({ posts, postLoading, postListFinished }) => {
   const [showDropdowns, setShowDropdowns] = useState(Array(posts.length).fill(false));
   const [showReportModal, setShowReportModal] = useState(false)
   const [reportedPostId, setReportedPostId] = useState('')
+  const [postedById, setPostedById] =useState('')
 
   const toggleDropdown = (index) => {
     const newDropdowns = [...showDropdowns];
     newDropdowns[index] = !newDropdowns[index];
     setShowDropdowns(newDropdowns);
   };
-  const handleClick = (postId) => {
+  const handleClick = (postId,userId) => {
     setShowReportModal(true)
     setReportedPostId(postId)
+    setPostedById(userId)
 
   }
 
@@ -36,7 +38,7 @@ const PostContainer = ({ posts, postLoading, postListFinished }) => {
                 <SlOptionsVertical className="w-6 h-6 text-gray-600 cursor-pointer" onClick={() => toggleDropdown(index)} />
                 {showDropdowns[index] && (
                   <div className="absolute right-0 mt-10 w-20 bg-white rounded-lg shadow-lg z-10">
-                    <button onClick={() => handleClick(post._id)} className="block w-full text-left px-4 py-2 text-sm font-protest text-gray-800 hover:bg-gray-100 rounded-lg">
+                    <button onClick={() => handleClick(post._id,post.postedBy._id)} className="block w-full text-left px-4 py-2 text-sm font-protest text-gray-800 hover:bg-gray-100 rounded-lg">
                       Report
                     </button>
                   </div>
@@ -60,7 +62,7 @@ const PostContainer = ({ posts, postLoading, postListFinished }) => {
       {postListFinished && <p className="finished-message">List Completed</p>}
       {showReportModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
         <div className=" rounded-lg shadow-md ">
-          <ReportModal isOpen={showReportModal} onClose={handleReportModal} postId={reportedPostId}/>
+          <ReportModal isOpen={showReportModal} onClose={handleReportModal} postId={reportedPostId} userId={postedById}/>
         </div>
       </div>}
     </>
