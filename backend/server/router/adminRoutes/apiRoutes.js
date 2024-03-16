@@ -10,4 +10,5 @@ route.get('/getReports',authorize('admin'),getReports)
 route.get('/getReportData/:reportId',authorize('admin'), reportPostData)
 
 
+
 export default route

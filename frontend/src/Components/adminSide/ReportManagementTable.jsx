@@ -8,12 +8,14 @@ const ReportManagementTable = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [showReportModal, setShowReportModal] = useState(false)
     const [reportedPost, setReportedPost] = useState('')
+    const [currentReportId, setCurrentReportId] = useState('')
 
 
     const handleViewReport = async (reportId) => {
         try {
             const response = await Axios.get(`/api/getReportData/${reportId}`);
             setReportedPost(response.data.post);
+            setCurrentReportId(reportId)
             setShowReportModal(true);
         } catch (error) {
             console.log(error);
@@ -22,6 +24,7 @@ const ReportManagementTable = () => {
 
     const handleCloseReportModal = (e) => {
         setShowReportModal(false)
+        setCurrentReportId('')
     }
 
 
@@ -80,7 +83,7 @@ const ReportManagementTable = () => {
                                 PostedBy
                             </th>
                             <th className="tableHeading">
-                                Message
+                                Remark
                             </th>
                             <th className="tableHeading">
                                 Action
@@ -111,7 +114,7 @@ const ReportManagementTable = () => {
             </div>
             {showReportModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
                 <div className=" rounded-lg shadow-md">
-                    <ReportModal isOpen={showReportModal} post={reportedPost} onClose={handleCloseReportModal} />
+                    <ReportModal isOpen={showReportModal} post={reportedPost} onClose={handleCloseReportModal} reportId={currentReportId} />
                 </div>
             </div>}
         </>

@@ -16,7 +16,10 @@ const postSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
-    
+    },
+    isBlocked:{
+        type :Boolean,
+        default:false
     },
     rating: [{
         userId: {

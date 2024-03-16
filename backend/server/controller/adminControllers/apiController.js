@@ -1,6 +1,7 @@
 import { getPostCountsByMonth, getUserCountsByMonth } from "../../services/adminServices/adminServices.js";
 import userSchema from "../../model/userModels/userModel.js";
 import reportSchema from "../../model/adminModels/reportModel.js"
+import postSchema from "../../model/userModels/postModel.js";
 
 export const getUserData = async (req, res) => {
     try {
@@ -63,7 +64,10 @@ export const getReports = async (req,res)=>{
 
     try {
         const reports = await reportSchema.find({})
-        .populate('post') 
+        .populate({
+            path:'post',
+            match: { isBlocked: false }
+        }) 
         .populate('user') 
         
     console.log(reports);
@@ -74,6 +78,7 @@ export const getReports = async (req,res)=>{
         console.log(error)
     }
 }
+
 export const reportPostData = async(req,res)=>{
     try {
         const reportId = req.params.reportId;
@@ -82,11 +87,13 @@ export const reportPostData = async(req,res)=>{
         if (!reportData) {
             return res.status(404).json({ error: 'Report not found' });
         }
-        console.log(reportData)
         res.json(reportData);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+
+
 

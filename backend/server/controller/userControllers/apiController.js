@@ -23,7 +23,7 @@ export const postsList = async (req,res)=>{
   const limit = 5;
   const skip = (page - 1) * limit;
   try {
-    const posts = await postSchema.find().skip(skip).limit(limit).populate({
+    const posts = await postSchema.find({ isBlocked: false }).skip(skip).limit(limit).populate({
       path:'postedBy'
     })
     res.json(posts)
@@ -70,7 +70,6 @@ export const followingList = async(req,res)=>{
 
 export const reportPost = async (req, res) => {
   const { postId, message ,userId} = req.body;
-  console.log(req.body,"sdjfkljas")
   try {
     const report = new reportSchema({
       post: postId,
