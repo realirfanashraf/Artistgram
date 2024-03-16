@@ -74,4 +74,19 @@ export const getReports = async (req,res)=>{
         console.log(error)
     }
 }
+export const reportPostData = async(req,res)=>{
+    try {
+        const reportId = req.params.reportId;
+       
+        const reportData = await reportSchema.findById(reportId).populate(('post'))
+        if (!reportData) {
+            return res.status(404).json({ error: 'Report not found' });
+        }
+        console.log(reportData)
+        res.json(reportData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
 
