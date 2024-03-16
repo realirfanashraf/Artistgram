@@ -23,7 +23,7 @@ const AdminNavbar = () => {
               <Link to='/admin/dashboard' className='navLinks'>Dashboard</Link>
               <Link to='/admin/userManagement' className='navLinks'>User Management</Link>
               <Link to='/admin/postManagement' className='navLinks'>Post Management</Link>
-              <Link to='/admin/profile' className='navLinks'>Profile</Link>
+              <Link to='/admin/adminProfile' className='navLinks'>Profile</Link>
             </div>
             <div className="md:hidden">
               {/* Mobile menu button */}
@@ -48,9 +48,9 @@ const AdminNavbar = () => {
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {/* Mobile navigation links */}
             <Link to='/admin/dashboard' className='navLinks block'>Dashboard</Link>
-            <Link to='/admin/users' className='navLinks block'>User Management</Link>
-            <Link to='/admin/posts' className='navLinks block'>Post Management</Link>
-            <Link to='/admin/profile' className='navLinks block'>Profile</Link>
+            <Link to='/admin/userManagement' className='navLinks block'>User Management</Link>
+            <Link to='/admin/postManagement' className='navLinks block'>Post Management</Link>
+            <Link to='/admin/adminProfile' className='navLinks block'>Profile</Link>
           </div>
         </div>
       )}

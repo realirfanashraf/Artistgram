@@ -2,7 +2,7 @@ import { useState } from 'react';
 import swal from 'sweetalert';
 import { Axios } from '../../../axios/userInstance.js';
 
-const ReportModal = ({ isOpen, onClose, postId }) => {
+const ReportModal = ({ isOpen, onClose, postId, userId }) => {
     const [message, setMessage] = useState('');
 
     const handleMessageChange = (e) => {
@@ -11,7 +11,7 @@ const ReportModal = ({ isOpen, onClose, postId }) => {
 
     const handleSubmit = async () => {
         try {
-            const response = await Axios.post('/api/reportPost', { postId, message });
+            const response = await Axios.post('/api/reportPost', { postId,userId, message });
             if (response.status === 200) {
                 swal('Report Submitted!', 'Thank you for reporting this post.', 'success');
                 onClose();
@@ -19,7 +19,7 @@ const ReportModal = ({ isOpen, onClose, postId }) => {
         } catch (error) {
             swal('Error', 'Failed to submit report. Please try again later.', 'error');
         }
-    };
+    }; 
 
     return (
         <div className={`modal ${isOpen ? 'is-active' : ''}`}>

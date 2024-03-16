@@ -1,5 +1,7 @@
 import { getPostCountsByMonth, getUserCountsByMonth } from "../../services/adminServices/adminServices.js";
 import userSchema from "../../model/userModels/userModel.js";
+import reportSchema from "../../model/adminModels/reportModel.js"
+
 export const getUserData = async (req, res) => {
     try {
         const result = await getUserCountsByMonth();
@@ -48,7 +50,6 @@ export const getPostData = async (req, res) => {
 export const getUsersDetail = async (req, res) => {
     try {
 
-        console.log("getting here")
         const users = await userSchema.find()
         if (users) {
             res.status(200).json(users)
@@ -58,4 +59,19 @@ export const getUsersDetail = async (req, res) => {
     }
 }
 
+export const getReports = async (req,res)=>{
+
+    try {
+        const reports = await reportSchema.find({})
+        .populate('post') 
+        .populate('user') 
+        
+    console.log(reports);
+        
+        res.status(200).json(reports)
+        
+    } catch (error) {
+        console.log(error)
+    }
+}
 

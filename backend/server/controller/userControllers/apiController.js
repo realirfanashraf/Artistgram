@@ -69,12 +69,13 @@ export const followingList = async(req,res)=>{
 }
 
 export const reportPost = async (req, res) => {
-  const { postId, message } = req.body;
+  const { postId, message ,userId} = req.body;
   console.log(req.body,"sdjfkljas")
   try {
     const report = new reportSchema({
       post: postId,
-      message: message
+      message: message,
+      user:userId
     });
     await report.save();
     res.status(200).json({ message: 'success' });
