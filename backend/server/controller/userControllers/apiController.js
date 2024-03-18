@@ -3,6 +3,7 @@ import userSchema from '../../model/userModels/userModel.js';
 import postSchema from '../../model/userModels/postModel.js'
 import { getUserByEmail } from '../../services/userServices/authServices.js';
 import reportSchema from '../../model/adminModels/reportModel.js'
+import messageSchema from '../../model/userModels/messageModel.js';
 
 export const usersList = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
@@ -81,5 +82,24 @@ export const reportPost = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'error' });
+  }
+};
+
+
+export const getMessages = async (req, res) => {
+  try {
+    const messages = await messageSchema
+      .find({
+        $or: [
+          { sender: req.params.userId },
+          { receiver: req.params.userId }
+        ]
+      })
+      .populate('sender receiver')
+      .exec();
+    res.json(messages);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
