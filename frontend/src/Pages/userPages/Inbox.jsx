@@ -11,6 +11,8 @@ const Inbox = () => {
     const [messageInput, setMessageInput] = useState("");
     const [messages, setMessages] = useState([]);
     const [users, setUsers] = useState([]);
+    const [selectedUserName, setSelectedUserName] = useState("");
+    const [selectedUserProfilePicture, setSelectedUserProfilePicture] = useState("");
     const userData = useSelector((state) => state.userInfo.user);
     const userId = userData._id;
 
@@ -52,6 +54,11 @@ const Inbox = () => {
         try {
             const response = await Axios.get(`/api/messages/${selectedUserId}`)
             setMessages(response.data);
+            const selectedUser = users.find(user => user.followingId._id === selectedUserId);
+            if (selectedUser) {
+                setSelectedUserName(selectedUser.followingId.name);
+                setSelectedUserProfilePicture(selectedUser.followingId.ProfilePicture);
+            }
         } catch (error) {
             console.error("Error fetching messages:", error);
         }
@@ -73,13 +80,13 @@ const Inbox = () => {
         <>
             <Navbar />
             <div className="flex">
-                <div className="w-1/4 bg-gray-200 h-screen mt-4 rounded-lg ml-4">
-                    <div className="p-3">
-                        <h2 className="text-lg font-protest mb-4">Users</h2>
+                <div className="w-1/4 bg-thirdShade overflow-y-auto no-scrollbar h-80 mt-4 rounded-lg ml-4">
+                    <div className="p-2">
+                        <h2 className=" flex justify-center text-xl font-protest mb-4  ">Users</h2>
                         {users.map((user, index) => (
                             <div
                                 key={index}
-                                className="flex items-center mb-2 cursor-pointer"
+                                className="flex items-center mb-2 cursor-pointer hover:bg-gray-200 rounded-lg  p-2"
                                 onClick={() => {
                                     setSelectedUser(user.followingId._id);
                                     fetchMessages(user.followingId._id);
@@ -88,15 +95,29 @@ const Inbox = () => {
                                 <div className="">
                                     <img src={user.followingId.ProfilePicture} alt="" className="w-10 h-10 bg-gray-400 rounded-full" />
                                 </div>
-                                <span className="ml-2 hidden md:inline-block">{user.followingId.name}</span>
+                                <span className="ml-2 hidden md:inline-block font-protest">{user.followingId.name}</span>
                             </div>
                         ))}
                     </div>
                 </div>
                 <div className="flex-1">
                     <div className="p-4">
-                        <div className="h-screen bg-gray-100 flex flex-col rounded-lg">
-                            <div className="flex-1 overflow-y-auto">
+                        <div className="h-screen bg-thirdShade flex flex-col rounded-lg p-4">
+                            <div className="flex justify-between items-center mb-4 bg-gray-200 p-2 rounded-lg">
+                                {selectedUser && (
+                                   <>
+                                   <div className="flex items-center ">
+                                       <div>
+                                           <img src={selectedUserProfilePicture} alt="" className="w-10 h-10 bg-gray-400 rounded-full" />
+                                       </div>
+                                       <div className="ml-2">
+                                           <h2 className="text-lg font-protest mb-2">{selectedUserName}</h2>
+                                       </div>
+                                   </div>
+                               </>
+                                )}
+                            </div>
+                            <div className="flex-1 overflow-y-auto no-scrollbar">
                                 {selectedUser ? (
                                     messages.map((msg, index) => (
                                         <div
@@ -110,9 +131,10 @@ const Inbox = () => {
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-gray-500">
+                                    <p className="text-gray-500 flex justify-center text-center mt-52 font-protest">
                                         Select a user to start chatting.
                                     </p>
+
                                 )}
 
                             </div>
@@ -127,7 +149,7 @@ const Inbox = () => {
                                     />
                                     <button
                                         onClick={sendMessage}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                                        className="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-md"
                                     >
                                         Send
                                     </button>
