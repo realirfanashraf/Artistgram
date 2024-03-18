@@ -9,7 +9,7 @@ route.get('/posts',authorize('user'),postsList)
 route.get('/followers',authorize('user'),followersList)
 route.get('/following',authorize('user'),followingList)
 route.post('/reportPost',authorize('user'),reportPost)
-route.get('/messages/:userId', getMessages);
+route.get('/messages/:userId',authorize('user'), getMessages);
 
 
 

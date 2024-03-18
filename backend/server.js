@@ -20,7 +20,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-      origin: ["http://localhost:5173", 'http://localhost:3000','*'],
+      origin: ["http://localhost:5173", 'http://localhost:3000'],
       methods: ["GET", "POST"],
       credentials: true,
     },
@@ -51,25 +51,17 @@ app.use('/admin/action/', actionRoute)
 
 io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
-
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
     });
 
     socket.on('message', (data) => {
-        console.log('Message received:', data);
-        // Save message to MongoDB
         const { sender, receiver, content } = data;
         const message = new messageSchema({ sender, receiver, content });
-        // Save the message to MongoDB
         message.save();
-        io.emit('message', message); // Broadcast message to all clients
+        io.emit('message', message);
     });
-    
-
-    
 });
-
 
 const PORT = process.env.PORT || 3000;
 

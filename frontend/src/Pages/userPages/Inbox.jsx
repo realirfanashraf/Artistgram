@@ -34,14 +34,10 @@ const Inbox = () => {
     const handleMessage = (message) => {
         setMessages(prevMessages => [...prevMessages, message]);
     };
-    useEffect(() => {
-        console.log(messages, "the state of the messages");
-    }, [messages]);
-    
+
     const fetchUsers = async () => {
         try {
             const response = await Axios.get("/api/following");
-            console.log(response.data, "following data")
             if (Array.isArray(response.data)) {
                 setUsers(response.data);
             } else {
@@ -63,14 +59,12 @@ const Inbox = () => {
 
     const sendMessage = () => {
         if (!selectedUser || !messageInput.trim()) return;
-    
+
         const newMessage = {
             sender: userId,
             receiver: selectedUser,
             content: messageInput.trim(),
         };
-
-        console.log(newMessage, "thish is that last one")
         socket.emit('message', newMessage);
         setMessageInput("");
     };
@@ -107,10 +101,10 @@ const Inbox = () => {
                                     messages.map((msg, index) => (
                                         <div
                                             key={index}
-                                            className={`${msg.sender._id === userId || msg.sender ===userId ? "text-right" : "text-left"
+                                            className={`${msg.sender._id === userId || msg.sender === userId ? "text-right" : "text-left"
                                                 }`}
                                         >
-                                            <div className={`bg-${msg.sender._id === userId || msg.sender ===userId ? "blue" : "green"}-500 text-white p-2 rounded-lg inline-block mb-2`}>
+                                            <div className={`bg-${msg.sender._id === userId || msg.sender === userId ? "blue" : "green"}-500 text-white p-2 rounded-lg inline-block mb-2`}>
                                                 {msg.content}
                                             </div>
                                         </div>
