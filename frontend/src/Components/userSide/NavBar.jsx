@@ -22,7 +22,7 @@ const Navbar = () => {
               {/* Desktop navigation links */}
               <Link to='/home' className='navLinks'>Home</Link>
               <a href="#" className="navLinks">Forum</a>
-              <a href="#" className="navLinks">Inbox</a>
+              <a href="/inbox" className="navLinks">Inbox</a>
               <Link to='/profile' className='navLinks'>Profile</Link>
             </div>
             <div className="md:hidden">
