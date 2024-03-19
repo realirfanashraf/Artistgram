@@ -105,16 +105,16 @@ const Inbox = () => {
                         <div className="h-screen bg-thirdShade flex flex-col rounded-lg p-4">
                             <div className="flex justify-between items-center mb-4 bg-gray-200 p-2 rounded-lg">
                                 {selectedUser && (
-                                   <>
-                                   <div className="flex items-center ">
-                                       <div>
-                                           <img src={selectedUserProfilePicture} alt="" className="w-10 h-10 bg-gray-400 rounded-full" />
-                                       </div>
-                                       <div className="ml-2">
-                                           <h2 className="text-lg font-protest mb-2">{selectedUserName}</h2>
-                                       </div>
-                                   </div>
-                               </>
+                                    <>
+                                        <div className="flex items-center ">
+                                            <div>
+                                                <img src={selectedUserProfilePicture} alt="" className="w-10 h-10 bg-gray-400 rounded-full" />
+                                            </div>
+                                            <div className="ml-2">
+                                                <h2 className="text-lg font-protest mb-2">{selectedUserName}</h2>
+                                            </div>
+                                        </div>
+                                    </>
                                 )}
                             </div>
                             <div className="flex-1 overflow-y-auto no-scrollbar">
@@ -125,9 +125,10 @@ const Inbox = () => {
                                             className={`${msg.sender._id === userId || msg.sender === userId ? "text-right" : "text-left"
                                                 }`}
                                         >
-                                            <div className={`bg-${msg.sender._id === userId || msg.sender === userId ? "blue" : "green"}-500 text-white p-2 rounded-lg inline-block mb-2`}>
+                                            <div className={`bg-${msg.sender._id === userId || msg.sender === userId ? "green" : "green"}-500 text-white p-2 rounded-lg inline-block mb-2`}>
                                                 {msg.content}
                                             </div>
+
                                         </div>
                                     ))
                                 ) : (
