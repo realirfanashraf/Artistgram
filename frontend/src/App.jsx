@@ -1,6 +1,6 @@
 
-import { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuthenticated, selectIsAuthenticated } from './redux/slices/userSlices/authSlice.js';
 import { setAdminAuthenticated, selectIsAdminAuthenticated } from './redux/slices/adminSlices/adminAuthSlice.js'
@@ -25,6 +25,8 @@ function App() {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const isAdminAuthenticated = useSelector(selectIsAdminAuthenticated);
+  const location = useLocation();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,15 +43,38 @@ function App() {
       } catch (error) {
         dispatch(setAdminAuthenticated(false));
       }
+
+      setLoading(false);
     };
 
     fetchData();
   }, [dispatch]);
 
-  if (isAuthenticated === null || isAdminAuthenticated === null) {
+  useEffect(() => {
+    if (!loading) {
+      const tokenCheck = async () => {
+        try {
+          const userIsAuthenticated = await checkJWTToken();
+          dispatch(setAuthenticated(userIsAuthenticated));
+        } catch (error) {
+          dispatch(setAuthenticated(false));
+        }
+
+        try {
+          const adminIsAuthenticated = await checkAdminJWTToken();
+          dispatch(setAdminAuthenticated(adminIsAuthenticated));
+        } catch (error) {
+          dispatch(setAdminAuthenticated(false));
+        }
+      };
+
+      tokenCheck();
+    }
+  }, [location.pathname, loading, dispatch]);
+
+  if (loading) {
     return <div>Loading...</div>;
   }
-
   return (
     <Routes>
       <Route path='/' element={<AuthRoute component={Intro} isAuthenticated={isAuthenticated} />} />
