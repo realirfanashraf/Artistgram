@@ -63,3 +63,7 @@ body {
 .tableHeading {
     @apply px-6 py-3 text-xs font-protest text-gray-500 uppercase tracking-wider
 }
+
+input[type=radio]{
+    display: none;
+}
