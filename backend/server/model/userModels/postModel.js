@@ -20,18 +20,7 @@ const postSchema = new mongoose.Schema({
     isBlocked:{
         type :Boolean,
         default:false
-    },
-    rating: [{
-        userId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
-        value: {
-            type: Number,
-            min: 0,
-            max: 5
-        }
-    }]
+    }
 }, { timestamps: true });
 
 const postModel = mongoose.model('Posts', postSchema);
