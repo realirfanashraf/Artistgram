@@ -4,6 +4,7 @@ import postSchema from '../../model/userModels/postModel.js'
 import { getUserByEmail } from '../../services/userServices/authServices.js';
 import reportSchema from '../../model/adminModels/reportModel.js'
 import messageSchema from '../../model/userModels/messageModel.js';
+import ratingSchema from '../../model/userModels/ratingModel.js';
 
 export const usersList = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
@@ -101,5 +102,60 @@ export const getMessages = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+
+export const getRating = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const ratings = await ratingSchema.find({ PostId: postId });
+
+    if (ratings.length === 0) {
+      return res.status(200).json({ averageRating: 0 });
+    }
+
+    const sum = ratings.reduce((acc, curr) => acc + curr.Value, 0);
+    const averageRating = sum / ratings.length;
+    res.status(200).json({ averageRating });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+export const submitRating = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const email = req.query.email;
+    const user = await userSchema.findOne({ email: email });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const userId = user._id;
+
+    const { rating } = req.body;
+    const post = await postSchema.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    const existingRating = await ratingSchema.findOne({ PostId: postId, UserId: userId });
+
+    if (existingRating) {
+      existingRating.Value = rating;
+      await existingRating.save();
+    } else {
+      await ratingSchema.create({ PostId: postId, UserId: userId, Value: rating });
+    }
+
+    res.status(200).json({ message: 'Rating submitted successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };

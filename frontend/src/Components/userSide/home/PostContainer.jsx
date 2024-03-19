@@ -53,7 +53,7 @@ const PostContainer = ({ posts, postLoading, postListFinished }) => {
                 <div className="overflow-y-scroll no-scrollbar w-40 h-24 sm:h-48">
                   {post.description}
                 </div>
-               <Rating/>
+               <Rating postId={post._id}/>
               </div>
             </div>
           </div>
