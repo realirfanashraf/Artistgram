@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Axios } from "../../axios/userInstance.js";
+import { showErrorMessage, showSuccessMessage } from "../../helper/sweetalert.js";
 
 const FollowingModal = ({ isOpen, onClose }) => {
     const [following, setFollowing] = useState([]);
@@ -8,7 +9,7 @@ const FollowingModal = ({ isOpen, onClose }) => {
         if (isOpen) {
             fetchFollowingData();
         }
-    }, [isOpen]);
+    }, [isOpen]);   
 
     const fetchFollowingData = async () => {
         try {
@@ -20,6 +21,29 @@ const FollowingModal = ({ isOpen, onClose }) => {
             }
         } catch (error) {
             console.error("Error fetching following:", error);
+            showErrorMessage(error);
+        }
+    };
+
+    const handleFollow = async (followingId) => {
+        try {
+            const isFollowing = following.some((follow) => follow.followingId === followingId);
+
+            if (isFollowing) {
+                const response = await Axios.post(`/api/unfollow/${followingId}`);
+                if (response.status === 200) {
+                    console.log("Unfollowed successfully");
+                }
+            } else {
+                // If not following, follow the user
+                const response = await Axios.post(`/api/follow/${followingId}`);
+                if (response.status === 200) {
+                    showSuccessMessage(response.message);
+                }
+            }
+        } catch (error) {
+            console.error("Error following/unfollowing user:", error);
+            showErrorMessage(error);
         }
     };
 
@@ -37,6 +61,9 @@ const FollowingModal = ({ isOpen, onClose }) => {
                         <div key={follow._id} className="flex items-center mb-2 hover:bg-gray-200 rounded-lg">
                             <img src={follow.followingId.ProfilePicture} alt={follow.followingId.name} className="w-8 h-8 rounded-full mr-2" />
                             <span className="text-sm">{follow.followingId.name}</span>
+                            <button onClick={() => handleFollow(follow.followingId._id)} className="text-sm text-blue-500 hover:text-blue-700 ml-auto">
+                                {following.some((f) => f.followingId._id === follow.followingId._id) ? "follow" : "unfollow"}
+                            </button>
                         </div>
                     ))}
                 </div>
