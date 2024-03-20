@@ -21,8 +21,8 @@ const Navbar = () => {
             <div className="hidden md:block">
               {/* Desktop navigation links */}
               <Link to='/home' className='navLinks'>Home</Link>
-              <a href="#" className="navLinks">Forum</a>
-              <a href="/inbox" className="navLinks">Inbox</a>
+              <Link to='/event' className='navLinks'>Event</Link>
+              <Link to='/inbox' className='navLinks'>Inbox</Link>
               <Link to='/profile' className='navLinks'>Profile</Link>
             </div>
             <div className="md:hidden">

@@ -19,6 +19,8 @@ import UserManagement from './Pages/adminPages/management/UserManagement.jsx';
 import AdminProfile from './Pages/adminPages/AdminProfile.jsx';
 import PostManagement from './Pages/adminPages/management/PostManagement.jsx';
 import Inbox from './Pages/userPages/Inbox.jsx';
+import Event from './Pages/userPages/Event.jsx';
+import EventManagement from './Pages/adminPages/management/EventManagement.jsx';
 
 
 function App() {
@@ -84,7 +86,7 @@ function App() {
       <Route path="/home" element={<PrivateRoute component={Home} isAuthenticated={isAuthenticated} />} />
       <Route path='/profile' element={<PrivateRoute component={Profile} isAuthenticated={isAuthenticated} />} />
       <Route path='/inbox' element={<PrivateRoute component={Inbox} isAuthenticated={isAuthenticated} />} />
-
+      <Route path='/event' element={<PrivateRoute component={Event} isAuthenticated={isAuthenticated} />} />
 
 
       {/* admin routes */}
@@ -93,6 +95,7 @@ function App() {
       <Route path="/admin/userManagement" element={<AdminPrivateRoute component={UserManagement} isAdminAuthenticated={isAdminAuthenticated} />} />
       <Route path="/admin/postManagement" element={<AdminPrivateRoute component={PostManagement} isAdminAuthenticated={isAdminAuthenticated} />} />
       <Route path="/admin/adminProfile" element={<AdminPrivateRoute component={AdminProfile} isAdminAuthenticated={isAdminAuthenticated} />} />
+      <Route path="/admin/eventManagement" element={<AdminPrivateRoute component={EventManagement} isAdminAuthenticated={isAdminAuthenticated} />} />
     </Routes>
   );
 }

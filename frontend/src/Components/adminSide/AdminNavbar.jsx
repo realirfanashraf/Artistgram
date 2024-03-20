@@ -21,8 +21,9 @@ const AdminNavbar = () => {
             <div className="hidden md:block">
               {/* Desktop navigation links */}
               <Link to='/admin/dashboard' className='navLinks'>Dashboard</Link>
-              <Link to='/admin/userManagement' className='navLinks'>User Management</Link>
-              <Link to='/admin/postManagement' className='navLinks'>Post Management</Link>
+              <Link to='/admin/userManagement' className='navLinks'>Users</Link>
+              <Link to='/admin/postManagement' className='navLinks'>Posts</Link>
+              <Link to='/admin/eventManagement' className='navLinks'>Events</Link>
               <Link to='/admin/adminProfile' className='navLinks'>Profile</Link>
             </div>
             <div className="md:hidden">
@@ -51,6 +52,7 @@ const AdminNavbar = () => {
             <Link to='/admin/userManagement' className='navLinks block'>User Management</Link>
             <Link to='/admin/postManagement' className='navLinks block'>Post Management</Link>
             <Link to='/admin/adminProfile' className='navLinks block'>Profile</Link>
+            <Link to='/admin/eventManagement' className='navLinks block'>Event Management</Link>
           </div>
         </div>
       )}
