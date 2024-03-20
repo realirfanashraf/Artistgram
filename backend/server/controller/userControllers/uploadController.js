@@ -80,16 +80,15 @@ export const posts = async (req, res) => {
 export const followUser = async (req, res) => {
   try {
     const { followingId } = req.body;
-    const { following, follower } = followingId;
-
-    const existingFollow = await followSchema.findOne({ followingId: following, followerId: follower });
+    const {userId} = req.query
+    const followerId = userId
+    const existingFollow = await followSchema.findOne({ followingId: followingId, followerId: followerId });
     if (existingFollow) {
       return res.status(400).json({ error: "User is already being followed" });
     }
-
     const follow = new followSchema({
-      followingId: following,
-      followerId: follower
+      followingId: followingId,
+      followerId: followerId
     });
     await follow.save();
     res.status(200).json({ message: "User followed successfully" });

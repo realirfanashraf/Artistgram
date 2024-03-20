@@ -3,9 +3,7 @@ import userSchema from "../model/userModels/userModel.js";
 const adminEmail = process.env.ADMIN_EMAIL;
 
 const authorize = (requiredRole) => async (req, res, next) => {
-  console.log(req.query)
   const {email} = req.query
-
 
   try {
     if (email === adminEmail && requiredRole === 'admin') {

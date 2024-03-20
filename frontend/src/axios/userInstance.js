@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {store} from '../redux/store.js'
+import { store } from '../redux/store.js';
 
 const Axios = axios.create({
   baseURL: "http://localhost:3000/",
@@ -8,11 +8,13 @@ const Axios = axios.create({
 
 Axios.interceptors.request.use(
   function(config) {
-    const email = store.getState().userInfo.user?.email; 
-    if (email) {
+    const userInfo = store.getState().userInfo.user;
+    if (userInfo) {
+      const { email, _id: userId } = userInfo; // Destructure _id as userId
       config.params = {
         ...config.params,
-        email: email
+        email: email,
+        userId: userId // Include userId here
       };
     }
     return config;
@@ -22,5 +24,4 @@ Axios.interceptors.request.use(
   }
 );
 
-export { Axios }; 
-
+export { Axios };

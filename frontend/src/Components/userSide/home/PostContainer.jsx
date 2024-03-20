@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { SlOptionsVertical } from 'react-icons/sl';
 import ReportModal from './ReportModal';
+import Rating from './Rating';
 
 const PostContainer = ({ posts, postLoading, postListFinished }) => {
   const [showDropdowns, setShowDropdowns] = useState(Array(posts.length).fill(false));
@@ -52,7 +53,7 @@ const PostContainer = ({ posts, postLoading, postListFinished }) => {
                 <div className="overflow-y-scroll no-scrollbar w-40 h-24 sm:h-48">
                   {post.description}
                 </div>
-                <span className="ml-2 text-yellow-500 self-start">⭐️⭐️⭐️⭐️⭐️</span>
+               <Rating postId={post._id}/>
               </div>
             </div>
           </div>
