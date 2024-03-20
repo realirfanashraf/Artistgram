@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Axios } from "../../axios/userInstance.js";
-import {showErrorMessage,showSuccessMessage} from '../../helper/sweetalert.js'
+import { showErrorMessage, showSuccessMessage } from '../../helper/sweetalert.js'
 
 const FollowerModal = ({ isOpen, onClose }) => {
-    const [followers, setFollowers] = useState([]);
+    const [followers, setFollowers] = useState([])
+    const [following, setFollowing] = useState([])
 
     useEffect(() => {
         if (isOpen) {
@@ -14,43 +15,42 @@ const FollowerModal = ({ isOpen, onClose }) => {
     const fetchFollowersData = async () => {
         try {
             const response = await Axios.get("/api/followers");
-            if (Array.isArray(response.data)) {
-                setFollowers(response.data);
-                console.log(response.data,"reponse")
-                console.log(followers,"list")
+            if (response.data && response.data.followers && response.data.following) {
+                setFollowers(response.data.followers);
+                setFollowing(response.data.following);
             } else {
-                console.error("Invalid response format: Expected an array");
+                console.error("Invalid response format: Expected followers and following arrays");
             }
         } catch (error) {
             console.error("Error fetching followers:", error);
         }
     };
 
-   
+
     const handleFollow = async (followerId) => {
         try {
-            const isFollowing = followers.some(follower => follower.followerId === followerId);
-            
+            const isFollowing = following.some(follow => {
+                return follow.followingId._id === followerId;
+            });
+
             if (isFollowing) {
                 const response = await Axios.post(`/api/unfollow/${followerId}`);
                 if (response.status === 200) {
-                    console.log("Unfollowed successfully");
+                    showSuccessMessage(response.data.message)
+                    fetchFollowersData()
                 }
             } else {
-                // If not following, follow the user
                 const response = await Axios.post(`/api/follow/${followerId}`);
                 if (response.status === 200) {
-                    showSuccessMessage(response.message)
-                   
+                    showSuccessMessage(response.data.message);
+                    fetchFollowersData()
                 }
             }
         } catch (error) {
             console.error("Error following/unfollowing user:", error);
-            showErrorMessage(error)
+            showErrorMessage(error);
         }
     };
-    
-    
 
 
     return (
@@ -70,7 +70,7 @@ const FollowerModal = ({ isOpen, onClose }) => {
                                 <span className="text-sm">{follower.followerId.name}</span>
                             </div>
                             <button onClick={() => handleFollow(follower.followerId._id)} className="text-sm text-blue-500 hover:text-blue-700">
-                                {followers.some(f => f.followerId._id === follower.followerId._id) ? "Unfollow" : "follow"}
+                                {following.some(follow => follow.followingId._id === follower.followerId._id) ? "Unfollow" : "Follow"}
                             </button>
                         </div>
                     ))}

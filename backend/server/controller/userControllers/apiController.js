@@ -41,28 +41,23 @@ export const postsList = async (req,res)=>{
 
 
 export const followersList = async (req, res) => {
-  const { email } = req.query;
-  const user = await getUserByEmail(email);
-  const userId = user._id;
-
+  const { userId } = req.query;
   try {
-    const followers = await followSchema.find({ followingId: userId, followerId: { $ne: userId } }).populate('followerId');
-    console.log(followers, "followers")
-    res.status(200).json(followers)
+    const followers = await followSchema.find({ followingId: userId }).populate('followerId');
+    const following = await followSchema.find({ followerId: userId}).populate('followingId');
+    res.status(200).json({followers,following})
   } catch (error) {
     console.error('Error fetching followers:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
+
 export const followingList = async(req,res)=>{
-  const { email } = req.query;
-  const user = await getUserByEmail(email);
-  const userId = user._id;
+  const { userId } = req.query;
 
   try {
-    const following = await followSchema.find({ followerId: userId, followingId: { $ne: userId } }).populate('followingId');
-    
+    const following = await followSchema.find({ followerId: userId}).populate('followingId');
     res.status(200).json(following);
   } catch (error) {
     console.error('Error fetching following:', error);
@@ -165,18 +160,10 @@ export const submitRating = async (req, res) => {
 export const followUser = async (req, res) => {
   try {
     const followerId = req.params.followerId; 
-    const { email } = req.query; 
-    const user = await userSchema.findOne({ email: email });
+    const { userId } = req.query; 
+    const followingId = userId
 
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const followingId = user._id.toString();
-
-    // Check if the follow relationship already exists
     const existingFollow = await followSchema.findOne({ followerId: followingId, followingId: followerId });
-
     if (existingFollow) {
       return res.status(400).json({ error: 'Already following this user' });
     }
@@ -185,10 +172,9 @@ export const followUser = async (req, res) => {
       followerId: followingId,
       followingId: followerId
     });
-
     await follow.save();
 
-    res.status(201).json({ message: 'User followed successfully' });
+    res.status(200).json({ message: 'User followed successfully' });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal server error' });
@@ -200,16 +186,9 @@ export const followUser = async (req, res) => {
 
 export const unfollowUser = async (req, res) => {
   try {
-    const { email } = req.query;
-    const user = await userSchema.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
+    const { userId } = req.query;
     const followingId = req.params.followerId;
-    const followerId = user._id.toString();
-
+    const followerId = userId
     const follow = await followSchema.findOneAndDelete({ followerId: followerId, followingId: followingId });
 
     if (!follow) {

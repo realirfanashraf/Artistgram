@@ -1,16 +1,15 @@
-import { useSelector } from "react-redux";
-import { followUserRequest} from '../../../API/apiCalls.js'
+
 import { showErrorMessage,showSuccessMessage } from "../../../helper/sweetalert.js";
+import { Axios } from "../../../axios/userInstance.js";
 
 const SuggestionBox = ({ users, loading, listFinished }) => {
 
-  const userData = useSelector((state) => state.userInfo.user);
 
   const handleFollow = async (userId) => {
     console.log(`Follow action triggered for user with ID: ${userId}`);
   
     try {
-      const response = await followUserRequest({ following: userId, follower: userData._id });
+      const response = await Axios.post('/upload/followUser', { followingId:userId});
       if (response.status === 200) {
         showSuccessMessage(response.data.message)
       } else {

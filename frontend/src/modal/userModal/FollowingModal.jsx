@@ -9,7 +9,7 @@ const FollowingModal = ({ isOpen, onClose }) => {
         if (isOpen) {
             fetchFollowingData();
         }
-    }, [isOpen]);   
+    }, [isOpen]);
 
     const fetchFollowingData = async () => {
         try {
@@ -27,26 +27,17 @@ const FollowingModal = ({ isOpen, onClose }) => {
 
     const handleFollow = async (followingId) => {
         try {
-            const isFollowing = following.some((follow) => follow.followingId === followingId);
-
-            if (isFollowing) {
-                const response = await Axios.post(`/api/unfollow/${followingId}`);
-                if (response.status === 200) {
-                    console.log("Unfollowed successfully");
-                }
-            } else {
-                // If not following, follow the user
-                const response = await Axios.post(`/api/follow/${followingId}`);
-                if (response.status === 200) {
-                    showSuccessMessage(response.message);
-                }
+            const response = await Axios.post(`/api/unfollow/${followingId}`);
+            if (response.status === 200) {
+                showSuccessMessage(response.data.message);
+                fetchFollowingData();
             }
         } catch (error) {
-            console.error("Error following/unfollowing user:", error);
+            console.error("Error unfollowing user:", error);
             showErrorMessage(error);
         }
     };
-
+    
     return (
         <div className={isOpen ? "block" : "hidden"}>
             <div className="bg-white w-96 p-4 rounded-lg shadow-md">
@@ -62,7 +53,7 @@ const FollowingModal = ({ isOpen, onClose }) => {
                             <img src={follow.followingId.ProfilePicture} alt={follow.followingId.name} className="w-8 h-8 rounded-full mr-2" />
                             <span className="text-sm">{follow.followingId.name}</span>
                             <button onClick={() => handleFollow(follow.followingId._id)} className="text-sm text-blue-500 hover:text-blue-700 ml-auto">
-                                {following.some((f) => f.followingId._id === follow.followingId._id) ? "follow" : "unfollow"}
+                                Unfollow
                             </button>
                         </div>
                     ))}
