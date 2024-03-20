@@ -53,15 +53,11 @@ export const followersList = async (req, res) => {
 };
 
 
-// not done we can use followers List instead of this
 export const followingList = async(req,res)=>{
-  const { email } = req.query;
-  const user = await getUserByEmail(email);
-  const userId = user._id;
+  const { userId } = req.query;
 
   try {
-    const following = await followSchema.find({ followerId: userId, followingId: { $ne: userId } }).populate('followingId');
-    
+    const following = await followSchema.find({ followerId: userId}).populate('followingId');
     res.status(200).json(following);
   } catch (error) {
     console.error('Error fetching following:', error);
