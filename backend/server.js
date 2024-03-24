@@ -52,6 +52,7 @@ app.use('/admin/action/', actionRoute)
 io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
     socket.emit("myID", socket.id);
+
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
     });
@@ -63,9 +64,32 @@ io.on('connection', (socket) => {
         io.emit('message', message);
     });
 
+    // WebRTC Signaling Handling
+    socket.on('iceCandidate', ({ recipient, signalData }) => {
+        io.to(recipient).emit('incomingSignal', signalData);
+    });
 
+    socket.on('offerSignal', ({ signalData }) => {
+        // Broadcast offer signal to the intended recipient
+        // Here, 'recipient' should be replaced with the intended recipient's socket ID
+        // You might need to modify this part to match your application's logic
+        socket.to(signalData.recipient).emit('incomingSignal', signalData.signalData);
+    });
 
+    socket.on('answerSignal', ({ signalData }) => {
+        // Broadcast answer signal to the intended recipient
+        // Here, 'recipient' should be replaced with the intended recipient's socket ID
+        // You might need to modify this part to match your application's logic
+        socket.to(signalData.recipient).emit('incomingSignal', signalData.signalData);
+    });
 
+    socket.on('acceptCall', ({ recipient }) => {
+        // Logic to handle call acceptance, if any
+    });
+
+    socket.on('endCall', ({ recipient }) => {
+        // Logic to handle call ending, if any
+    });
 });
 
 const PORT = process.env.PORT || 3000;

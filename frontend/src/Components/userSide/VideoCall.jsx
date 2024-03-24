@@ -1,16 +1,17 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-const VideoCall = ({ isCalling, callAccepted, acceptVideoCall, endVideoCall, mediaStream }) => {
+const VideoCall = ({ isCalling, callAccepted, acceptVideoCall, endVideoCall, mediaStream, partnerStream }) => {
   const videoRef = useRef(null);
+  const partnerVideoRef = useRef(null);
 
   useEffect(() => {
     if (videoRef.current && mediaStream && isCalling) {
       videoRef.current.srcObject = mediaStream;
     }
-  }, [mediaStream, isCalling,acceptVideoCall]);
-
-
-
+    if (partnerVideoRef.current && partnerStream && callAccepted) {
+      partnerVideoRef.current.srcObject = partnerStream;
+    }
+  }, [mediaStream, isCalling, callAccepted, partnerStream]);
 
   return (
     <div className="video-call-interface mt-4 border border-gray-300 rounded p-4">
@@ -23,6 +24,9 @@ const VideoCall = ({ isCalling, callAccepted, acceptVideoCall, endVideoCall, med
         <div>
           {mediaStream && (
             <video id="localVideo" autoPlay playsInline muted ref={videoRef}></video>
+          )}
+          {partnerStream && (
+            <video id='partnerVideo' autoPlay playsInline ref={partnerVideoRef}></video>
           )}
           <button onClick={endVideoCall} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-2">End Call</button>
         </div>
