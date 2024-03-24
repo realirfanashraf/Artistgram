@@ -99,9 +99,6 @@ const Inbox = () => {
 
 
 
-
-    // Function to initiate a video call
-  // Function to initiate a video call
 const initiateVideoCall = (recipient) => {
     try {
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -112,6 +109,7 @@ const initiateVideoCall = (recipient) => {
                 setMediaStream(stream);
 
                 const pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
+                console.log(pc,"offer is here ")
                 stream.getTracks().forEach(track => pc.addTrack(track, stream));
                 setPeerConnection(pc);
 
@@ -121,9 +119,11 @@ const initiateVideoCall = (recipient) => {
                             type: 'candidate',
                             candidate: event.candidate
                         });
+                        console.log(signalData,"icecandidate data is here")
                         socket.emit('iceCandidate', { recipient: recipient, signalData: signalData });
                     }
                 };
+                //debugged
 
                 const handleIncomingStream = event => {
                     event.streams.forEach(stream => {

@@ -64,8 +64,11 @@ io.on('connection', (socket) => {
         io.emit('message', message);
     });
 
+
+    //neeed current user socket id for the remaining
     // WebRTC Signaling Handling
     socket.on('iceCandidate', ({ recipient, signalData }) => {
+        console.log("ice candidate is at server with ",recipient,signalData)
         io.to(recipient).emit('incomingSignal', signalData);
     });
 
