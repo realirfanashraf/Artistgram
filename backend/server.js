@@ -51,6 +51,7 @@ app.use('/admin/action/', actionRoute)
 
 io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
+    socket.emit("myID", socket.id);
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
     });
@@ -62,7 +63,7 @@ io.on('connection', (socket) => {
         io.emit('message', message);
     });
 
-    
+
 
 
 });

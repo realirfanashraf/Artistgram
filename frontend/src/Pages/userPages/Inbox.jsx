@@ -3,7 +3,7 @@ import Navbar from "../../Components/userSide/NavBar";
 import socketIOClient from 'socket.io-client';
 import { Axios } from '../../axios/userInstance.js';
 import { useSelector } from 'react-redux';
-import Peer from 'simple-peer'
+// import Peer from 'simple-peer'
 import VideoCall from '../../Components/userSide/VideoCall.jsx';
 
 const socket = socketIOClient('http://localhost:3000');
@@ -17,6 +17,7 @@ const Inbox = () => {
     const [selectedUserProfilePicture, setSelectedUserProfilePicture] = useState("");
     const userData = useSelector((state) => state.userInfo.user);
     const userId = userData._id;
+    const [myID, setMyID] = useState('')
 
 
     const [isCalling, setIsCalling] = useState(false);
@@ -42,6 +43,14 @@ const Inbox = () => {
             socket.off('message', handleMessage);
         };
     }, []);
+
+    useEffect(() => {
+        socket.on("myID", (id) => {
+            console.log(id, "my socket id");
+            setMyID(id);
+        });
+    }, []);
+    
 
     
     const handleMessage = (message) => {
