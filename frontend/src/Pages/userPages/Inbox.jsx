@@ -99,7 +99,8 @@ const Inbox = () => {
     };
 
 
-let pc;
+
+
 const initiateVideoCall = (recipient) => {
     try {
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -109,7 +110,7 @@ const initiateVideoCall = (recipient) => {
                 
                 setMediaStream(stream);
 
-                 pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
+                let pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
                 console.log(pc,"offer is here ")
                 stream.getTracks().forEach(track => pc.addTrack(track, stream));
                 setPeerConnection(pc);
@@ -138,9 +139,13 @@ const initiateVideoCall = (recipient) => {
                 pc.createOffer()
                     .then(offer => pc.setLocalDescription(offer))
                     .then(() => {
-                        const signalData = JSON.stringify(pc.localDescription);
+                        const signalData = {
+                            type: 'offer',
+                            offer: pc.localDescription,
+                            pc: pc
+                        };
                         console.log("creating offer is done as expected ")
-                        socket.emit('offerSignal', { recipient: recipient,signalData: signalData });
+                        socket.emit('offerSignal', { recipient: recipient,signalData: signalData});
                     })
                     .catch(error => console.error("Error creating offer:", error));
 
@@ -155,10 +160,18 @@ const initiateVideoCall = (recipient) => {
 };
 
 useEffect(() => {
-    const handleIncomingSignal = (signal) => {
+    socket.on("incomingSignal", ({ type, signalData,pc }) => {
+        console.log("Incoming signal:", signalData);
+        console.log("Type is here:", type);
+        console.log(pc,"pc is here")
         setIsCalling(true);
-        console.log("incoming signal is here")
-        const remoteDescription = new RTCSessionDescription(JSON.parse(signal));
+        
+        if (!pc) {
+            console.error("Peer connection is null.");
+            return;
+        }
+        const remoteDescription = new RTCSessionDescription(JSON.parse(signalData));
+        console.log(remoteDescription.type, "checking if that is offer or not ");
         if (remoteDescription.type === 'offer') {
             pc.setRemoteDescription(remoteDescription)
                 .then(() => {
@@ -166,8 +179,8 @@ useEffect(() => {
                         .then(answer => {
                             pc.setLocalDescription(answer)
                                 .then(() => {
-                                    const signalData = JSON.stringify(pc.localDescription);
-                                    socket.emit('answerSignal', { signalData: signalData });
+                                    const localDescription = JSON.stringify(pc.localDescription);
+                                    socket.emit('answerSignal', { signalData: localDescription });
                                 })
                                 .catch(error => console.error("Error setting local description:", error));
                         })
@@ -181,32 +194,53 @@ useEffect(() => {
             pc.addIceCandidate(remoteDescription.candidate)
                 .catch(error => console.error("Error adding ICE candidate:", error));
         }
-    };
+    });
+}, [socket]);
 
-    socket.on("incomingSignal", handleIncomingSignal);
 
-   
-  }, [socket]);
 
-// Function to accept a video call
 const acceptVideoCall = () => {
-    console.log("accept called")
+    console.log("accept called");
     socket.emit('acceptCall', { recipient: callRecipient });
-    const pc = new RTCPeerConnection();
-    pc.ontrack = (event) => {
-        console.log('Incoming track received:', event.streams[0]);
-        setPartnerStream(event.streams)
-    };
 
-    pc.onicecandidate = (event) => {
-        if (event.candidate) {
-            socket.emit('iceCandidate', { candidate: event.candidate, recipient: callRecipient });
-        }
-    };
-    pc.addStream(mediaStream);
-    setPeerConnection(pc);
-    setCallAccepted(true);
+    try {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => {
+                setMediaStream(stream);
+
+                const pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
+                pc.ontrack = event => {
+                    console.log('Incoming track received:', event.streams[0]);
+                    setPartnerStream(event.streams[0]); // Assuming only one stream
+                };
+                pc.onicecandidate = event => {
+                    if (event.candidate) {
+                        socket.emit('iceCandidate', { candidate: event.candidate, recipient: callRecipient });
+                    }
+                };
+                pc.addStream(stream);
+                setPeerConnection(pc);
+                setCallAccepted(true);
+
+                peerConnection.createAnswer()
+                    .then(answer => {
+                        pc.setLocalDescription(answer)
+                            .then(() => {
+                                const localDescription = JSON.stringify(pc.localDescription);
+                                socket.emit('answerSignal', { signalData: localDescription });
+                            })
+                            .catch(error => console.error("Error setting local description:", error));
+                    })
+                    .catch(error => console.error("Error creating answer:", error));
+            })
+            .catch(error => {
+                console.error('Error accessing media devices:', error);
+            });
+    } catch (error) {
+        console.error('Error accessing media devices:', error);
+    }
 };
+
 
 // Function to end a video call
 const endVideoCall = () => {

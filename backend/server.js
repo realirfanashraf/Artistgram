@@ -80,7 +80,7 @@ io.on('connection', (socket) => {
 
     //neeed current user socket id for the remaining
     // WebRTC Signaling Handling
-    socket.on('iceCandidate', ({ recipient, signalData }) => {
+    socket.on('iceCandidate', ({ recipient, signalData  }) => {
         const recipientSocketId = users[recipient];
         if(recipientSocketId){
             io.to(recipientSocketId).emit('incomingSignal', signalData);
@@ -89,11 +89,12 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('offerSignal', ({ recipient,signalData }) => {
+    socket.on('offerSignal', ({ recipient,signalData}) => {
         const recipientSocketId = users[recipient];
         console.log(recipientSocketId,"inside offerSignal signal is perfect")
+        console.log(signalData,"type and signal data is here ")
         
-        io.to(recipientSocketId).emit('incomingSignal', signalData);
+        io.to(recipientSocketId).emit('incomingSignal', {signalData});
     });
 
     socket.on('answerSignal', ({ signalData }) => {
@@ -102,6 +103,7 @@ io.on('connection', (socket) => {
         // You might need to modify this part to match your application's logic
         socket.to(signalData.recipient).emit('incomingSignal', signalData.signalData);
     });
+    
 
     socket.on('acceptCall', ({ recipient }) => {
         // Logic to handle call acceptance, if any
