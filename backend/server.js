@@ -49,12 +49,25 @@ app.use('/admin', adminRoute)
 app.use('/admin/api', apiRoutes)
 app.use('/admin/action/', actionRoute)
 
+const users = {};
+
 io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
     socket.emit("myID", socket.id);
 
+    socket.on('authenticate', (userId) => {
+        console.log("authenticate from server socket",userId)
+        users[userId] = socket.id;
+        console.log(users,"this is users list current")
+    });
+
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
+        Object.keys(users).forEach((userId) => {
+            if (users[userId] === socket.id) {
+                delete users[userId];
+            }
+        });
     });
 
     socket.on('message', (data) => {
@@ -68,15 +81,19 @@ io.on('connection', (socket) => {
     //neeed current user socket id for the remaining
     // WebRTC Signaling Handling
     socket.on('iceCandidate', ({ recipient, signalData }) => {
-        console.log("ice candidate is at server with ",recipient,signalData)
-        io.to(recipient).emit('incomingSignal', signalData);
+        const recipientSocketId = users[recipient];
+        if(recipientSocketId){
+            io.to(recipientSocketId).emit('incomingSignal', signalData);
+        }else{
+            console.log("Recipient not found:", recipient)
+        }
     });
 
-    socket.on('offerSignal', ({ signalData }) => {
-        // Broadcast offer signal to the intended recipient
-        // Here, 'recipient' should be replaced with the intended recipient's socket ID
-        // You might need to modify this part to match your application's logic
-        socket.to(signalData.recipient).emit('incomingSignal', signalData.signalData);
+    socket.on('offerSignal', ({ recipient,signalData }) => {
+        const recipientSocketId = users[recipient];
+        console.log(recipientSocketId,"inside offerSignal signal is perfect")
+        
+        io.to(recipientSocketId).emit('incomingSignal', signalData);
     });
 
     socket.on('answerSignal', ({ signalData }) => {

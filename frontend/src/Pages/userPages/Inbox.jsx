@@ -50,6 +50,7 @@ const Inbox = () => {
             console.log(id, "my socket id");
             setMyID(id);
         });
+        socket.emit('authenticate', userId)
     }, []);
 
 
@@ -126,8 +127,10 @@ const initiateVideoCall = (recipient) => {
                 //debugged
 
                 const handleIncomingStream = event => {
+                    
                     event.streams.forEach(stream => {
                         setPartnerStream(stream);
+                        console.log(stream,"stream is here for the patner")
                     });
                 };
                 pc.ontrack = handleIncomingStream;
@@ -136,11 +139,13 @@ const initiateVideoCall = (recipient) => {
                     .then(offer => pc.setLocalDescription(offer))
                     .then(() => {
                         const signalData = JSON.stringify(pc.localDescription);
-                        socket.emit('offerSignal', { signalData: signalData });
+                        console.log("creating offer is done as expected ")
+                        socket.emit('offerSignal', { recipient: recipient,signalData: signalData });
                     })
                     .catch(error => console.error("Error creating offer:", error));
 
                 socket.on("incomingSignal", signal => {
+                    console.log("incoming signal is here")
                     const remoteDescription = new RTCSessionDescription(JSON.parse(signal));
                     if (remoteDescription.type === 'offer') {
                         pc.setRemoteDescription(remoteDescription)
