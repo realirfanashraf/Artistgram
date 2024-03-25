@@ -99,17 +99,17 @@ const Inbox = () => {
     };
 
 
-
+let pc;
 const initiateVideoCall = (recipient) => {
     try {
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             .then(stream => {
                 console.log('Got MediaStream:', stream);
                 setCallRecipient(recipient);
-                setIsCalling(true);
+                
                 setMediaStream(stream);
 
-                const pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
+                 pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
                 console.log(pc,"offer is here ")
                 stream.getTracks().forEach(track => pc.addTrack(track, stream));
                 setPeerConnection(pc);
@@ -144,32 +144,7 @@ const initiateVideoCall = (recipient) => {
                     })
                     .catch(error => console.error("Error creating offer:", error));
 
-                socket.on("incomingSignal", signal => {
-                    console.log("incoming signal is here")
-                    const remoteDescription = new RTCSessionDescription(JSON.parse(signal));
-                    if (remoteDescription.type === 'offer') {
-                        pc.setRemoteDescription(remoteDescription)
-                            .then(() => {
-                                pc.createAnswer()
-                                    .then(answer => {
-                                        pc.setLocalDescription(answer)
-                                            .then(() => {
-                                                const signalData = JSON.stringify(pc.localDescription);
-                                                socket.emit('answerSignal', { signalData: signalData });
-                                            })
-                                            .catch(error => console.error("Error setting local description:", error));
-                                    })
-                                    .catch(error => console.error("Error creating answer:", error));
-                            })
-                            .catch(error => console.error("Error setting remote description:", error));
-                    } else if (remoteDescription.type === 'answer') {
-                        pc.setRemoteDescription(remoteDescription)
-                            .catch(error => console.error("Error setting remote description:", error));
-                    } else if (remoteDescription.type === 'candidate') {
-                        pc.addIceCandidate(remoteDescription.candidate)
-                            .catch(error => console.error("Error adding ICE candidate:", error));
-                    }
-                });
+                
             })
             .catch(error => {
                 console.error('Error accessing media devices:', error);
@@ -178,6 +153,40 @@ const initiateVideoCall = (recipient) => {
         console.error('Error accessing media devices:', error);
     }
 };
+
+useEffect(() => {
+    const handleIncomingSignal = (signal) => {
+        setIsCalling(true);
+        console.log("incoming signal is here")
+        const remoteDescription = new RTCSessionDescription(JSON.parse(signal));
+        if (remoteDescription.type === 'offer') {
+            pc.setRemoteDescription(remoteDescription)
+                .then(() => {
+                    pc.createAnswer()
+                        .then(answer => {
+                            pc.setLocalDescription(answer)
+                                .then(() => {
+                                    const signalData = JSON.stringify(pc.localDescription);
+                                    socket.emit('answerSignal', { signalData: signalData });
+                                })
+                                .catch(error => console.error("Error setting local description:", error));
+                        })
+                        .catch(error => console.error("Error creating answer:", error));
+                })
+                .catch(error => console.error("Error setting remote description:", error));
+        } else if (remoteDescription.type === 'answer') {
+            pc.setRemoteDescription(remoteDescription)
+                .catch(error => console.error("Error setting remote description:", error));
+        } else if (remoteDescription.type === 'candidate') {
+            pc.addIceCandidate(remoteDescription.candidate)
+                .catch(error => console.error("Error adding ICE candidate:", error));
+        }
+    };
+
+    socket.on("incomingSignal", handleIncomingSignal);
+
+   
+  }, [socket]);
 
 // Function to accept a video call
 const acceptVideoCall = () => {
