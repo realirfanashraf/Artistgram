@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import Navbar from "../../Components/userSide/NavBar";
 import socketIOClient from 'socket.io-client';
 import { Axios } from '../../axios/userInstance.js';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import VideoCall from '../../Components/userSide/VideoCall.jsx';
+import { selectPeerConnection, setPeerConnection } from '../../redux/slices/userSlices/localPeerConnection.js';
 
 const socket = socketIOClient('http://localhost:3000');
 
 const Inbox = () => {
+    const dispatch = useDispatch()
     const [selectedUser, setSelectedUser] = useState(null);
     const [messageInput, setMessageInput] = useState("");
     const [messages, setMessages] = useState([]);
@@ -17,14 +19,15 @@ const Inbox = () => {
     const userData = useSelector((state) => state.userInfo.user);
     const userId = userData._id;
     const [myID, setMyID] = useState('')
+    const peerConnection = useSelector(selectPeerConnection)
 
 
     const [isCalling, setIsCalling] = useState(false);
     const [callRecipient, setCallRecipient] = useState(null);
     const [callAccepted, setCallAccepted] = useState(false);
     const [mediaStream, setMediaStream] = useState(null)
-    const [peerConnection, setPeerConnection] = useState(null);
-    const [partnerStream, setPartnerStream] = useState(null)
+    
+    const [remotePeerStream, setRemotePeerStream] = useState(null)
 
 
 
@@ -100,82 +103,218 @@ const Inbox = () => {
 
 
 
+    let remotePeerConnection;
 
-const initiateVideoCall = (recipient) => {
-    try {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            .then(stream => {
-                console.log('Got MediaStream:', stream);
-                setCallRecipient(recipient);
-                
-                setMediaStream(stream);
+    function initializeRemotePeerConnection() {
+        remotePeerConnection = new RTCPeerConnection({
+            'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]
+        });
 
-                let pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
-                console.log(pc,"offer is here ")
-                stream.getTracks().forEach(track => pc.addTrack(track, stream));
-                setPeerConnection(pc);
+    }
+    initializeRemotePeerConnection();
 
-                pc.onicecandidate = event => {
-                    if (event.candidate) {
-                        const signalData = JSON.stringify({
-                            type: 'candidate',
-                            candidate: event.candidate
-                        });
-                        console.log(signalData,"icecandidate data is here")
-                        socket.emit('iceCandidate', { recipient: recipient, signalData: signalData });
-                    }
+
+
+    socket.on('incomingSignal', data => {
+        const { candidate } = JSON.parse(data);
+        if (candidate) {
+            try {
+                remotePeerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+            } catch (error) {
+                console.error('Error adding ICE candidate:', error);
+            }
+        }
+    });
+
+
+    socket.on('incomingOfferSignal', ({ signalData,senderId }) => {
+        const { sdp } = signalData;
+        
+        remotePeerConnection.setRemoteDescription(new RTCSessionDescription(sdp))
+            .then(() => {
+                console.log('Remote description set successfully.');
+    
+                return remotePeerConnection.createAnswer();
+            })
+            .then(answer => {
+                return remotePeerConnection.setLocalDescription(answer);
+            })
+            .then(() => {
+                const answerSignalData = {
+                    type: 'answer',
+                    answer: remotePeerConnection.localDescription,
                 };
-                //debugged
-
-                const handleIncomingStream = event => {
-                    
-                    event.streams.forEach(stream => {
-                        setPartnerStream(stream);
-                        console.log(stream,"stream is here for the patner")
-                    });
-                };
-                pc.ontrack = handleIncomingStream;
-
-                pc.createOffer()
-                    .then(offer => pc.setLocalDescription(offer))
-                    .then(() => {
-                        const signalData = {
-                            type: 'offer',
-                            offer: pc.localDescription,
-                            pc: pc
-                        };
-                        console.log("creating offer is done as expected ")
-                        socket.emit('offerSignal', { recipient: recipient,signalData: signalData});
-                    })
-                    .catch(error => console.error("Error creating offer:", error));
-
-                
+                setIsCalling(true)
+                socket.emit('answerSignal', {  signalData: answerSignalData ,senderId:senderId});
             })
             .catch(error => {
-                console.error('Error accessing media devices:', error);
+                console.error('Error handling offer:', error);
             });
-    } catch (error) {
-        console.error('Error accessing media devices:', error);
-    }
-};
+    });
+    
 
-useEffect(() => {
-    socket.on("incomingSignal", ({ type, signalData,pc }) => {
-        console.log("Incoming signal:", signalData);
-        console.log("Type is here:", type);
-        console.log(pc,"pc is here")
-        setIsCalling(true);
-        
-        if (!pc) {
-            console.error("Peer connection is null.");
-            return;
-        }
-        const remoteDescription = new RTCSessionDescription(JSON.parse(signalData));
-        console.log(remoteDescription.type, "checking if that is offer or not ");
-        if (remoteDescription.type === 'offer') {
-            pc.setRemoteDescription(remoteDescription)
+    socket.on('offerAnswerSignal', ({ signalData }) => {
+        const { sdp } = signalData;
+    console.log(peerConnection,"this is peerconnection")
+        if (peerConnection) {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(sdp))
                 .then(() => {
-                    pc.createAnswer()
+                    console.log('Remote description set successfully.');
+    
+                })
+                .catch(error => {
+                    console.error('Error setting remote description:', error);
+                });
+        } else {
+            console.error('Local peer connection not found.');
+        }
+    });
+    
+
+
+
+
+
+    const initiateVideoCall = (recipient) => {
+        try {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then(stream => {
+                    console.log('Got MediaStream:', stream);
+                    setCallRecipient(recipient);
+                    setMediaStream(stream);
+
+                    let pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
+                    stream.getTracks().forEach(track => pc.addTrack(track, stream));
+                    dispatch(setPeerConnection(pc))
+                    pc.onicecandidate = event => {
+                        if (event.candidate) {
+                            const signalData = JSON.stringify({
+                                type: 'candidate',
+                                candidate: event.candidate
+                            });
+                            socket.emit('iceCandidate', { recipient: recipient, signalData: signalData });
+                        }
+                    };
+
+
+
+                    const handleIncomingStream = event => {
+                        event.streams.forEach(stream => {
+                            setRemotePeerStream(stream);
+                            console.log(stream, "stream is here for the patner")
+                        });
+                    };
+                    pc.ontrack = handleIncomingStream;
+
+                    pc.createOffer()
+                        .then(offer => pc.setLocalDescription(offer))
+                        .then(() => {
+                            const signalData = {
+                                type: 'offer',
+                                sdp: pc.localDescription 
+                            };
+                            console.log(userId,"before sending the offer")
+                            socket.emit('offerSignal', { recipient: recipient, signalData: signalData, senderId:userId  });
+                        })
+                        .catch(error => console.error("Error creating offer:", error));
+                })
+                .catch(error => {
+                    console.error('Error accessing media devices:', error);
+                });
+        } catch (error) {
+            console.error('Error accessing media devices:', error);
+        }
+    };
+
+
+
+
+//end remaining demo---------------------------
+
+
+
+
+
+
+
+
+
+
+    useEffect(() => {
+        socket.on("incomisngSssdignal", ({ type, signalData }) => {
+            try {
+                const parsedSignalData = JSON.parse(signalData);
+
+                console.log("Incoming signal:", parsedSignalData);
+                console.log("Type is here:", type);
+
+                let pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
+                setIsCalling(true);
+
+                if (!pc) {
+                    console.error("Peer connection is null.");
+                    return;
+                }
+
+                const remoteDescription = new RTCSessionDescription(parsedSignalData);
+
+                console.log(remoteDescription.type, "checking if that is offer or not ");
+
+                if (remoteDescription.type === 'offer') {
+                    pc.setRemoteDescription(remoteDescription)
+                        .then(() => {
+                            pc.createAnswer()
+                                .then(answer => {
+                                    pc.setLocalDescription(answer)
+                                        .then(() => {
+                                            const localDescription = JSON.stringify(pc.localDescription);
+                                            socket.emit('answerSignal', { signalData: localDescription });
+                                        })
+                                        .catch(error => console.error("Error setting local description:", error));
+                                })
+                                .catch(error => console.error("Error creating answer:", error));
+                        })
+                        .catch(error => console.error("Error setting remote description:", error));
+                } else if (remoteDescription.type === 'answer') {
+                    pc.setRemoteDescription(remoteDescription)
+                        .catch(error => console.error("Error setting remote description:", error));
+                } else if (remoteDescription.type === 'candidate') {
+                    pc.addIceCandidate(remoteDescription.candidate)
+                        .catch(error => console.error("Error adding ICE candidate:", error));
+                }
+            } catch (error) {
+                console.error("Error parsing signal data:", error);
+            }
+        });
+    }, [socket]);
+
+
+
+
+    const acceptVideoCall = () => {
+        console.log("accept called");
+        socket.emit('acceptCall', { recipient: callRecipient });
+
+        try {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then(stream => {
+                    setMediaStream(stream);
+
+                    const pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
+                    pc.ontrack = event => {
+                        console.log('Incoming track received:', event.streams[0]);
+                        setRemotePeerStream(event.streams[0]); // Assuming only one stream
+                    };
+                    pc.onicecandidate = event => {
+                        if (event.candidate) {
+                            socket.emit('iceCandidate', { candidate: event.candidate, recipient: callRecipient });
+                        }
+                    };
+                    pc.addStream(stream);
+                    setPeerConnection(pc);
+                    setCallAccepted(true);
+
+                    peerConnection.createAnswer()
                         .then(answer => {
                             pc.setLocalDescription(answer)
                                 .then(() => {
@@ -186,79 +325,32 @@ useEffect(() => {
                         })
                         .catch(error => console.error("Error creating answer:", error));
                 })
-                .catch(error => console.error("Error setting remote description:", error));
-        } else if (remoteDescription.type === 'answer') {
-            pc.setRemoteDescription(remoteDescription)
-                .catch(error => console.error("Error setting remote description:", error));
-        } else if (remoteDescription.type === 'candidate') {
-            pc.addIceCandidate(remoteDescription.candidate)
-                .catch(error => console.error("Error adding ICE candidate:", error));
+                .catch(error => {
+                    console.error('Error accessing media devices:', error);
+                });
+        } catch (error) {
+            console.error('Error accessing media devices:', error);
         }
-    });
-}, [socket]);
+    };
 
 
-
-const acceptVideoCall = () => {
-    console.log("accept called");
-    socket.emit('acceptCall', { recipient: callRecipient });
-
-    try {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            .then(stream => {
-                setMediaStream(stream);
-
-                const pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
-                pc.ontrack = event => {
-                    console.log('Incoming track received:', event.streams[0]);
-                    setPartnerStream(event.streams[0]); // Assuming only one stream
-                };
-                pc.onicecandidate = event => {
-                    if (event.candidate) {
-                        socket.emit('iceCandidate', { candidate: event.candidate, recipient: callRecipient });
-                    }
-                };
-                pc.addStream(stream);
-                setPeerConnection(pc);
-                setCallAccepted(true);
-
-                peerConnection.createAnswer()
-                    .then(answer => {
-                        pc.setLocalDescription(answer)
-                            .then(() => {
-                                const localDescription = JSON.stringify(pc.localDescription);
-                                socket.emit('answerSignal', { signalData: localDescription });
-                            })
-                            .catch(error => console.error("Error setting local description:", error));
-                    })
-                    .catch(error => console.error("Error creating answer:", error));
-            })
-            .catch(error => {
-                console.error('Error accessing media devices:', error);
+    // Function to end a video call
+    const endVideoCall = () => {
+        socket.emit('endCall', { recipient: callRecipient });
+        if (peerConnection) {
+            peerConnection.close();
+        }
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => {
+                track.stop();
             });
-    } catch (error) {
-        console.error('Error accessing media devices:', error);
-    }
-};
-
-
-// Function to end a video call
-const endVideoCall = () => {
-    socket.emit('endCall', { recipient: callRecipient });
-    if (peerConnection) {
-        peerConnection.close();
-    }
-    if (mediaStream) {
-        mediaStream.getTracks().forEach(track => {
-            track.stop();
-        });
-    }
-    setIsCalling(false);
-    setCallRecipient(null);
-    setCallAccepted(false);
-    setMediaStream(null);
-    setPeerConnection(null);
-};
+        }
+        setIsCalling(false);
+        setCallRecipient(null);
+        setCallAccepted(false);
+        setMediaStream(null);
+        setPeerConnection(null);
+    };
 
 
 
@@ -275,7 +367,7 @@ const endVideoCall = () => {
                         acceptVideoCall={acceptVideoCall}
                         endVideoCall={endVideoCall}
                         mediaStream={mediaStream}
-                        partnerStream={partnerStream}
+                        partnerStream={remotePeerStream}
                     />
                 ) : (
                     <div className="flex">

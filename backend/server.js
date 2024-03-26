@@ -78,8 +78,7 @@ io.on('connection', (socket) => {
     });
 
 
-    //neeed current user socket id for the remaining
-    // WebRTC Signaling Handling
+   
     socket.on('iceCandidate', ({ recipient, signalData  }) => {
         const recipientSocketId = users[recipient];
         if(recipientSocketId){
@@ -89,19 +88,17 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('offerSignal', ({ recipient,signalData}) => {
+    socket.on('offerSignal', ({ recipient,signalData,senderId}) => {
         const recipientSocketId = users[recipient];
-        console.log(recipientSocketId,"inside offerSignal signal is perfect")
-        console.log(signalData,"type and signal data is here ")
-        
-        io.to(recipientSocketId).emit('incomingSignal', {signalData});
+        console.log(signalData,"inside the offer signal")
+        console.log(senderId,"senderId")
+        io.to(recipientSocketId).emit('incomingOfferSignal', {signalData,senderId});
     });
 
-    socket.on('answerSignal', ({ signalData }) => {
-        // Broadcast answer signal to the intended recipient
-        // Here, 'recipient' should be replaced with the intended recipient's socket ID
-        // You might need to modify this part to match your application's logic
-        socket.to(signalData.recipient).emit('incomingSignal', signalData.signalData);
+    socket.on('answerSignal', ({ signalData,senderId }) => {
+
+        const recipientSocketId = users[senderId];
+        io.to(recipientSocketId).emit('offerAnswerSignal', {signalData});
     });
     
 
