@@ -102,8 +102,9 @@ io.on('connection', (socket) => {
     });
     
 
-    socket.on('acceptCall', ({ recipient }) => {
-        // Logic to handle call acceptance, if any
+    socket.on('acceptCall', ({ userId }) => {
+        const recipientSocketId = users[userId];
+        io.to(recipientSocketId).emit('callAnswered')
     });
 
     socket.on('endCall', ({ recipient }) => {

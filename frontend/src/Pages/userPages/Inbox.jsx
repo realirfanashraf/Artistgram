@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Navbar from "../../Components/userSide/NavBar";
 import socketIOClient from 'socket.io-client';
 import { Axios } from '../../axios/userInstance.js';
@@ -19,7 +19,7 @@ const Inbox = () => {
     const userData = useSelector((state) => state.userInfo.user);
     const userId = userData._id;
     const [myID, setMyID] = useState('')
-    const peerConnection = useSelector(selectPeerConnection)
+    const pc = useRef(null)
 
 
     const [isCalling, setIsCalling] = useState(false);
@@ -153,22 +153,32 @@ const Inbox = () => {
     });
     
 
+
     socket.on('offerAnswerSignal', ({ signalData }) => {
-        const { sdp } = signalData;
-    console.log(peerConnection,"this is peerconnection")
-        if (peerConnection) {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(sdp))
-                .then(() => {
-                    console.log('Remote description set successfully.');
+        if (signalData && signalData.answer && signalData.answer.sdp) {
+            const sdp = signalData.answer.sdp;
     
-                })
-                .catch(error => {
-                    console.error('Error setting remote description:', error);
-                });
+            if (pc.current) {
+                try {
+                    const sessionDescription = new RTCSessionDescription({ type: 'answer', sdp: sdp });
+                    pc.current.setRemoteDescription(sessionDescription)
+                        .then(() => {
+                            console.log('Remote description set successfully.');
+                        })
+                        .catch(error => {
+                            console.error('Error setting remote description:', error);
+                        });
+                } catch (error) {
+                    console.error('Error constructing RTCSessionDescription:', error);
+                }
+            } else {
+                console.error('Local peer connection not found.');
+            }
         } else {
-            console.error('Local peer connection not found.');
+            console.error('Invalid signalData format.');
         }
     });
+    
     
 
 
@@ -183,10 +193,10 @@ const Inbox = () => {
                     setCallRecipient(recipient);
                     setMediaStream(stream);
 
-                    let pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
-                    stream.getTracks().forEach(track => pc.addTrack(track, stream));
-                    dispatch(setPeerConnection(pc))
-                    pc.onicecandidate = event => {
+                    pc.current = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
+                    stream.getTracks().forEach(track => pc.current.addTrack(track, stream));
+                    // dispatch(setPeerConnection(pc))
+                    pc.current.onicecandidate = event => {
                         if (event.candidate) {
                             const signalData = JSON.stringify({
                                 type: 'candidate',
@@ -204,14 +214,14 @@ const Inbox = () => {
                             console.log(stream, "stream is here for the patner")
                         });
                     };
-                    pc.ontrack = handleIncomingStream;
+                    pc.current.ontrack = handleIncomingStream;
 
-                    pc.createOffer()
-                        .then(offer => pc.setLocalDescription(offer))
+                    pc.current.createOffer()
+                        .then(offer => pc.current.setLocalDescription(offer))
                         .then(() => {
                             const signalData = {
                                 type: 'offer',
-                                sdp: pc.localDescription 
+                                sdp: pc.current.localDescription 
                             };
                             console.log(userId,"before sending the offer")
                             socket.emit('offerSignal', { recipient: recipient, signalData: signalData, senderId:userId  });
@@ -240,111 +250,30 @@ const Inbox = () => {
 
 
 
-    useEffect(() => {
-        socket.on("incomisngSssdignal", ({ type, signalData }) => {
-            try {
-                const parsedSignalData = JSON.parse(signalData);
-
-                console.log("Incoming signal:", parsedSignalData);
-                console.log("Type is here:", type);
-
-                let pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
-                setIsCalling(true);
-
-                if (!pc) {
-                    console.error("Peer connection is null.");
-                    return;
-                }
-
-                const remoteDescription = new RTCSessionDescription(parsedSignalData);
-
-                console.log(remoteDescription.type, "checking if that is offer or not ");
-
-                if (remoteDescription.type === 'offer') {
-                    pc.setRemoteDescription(remoteDescription)
-                        .then(() => {
-                            pc.createAnswer()
-                                .then(answer => {
-                                    pc.setLocalDescription(answer)
-                                        .then(() => {
-                                            const localDescription = JSON.stringify(pc.localDescription);
-                                            socket.emit('answerSignal', { signalData: localDescription });
-                                        })
-                                        .catch(error => console.error("Error setting local description:", error));
-                                })
-                                .catch(error => console.error("Error creating answer:", error));
-                        })
-                        .catch(error => console.error("Error setting remote description:", error));
-                } else if (remoteDescription.type === 'answer') {
-                    pc.setRemoteDescription(remoteDescription)
-                        .catch(error => console.error("Error setting remote description:", error));
-                } else if (remoteDescription.type === 'candidate') {
-                    pc.addIceCandidate(remoteDescription.candidate)
-                        .catch(error => console.error("Error adding ICE candidate:", error));
-                }
-            } catch (error) {
-                console.error("Error parsing signal data:", error);
-            }
-        });
-    }, [socket]);
+   
+      
 
 
 
 
-    const acceptVideoCall = () => {
-        console.log("accept called");
-        socket.emit('acceptCall', { recipient: callRecipient });
+const acceptVideoCall = () => {
+    socket.emit('acceptCall', { userId });
+    
+    // Update call acceptance state
+    setCallAccepted(true);
+    
+};
 
-        try {
-            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-                .then(stream => {
-                    setMediaStream(stream);
-
-                    const pc = new RTCPeerConnection({ 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] });
-                    pc.ontrack = event => {
-                        console.log('Incoming track received:', event.streams[0]);
-                        setRemotePeerStream(event.streams[0]); // Assuming only one stream
-                    };
-                    pc.onicecandidate = event => {
-                        if (event.candidate) {
-                            socket.emit('iceCandidate', { candidate: event.candidate, recipient: callRecipient });
-                        }
-                    };
-                    pc.addStream(stream);
-                    setPeerConnection(pc);
-                    setCallAccepted(true);
-
-                    peerConnection.createAnswer()
-                        .then(answer => {
-                            pc.setLocalDescription(answer)
-                                .then(() => {
-                                    const localDescription = JSON.stringify(pc.localDescription);
-                                    socket.emit('answerSignal', { signalData: localDescription });
-                                })
-                                .catch(error => console.error("Error setting local description:", error));
-                        })
-                        .catch(error => console.error("Error creating answer:", error));
-                })
-                .catch(error => {
-                    console.error('Error accessing media devices:', error);
-                });
-        } catch (error) {
-            console.error('Error accessing media devices:', error);
-        }
-    };
+socket.on('callAnswered', () => {
+    console.log("callanswers")
+    // Update call acceptance state when the call is answered
+    setCallAccepted(true);
+});
 
 
     // Function to end a video call
     const endVideoCall = () => {
-        socket.emit('endCall', { recipient: callRecipient });
-        if (peerConnection) {
-            peerConnection.close();
-        }
-        if (mediaStream) {
-            mediaStream.getTracks().forEach(track => {
-                track.stop();
-            });
-        }
+       
         setIsCalling(false);
         setCallRecipient(null);
         setCallAccepted(false);
