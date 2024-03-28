@@ -55,10 +55,9 @@ io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
     socket.emit("myID", socket.id);
 
-    socket.on('authenticate', (userId) => {
-        console.log("authenticate from server socket",userId)
+    socket.on('newUser', (userId) => {
         users[userId] = socket.id;
-        console.log(users,"this is users list current")
+        console.log(users,"Active Users List")
     });
 
     socket.on('disconnect', () => {
@@ -88,28 +87,51 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('offerSignal', ({ recipient,signalData,senderId}) => {
-        const recipientSocketId = users[recipient];
-        console.log(signalData,"inside the offer signal")
-        console.log(senderId,"senderId")
-        io.to(recipientSocketId).emit('incomingOfferSignal', {signalData,senderId});
-    });
-
-    socket.on('answerSignal', ({ signalData,senderId }) => {
-
-        const recipientSocketId = users[senderId];
-        io.to(recipientSocketId).emit('offerAnswerSignal', {signalData});
-    });
+    socket.on("callUser", (data) => {
+        const userToCallId = users[data.userToCall]
+        if (userToCallId) {
+          io.to(userToCallId).emit("callUser", {
+            signal: data.signalData,
+            from: data.from,
+            name: data.name,
+          });
+        }
+      });
+    
+      socket.on("ice-candidate", ({ target, candidate }) => {
+        const userSocketId = users[target]
+        if(!userSocketId){
+          userSocketId = target
+        }
+        console.log(userSocketId, "ice-candidate event received", target, candidate);
+    
+        if (userSocketId) {
+          io.to(userSocketId).emit("ice-candidate", {
+            candidate: candidate,
+            sender: target,
+          });
+        }
+      });
     
 
-    socket.on('acceptCall', ({ userId }) => {
-        const recipientSocketId = users[userId];
-        io.to(recipientSocketId).emit('callAnswered')
-    });
+      socket.on("answerCall", (data) => {
+        const userSocketId = users[data.to]
+        io.to(userSocketId).emit("callAccepted", data.signal);
+      });
 
-    socket.on('endCall', ({ recipient }) => {
-        // Logic to handle call ending, if any
-    });
+
+      socket.on("callEnded", (data) => {
+        const { userId } = data;
+        const userSocketId = users[userId]
+    
+        if (userSocketId) {
+          io.to(userSocketId).emit("callEnded");
+        } else {
+          console.log("User not found");
+        }
+      });
+
+
 });
 
 const PORT = process.env.PORT || 3000;
