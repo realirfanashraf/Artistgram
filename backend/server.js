@@ -55,10 +55,9 @@ io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
     socket.emit("myID", socket.id);
 
-    socket.on('authenticate', (userId) => {
-        console.log("authenticate from server socket",userId)
+    socket.on('newUser', (userId) => {
         users[userId] = socket.id;
-        console.log(users,"this is users list current")
+        console.log(users,"Active Users List")
     });
 
     socket.on('disconnect', () => {
@@ -78,8 +77,7 @@ io.on('connection', (socket) => {
     });
 
 
-    //neeed current user socket id for the remaining
-    // WebRTC Signaling Handling
+   
     socket.on('iceCandidate', ({ recipient, signalData  }) => {
         const recipientSocketId = users[recipient];
         if(recipientSocketId){
@@ -89,29 +87,51 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('offerSignal', ({ recipient,signalData}) => {
-        const recipientSocketId = users[recipient];
-        console.log(recipientSocketId,"inside offerSignal signal is perfect")
-        console.log(signalData,"type and signal data is here ")
-        
-        io.to(recipientSocketId).emit('incomingSignal', {signalData});
-    });
-
-    socket.on('answerSignal', ({ signalData }) => {
-        // Broadcast answer signal to the intended recipient
-        // Here, 'recipient' should be replaced with the intended recipient's socket ID
-        // You might need to modify this part to match your application's logic
-        socket.to(signalData.recipient).emit('incomingSignal', signalData.signalData);
-    });
+    socket.on("callUser", (data) => {
+        const userToCallId = users[data.userToCall]
+        if (userToCallId) {
+          io.to(userToCallId).emit("callUser", {
+            signal: data.signalData,
+            from: data.from,
+            name: data.name,
+          });
+        }
+      });
+    
+      socket.on("ice-candidate", ({ target, candidate }) => {
+        const userSocketId = users[target]
+        if(!userSocketId){
+          userSocketId = target
+        }
+        console.log(userSocketId, "ice-candidate event received", target, candidate);
+    
+        if (userSocketId) {
+          io.to(userSocketId).emit("ice-candidate", {
+            candidate: candidate,
+            sender: target,
+          });
+        }
+      });
     
 
-    socket.on('acceptCall', ({ recipient }) => {
-        // Logic to handle call acceptance, if any
-    });
+      socket.on("answerCall", (data) => {
+        const userSocketId = users[data.to]
+        io.to(userSocketId).emit("callAccepted", data.signal);
+      });
 
-    socket.on('endCall', ({ recipient }) => {
-        // Logic to handle call ending, if any
-    });
+
+      socket.on("callEnded", (data) => {
+        const { userId } = data;
+        const userSocketId = users[userId]
+    
+        if (userSocketId) {
+          io.to(userSocketId).emit("callEnded");
+        } else {
+          console.log("User not found");
+        }
+      });
+
+
 });
 
 const PORT = process.env.PORT || 3000;
