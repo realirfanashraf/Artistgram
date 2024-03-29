@@ -17,7 +17,7 @@ const Inbox = () => {
     const [selectedUserProfilePicture, setSelectedUserProfilePicture] = useState("");
     const userData = useSelector((state) => state.userInfo.user);
     const [myID, setMyID] = useState('');
-    const pc = useRef(null);
+    
 
     const [isCalling, setIsCalling] = useState(false);
     const [videoCall, setVideoCall] = useState(false)
@@ -145,7 +145,7 @@ const Inbox = () => {
                         onClose={() => setIsModalOpen(false)}
                         isIncomingCall={isIncomingCall}
                         caller={caller}
-                        myID={myID}
+                        myID={userData._id}
                         socket={socket}
                         receiverId={selectedUser}
                         name={selectedUserName}

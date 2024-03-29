@@ -44,7 +44,7 @@ const VideoCall = ({
         }
       }
     };
-
+    
     initializeVideoCall();
 
     return () => {

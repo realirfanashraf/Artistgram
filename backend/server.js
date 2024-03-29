@@ -77,15 +77,6 @@ io.on('connection', (socket) => {
     });
 
 
-   
-    socket.on('iceCandidate', ({ recipient, signalData  }) => {
-        const recipientSocketId = users[recipient];
-        if(recipientSocketId){
-            io.to(recipientSocketId).emit('incomingSignal', signalData);
-        }else{
-            console.log("Recipient not found:", recipient)
-        }
-    });
 
     socket.on("callUser", (data) => {
         const userToCallId = users[data.userToCall]
@@ -100,9 +91,7 @@ io.on('connection', (socket) => {
     
       socket.on("ice-candidate", ({ target, candidate }) => {
         const userSocketId = users[target]
-        if(!userSocketId){
-          userSocketId = target
-        }
+        
         console.log(userSocketId, "ice-candidate event received", target, candidate);
     
         if (userSocketId) {
@@ -121,8 +110,7 @@ io.on('connection', (socket) => {
 
 
       socket.on("callEnded", (data) => {
-        const { userId } = data;
-        const userSocketId = users[userId]
+        const userSocketId = users[data]
     
         if (userSocketId) {
           io.to(userSocketId).emit("callEnded");
