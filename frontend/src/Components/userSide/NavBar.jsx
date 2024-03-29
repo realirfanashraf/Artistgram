@@ -21,7 +21,7 @@ const Navbar = () => {
             <div className="hidden md:block">
               {/* Desktop navigation links */}
               <Link to='/home' className='navLinks'>Home</Link>
-              <a href="#" className="navLinks">Forum</a>
+              <a href="/event" className="navLinks">Event</a>
               <a href="/inbox" className="navLinks">Inbox</a>
               <Link to='/profile' className='navLinks'>Profile</Link>
             </div>
@@ -48,8 +48,8 @@ const Navbar = () => {
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {/* Mobile navigation links */}
             <Link to='/home' className='navLinks block'>Home</Link>
-            <a href="#" className="navLinks block">Forum</a>
-            <a href="#" className="navLinks block">Inbox</a>
+            <Link to='/event' className='navLinks block'>Event</Link>
+            <Link to='/inbox' className='navLinks block'>Inbox</Link>
             <Link to='/profile' className='navLinks block'>Profile</Link>
           </div>
         </div>

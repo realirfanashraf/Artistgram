@@ -1,6 +1,7 @@
 import userSchema from "../../model/userModels/userModel.js";
 import postSchema from "../../model/userModels/postModel.js";
 import reportSchema from "../../model/adminModels/reportModel.js"
+import eventSchema from "../../model/adminModels/eventModel.js"
 
 export const handleBlockUser = async (req, res) => {
     try {
@@ -44,5 +45,29 @@ export const blockPost = async (req, res) => {
     } catch (error) {
         console.error("Error blocking post:", error);
         return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
+export const addEvent = async (req, res) => {
+    try {
+        const { title, description, imageUrl, date, location } = req.body;
+
+       
+        const event = new eventSchema({
+            title: title,
+            description: description,
+            image: imageUrl,
+            date: date,
+            location,location
+        });
+
+       
+        await event.save();
+
+        return res.status(200).json("Event added successfully");
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "Internal server error" });
     }
 };
