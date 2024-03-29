@@ -1,14 +1,15 @@
 import { Axios } from '../../axios/adminInstance.js';
 import { showErrorMessage, showSuccessMessage } from '../../helper/sweetalert.js';
 
-const EventModal = ({ isOpen, onClose, event }) => {
+const EventModal = ({ isOpen, onClose, event ,fetchEvents}) => {
   console.log(event,"event is here")
 
   const handleDeleteEvent = async (eventId) => {
     try {
-      const response = await Axios.post(`/api/deleteEvent/${eventId}`);
+      const response = await Axios.post(`/action/deleteEvent/${eventId}`);
       if (response.status === 200) {
         showSuccessMessage(response.data.message);
+        fetchEvents()
         onClose();
       }
     } catch (error) {

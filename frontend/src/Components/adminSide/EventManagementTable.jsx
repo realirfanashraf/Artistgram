@@ -20,6 +20,7 @@ const EventManagementTable = () => {
     };
 
     const handleCloseEventModal = (e) => {
+        fetchEvents()
         setShowEventModal(false)
     }
 
@@ -43,7 +44,7 @@ const EventManagementTable = () => {
             });
     };
 
-    useEffect(() => {
+    const fetchEvents = (setEvents) => {
         Axios.get('/api/getEvents')
             .then((response) => {
                 setEvents(response.data);
@@ -51,6 +52,10 @@ const EventManagementTable = () => {
             .catch((error) => {
                 console.log(error);
             });
+    };
+
+    useEffect(() => {
+        fetchEvents(setEvents);
     }, []);
 
     return (
@@ -106,7 +111,7 @@ const EventManagementTable = () => {
             {showEventModal && (
                 <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
                     <div className=" rounded-lg shadow-md">
-                        <EventModal isOpen={showEventModal} event={view} onClose={handleCloseEventModal} />
+                        <EventModal isOpen={showEventModal} event={view} onClose={handleCloseEventModal} fetchEvents={fetchEvents}/>
                     </div>
                 </div>
             )}

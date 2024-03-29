@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import AdminNavbar from '../../../Components/adminSide/AdminNavbar';
 import EventManagementTable from '../../../Components/adminSide/EventManagementTable';
 import { CiSquarePlus } from "react-icons/ci";
