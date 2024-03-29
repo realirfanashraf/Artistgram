@@ -5,11 +5,11 @@ import { useDispatch } from 'react-redux';
 import { setAuthenticated } from '../../../redux/slices/userSlices/authSlice.js'
 import { userLogin } from '../../../redux/slices/userSlices/userInfoSlice.js';
 import { signIn } from '../../../API/apiCalls.js';
+import swal from 'sweetalert';
 
 
 const SignIn = () => {
-  const dispatch = useDispatch();
-
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: '',
@@ -22,6 +22,12 @@ const SignIn = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      swal("Error", "Please enter a valid email address.", "error");
+      return;
+    }
+
     signIn(formData)
       .then((response) => {
         dispatch(setAuthenticated(true));
@@ -37,12 +43,10 @@ const SignIn = () => {
 
   return (
     <>
-
       <div className="flex max-h-full flex-1 flex-col justify-center  px-6 py-20 lg:px-8">
         <h2 className="mt-10 text-center text-3xl font-protest leading-9 tracking-tight text-white">
           Sign In
         </h2>
-
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" action="#" method="POST">
             <div>
