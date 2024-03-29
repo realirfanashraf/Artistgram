@@ -5,6 +5,7 @@ import { getUserByEmail } from '../../services/userServices/authServices.js';
 import reportSchema from '../../model/adminModels/reportModel.js'
 import messageSchema from '../../model/userModels/messageModel.js';
 import ratingSchema from '../../model/userModels/ratingModel.js';
+import eventSchema from '../../model/adminModels/eventModel.js'
 
 
 
@@ -199,5 +200,20 @@ export const unfollowUser = async (req, res) => {
   } catch (error) {
     console.error('Error in unfollowUser:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+export const getEvents = async (req, res) => {
+  try {
+    const events = await eventSchema.find();
+    if (events) {
+      res.status(200).json(events);
+    } else {
+      res.status(404).json({ message: "No events found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
