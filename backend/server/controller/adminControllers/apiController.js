@@ -1,8 +1,7 @@
 import { getPostCountsByMonth, getUserCountsByMonth } from "../../services/adminServices/adminServices.js";
 import userSchema from "../../model/userModels/userModel.js";
 import reportSchema from "../../model/adminModels/reportModel.js"
-import postSchema from "../../model/userModels/postModel.js";
-
+import eventSchema from "../../model/adminModels/eventModel.js"
 export const getUserData = async (req, res) => {
     try {
         const result = await getUserCountsByMonth();
@@ -94,6 +93,33 @@ export const reportPostData = async(req,res)=>{
     }
 }
 
+
+export const getEvents = async (req, res) => {
+    try {
+        const events = await eventSchema.find();
+        if (events) {
+            return res.status(200).json(events);
+        }
+    } catch (error) {
+        console.error("Error fetching events:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+export const getEventId = async (req, res) => {
+    try {
+        const eventId = req.params.eventId;
+        const event = await eventSchema.findById(eventId);
+        if (event) {
+            return res.status(200).json(event);
+        } else {
+            return res.status(404).json({ error: "Event not found" });
+        }
+    } catch (error) {
+        console.error("Error fetching event by ID:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 
 
 
