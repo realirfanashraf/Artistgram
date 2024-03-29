@@ -49,10 +49,24 @@ app.use('/admin', adminRoute)
 app.use('/admin/api', apiRoutes)
 app.use('/admin/action/', actionRoute)
 
+const users = {};
+
 io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
+    socket.emit("myID", socket.id);
+
+    socket.on('newUser', (userId) => {
+        users[userId] = socket.id;
+        console.log(users,"Active Users List")
+    });
+
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
+        Object.keys(users).forEach((userId) => {
+            if (users[userId] === socket.id) {
+                delete users[userId];
+            }
+        });
     });
 
     socket.on('message', (data) => {
@@ -61,6 +75,51 @@ io.on('connection', (socket) => {
         message.save();
         io.emit('message', message);
     });
+
+
+
+    socket.on("callUser", (data) => {
+        const userToCallId = users[data.userToCall]
+        if (userToCallId) {
+          io.to(userToCallId).emit("callUser", {
+            signal: data.signalData,
+            from: data.from,
+            name: data.name,
+          });
+        }
+      });
+    
+      socket.on("ice-candidate", ({ target, candidate }) => {
+        const userSocketId = users[target]
+        
+        console.log(userSocketId, "ice-candidate event received", target, candidate);
+    
+        if (userSocketId) {
+          io.to(userSocketId).emit("ice-candidate", {
+            candidate: candidate,
+            sender: target,
+          });
+        }
+      });
+    
+
+      socket.on("answerCall", (data) => {
+        const userSocketId = users[data.to]
+        io.to(userSocketId).emit("callAccepted", data.signal);
+      });
+
+
+      socket.on("callEnded", (data) => {
+        const userSocketId = users[data]
+    
+        if (userSocketId) {
+          io.to(userSocketId).emit("callEnded");
+        } else {
+          console.log("User not found");
+        }
+      });
+
+
 });
 
 const PORT = process.env.PORT || 3000;
