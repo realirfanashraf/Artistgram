@@ -283,12 +283,12 @@ const VideoCall = ({
 
 
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
   <div id="video-call-modal">
     {isIncomingCall ? "Incoming Video Call" : "Ongoing Video Call"}
   </div>
 
-  <div>
+  <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
     {stream && (
       <>
         <video
@@ -296,18 +296,19 @@ const VideoCall = ({
           ref={myVideo}
           autoPlay
           style={{
-            width: callAccepted ? "150px" : "400px",
+            width: callAccepted ? "150px" : "100%", // Adjusted width for responsiveness
+            maxWidth: "800px", // Max width for larger screens
             marginBottom: "1rem",
             position: callAccepted && !callEnded ? "absolute" : "static",
-            top: callAccepted && !callEnded ? 140 : "auto",
-            right: callAccepted && !callEnded ? 130 : "auto",
+            top: callAccepted && !callEnded ? "140px" : "auto", // Adjusted top position
+            right: callAccepted && !callEnded ? "130px" : "auto", // Adjusted right position
             zIndex: callAccepted && !callEnded ? 1 : "auto",
             border: callAccepted && !callEnded ? "1px solid red" : "none",
             borderRadius: callAccepted && !callEnded ? "8px" : "0",
-            boxShadow: callAccepted && !callEnded ? 5 : "none",
+            boxShadow: callAccepted && !callEnded ? "5px" : "none",
           }}
         />
-        {!isIncomingCall && !callAccepted && <h4>calling ....</h4>}
+        {!isIncomingCall && !callAccepted && <h4>Calling....</h4>}
       </>
     )}
     {isIncomingCall && !callAccepted && (
@@ -315,52 +316,47 @@ const VideoCall = ({
         <h1>{name} is calling...</h1>
       </div>
     )}
-    <div>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
       <button
-        
         color={isAudioMuted ? "primary" : "secondary"}
         onClick={toggleAudioMute}
       >
-        {isAudioMuted ? <CiMicrophoneOn /> :<CiMicrophoneOff />}
+        {isAudioMuted ? <CiMicrophoneOn size={30} /> : <CiMicrophoneOff size={30}/>}
       </button>
       {isIncomingCall && !callAccepted && (
         <button
           color="primary"
           onClick={() => answerCall(caller, callerSignal)}
         >
-          accept
-          <IoMdCall />
+          <IoMdCall size={27}/>
         </button>
       )}
       <button
-       
         color="secondary"
         onClick={handleCallEnd}
       >
-        <MdCallEnd />
+        <MdCallEnd size={27}/>
       </button>
     </div>
   </div>
 
-  <div>
-    <>
-      <video
-        style={{
-          width: "100%",
-          height: "300px",
-          maxWidth: "400px",
-          display: callAccepted && !callEnded ? "block" : "none",
-          border: "1px solid red",
-          borderRadius: "8px",
-        }}
-        playsInline
-        ref={userVideo}
-        autoPlay
-        muted
-      />
-    </>
+  <div style={{ display: callAccepted && !callEnded ? "block" : "none", width: "100%", maxWidth: "400px" }}>
+    <video
+      style={{
+        width: "100%",
+        height: "300px",
+        border: "1px solid red",
+        borderRadius: "8px",
+      }}
+      playsInline
+      ref={userVideo}
+      autoPlay
+      muted
+    />
   </div>
 </div>
+
+
 
   );
 };
