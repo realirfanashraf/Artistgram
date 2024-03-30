@@ -1,12 +1,23 @@
 import AdminNavbar from "../../../Components/adminSide/AdminNavbar"
+import AdminSideBar from "../../../Components/adminSide/AdminSideBar"
 import UserManagementTable from "../../../Components/adminSide/UserManagementTable"
 
 const UserManagement = () => {
   return (
     <>
-      <AdminNavbar />
+  <AdminNavbar />
+  
+  <div className="flex flex-row">
+    <div className="hidden md:block w-1/5">
+      <AdminSideBar />
+    </div>
+    
+    <div className="flex-grow">
       <UserManagementTable />
-    </>
+    </div>
+  </div>
+</>
+
   )
 }
 
