@@ -35,17 +35,17 @@ const Event = () => {
             />
             {/* Event Details */}
             <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">
+              <h2 className="text-xl font-protest text-gray-800 mb-2">
                 {event.title}
               </h2>
-              <p className="text-gray-700 mb-4">
-                Date: <span className="font-semibold">{event.date}</span>
+              <p className="text-gray-700 mb-4 font-protest">
+                Date: <span className="font-semibold">{new Date(event.date).toLocaleDateString()}</span>
               </p>
-              <p className="text-gray-700 mb-4">
-                Location: <span className="font-semibold">{event.location}</span>
+              <p className="text-gray-700 mb-4 font-protest">
+                Location: <span>{event.location}</span>
               </p>
-              <p className="text-gray-700 mb-4">
-                Description: <span className="font-semibold">{event.description}</span>
+              <p className="text-gray-700 mb-4 font-protest">
+                Description: <span>{event.description}</span>
               </p>
               {/* <a
                 href="#"

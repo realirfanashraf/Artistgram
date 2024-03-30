@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import AdminNavbar from "../../Components/adminSide/AdminNavbar";
 import BarChart from "../../Components/adminSide/BarChart";
 import { Axios } from "../../axios/adminInstance.js";
+import AdminSideBar from "../../Components/adminSide/AdminSideBar.jsx";
 
 const Dashboard = () => {
   const [usersCount, setUsersCount] = useState('')
@@ -98,30 +99,35 @@ const Dashboard = () => {
   return (
 <>
   <AdminNavbar />
-  <div className=" px-8 py-8 mt-8 mx-8 mb-8 rounded-lg flex flex-col lg:flex-row lg:justify-between">
-    <div className="w-full lg:w-1/2 px-4 mb-4 lg:mb-0">
-      <div className="bg-thirdShade rounded-lg px-4 py-4">
-        <div className="flex justify-center mb-3 font-protest"><p>Users Count</p></div>
-        {userData && userData.datasets && <BarChart chartData={userData} />}
-        <div className="flex justify-center mt-3">
-        <p className="font-protest">Total Users : {usersCount}</p>
-        </div>
-      </div>
+
+  <div className="flex flex-row">
+    <div className="hidden md:block w-1/5">
+      <AdminSideBar/>
     </div>
-    <div className="w-full lg:w-1/2 px-4">
-      <div className="bg-thirdShade rounded-lg px-4 py-4">
-        <div className="flex justify-center mb-3 font-protest"><p>Posts Count</p></div>
-        {postData && postData.datasets && <BarChart chartData={postData} />}
-        <div className="flex justify-center mt-3">
-        <p className="font-protest">Total Posts : {postsCount}</p>
+    <div className="w-full lg:w-4/5 px-8 py-8 mt-8 mx-8 mb-8 rounded-lg">
+      <div className="flex flex-col lg:flex-row lg:justify-between">
+        <div className="w-full lg:w-1/2 px-4 mb-4 lg:mb-0">
+          <div className="bg-thirdShade rounded-lg px-4 py-4">
+            <div className="flex justify-center mb-3 font-protest"><p>Users Count</p></div>
+            {userData && userData.datasets && <BarChart chartData={userData} />}
+            <div className="flex justify-center mt-3">
+              <p className="font-protest">Total Users : {usersCount}</p>
+            </div>
+          </div>
+        </div>
+        <div className="w-full lg:w-1/2 px-4">
+          <div className="bg-thirdShade rounded-lg px-4 py-4">
+            <div className="flex justify-center mb-3 font-protest"><p>Posts Count</p></div>
+            {postData && postData.datasets && <BarChart chartData={postData} />}
+            <div className="flex justify-center mt-3">
+              <p className="font-protest">Total Posts : {postsCount}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </>
-
-
-
 
   );
 };

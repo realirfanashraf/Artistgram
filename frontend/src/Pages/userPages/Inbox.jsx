@@ -4,6 +4,7 @@ import socketIOClient from 'socket.io-client';
 import { Axios } from '../../axios/userInstance.js';
 import { useSelector } from 'react-redux';
 import VideoCall from '../../Components/userSide/VideoCall.jsx';
+import { CiVideoOn } from "react-icons/ci";
 
 
 const Inbox = () => {
@@ -192,7 +193,9 @@ const Inbox = () => {
                                             {selectedUser && (
                                                 <div className='flex justify-end'>
                                                     {!isModalOpen && (
-                                                        <button onClick={() => handleVideoCallClick(selectedUser)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Start Video Call</button>
+                                                        <button onClick={() => handleVideoCallClick(selectedUser)} className='mr-3' >
+                                                        <CiVideoOn size={30}/> 
+                                                      </button>
                                                     )}
                                                 </div>
                                             )}
