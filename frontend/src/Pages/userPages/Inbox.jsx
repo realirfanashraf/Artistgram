@@ -9,7 +9,6 @@ import { CiVideoOn } from "react-icons/ci";
 
 const Inbox = () => {
     const socket = useRef(null);
-
     const [selectedUser, setSelectedUser] = useState(null);
     const [messageInput, setMessageInput] = useState("");
     const [messages, setMessages] = useState([]);
@@ -18,27 +17,22 @@ const Inbox = () => {
     const [selectedUserProfilePicture, setSelectedUserProfilePicture] = useState("");
     const userData = useSelector((state) => state.userInfo.user);
     const [myID, setMyID] = useState('');
-    
-
-    const [isCalling, setIsCalling] = useState(false);
     const [videoCall, setVideoCall] = useState(false)
     const [caller, setCaller] = useState("")
     const [callerSignal, setCallerSignal] = useState()
     const [isIncomingCall, setIsIncomingCall] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
-
-
-
-
-
+    const [isTyping, setIsTyping] = useState(false);
 
 
     useEffect(() => {
-        socket.current = socketIOClient('http://localhost:3000');
+        const socketServerUrl = import.meta.env.VITE_SOCKET_SERVER_URL
+        socket.current = socketIOClient(socketServerUrl);
         return () => {
             socket.current.disconnect();
         };
     }, []);
+
 
     useEffect(() => {
         fetchUsers();
@@ -65,6 +59,27 @@ const Inbox = () => {
         });
         socket.current.emit('newUser', userData._id);
     }, []);
+
+
+    const startTyping = () => {
+        if (!isTyping) {
+          socket.current.emit('typing', { receiver: selectedUser, isTyping: true });
+        }
+      };
+    
+      const stopTyping = () => {
+        socket.current.emit('typing', { receiver: selectedUser, isTyping: false });
+      };
+    
+      useEffect(() => {
+        if (socket.current) {
+          socket.current.on('typing', ({ isTyping }) => {
+            console.log("inside useeffect the typing is woring" ,isTyping)
+            setIsTyping(isTyping);
+          });
+        }
+      }, [socket.current]);
+
 
     const sendMessage = () => {
         if (!selectedUser || !messageInput.trim()) return;
@@ -152,100 +167,109 @@ const Inbox = () => {
                         name={selectedUserName}
                         callerSignal={callerSignal}
                     />
-                
+
                 )} :
-                {!isModalOpen &&(
-                <div className="flex">
-                    <div className="w-1/4 bg-thirdShade overflow-y-auto no-scrollbar h-80 mt-4 rounded-lg ml-4">
-                        <div className="p-2">
-                            <h2 className=" flex justify-center text-xl font-protest mb-4  ">Users</h2>
-                            {users.map((user, index) => (
-                                <div
-                                    key={index}
-                                    className="flex items-center mb-2 cursor-pointer hover:bg-gray-200 rounded-lg  p-2"
-                                    onClick={() => {
-                                        setSelectedUser(user.followingId._id);
-                                        fetchMessages(user.followingId._id);
-                                    }}
-                                >
-                                    <div className="">
-                                        <img src={user.followingId.ProfilePicture} alt="" className="w-10 h-10 bg-gray-400 rounded-full" />
+                {!isModalOpen && (
+                    <div className="flex">
+                        <div className="w-1/4 bg-thirdShade overflow-y-auto no-scrollbar h-80 mt-4 rounded-lg ml-4">
+                            <div className="p-2">
+                                <h2 className=" flex justify-center text-xl font-protest mb-4  ">Users</h2>
+                                {users.map((user, index) => (
+                                    <div
+                                        key={index}
+                                        className="flex items-center mb-2 cursor-pointer hover:bg-gray-200 rounded-lg  p-2"
+                                        onClick={() => {
+                                            setSelectedUser(user.followingId._id);
+                                            fetchMessages(user.followingId._id);
+                                        }}
+                                    >
+                                        <div className="">
+                                            <img src={user.followingId.ProfilePicture} alt="" className="w-10 h-10 bg-gray-400 rounded-full" />
+                                        </div>
+                                        <span className="ml-2 hidden md:inline-block font-protest">{user.followingId.name}</span>
                                     </div>
-                                    <span className="ml-2 hidden md:inline-block font-protest">{user.followingId.name}</span>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex-1">
-                        <div className="p-4">
-                            <div className="h-screen bg-thirdShade flex flex-col rounded-lg p-4">
-                                <div className="flex justify-between items-center mb-4 bg-gray-200 p-2 rounded-lg">
-                                    {selectedUser && (
-                                        <div className="w-full flex justify-between items-center">
-                                            <div className="flex items-center">
-                                                <div>
-                                                    <img src={selectedUserProfilePicture} alt="" className="w-10 h-10 bg-gray-400 rounded-full" />
+                        <div className="flex-1">
+                            <div className="p-4">
+                                <div className="h-screen bg-thirdShade flex flex-col rounded-lg p-4">
+                                    <div className="flex justify-between items-center mb-4 bg-gray-200 p-2 rounded-lg">
+                                        {selectedUser && (
+                                            <div className="w-full flex justify-between items-center">
+                                                <div className="flex items-center">
+                                                    <div>
+                                                        <img src={selectedUserProfilePicture} alt="" className="w-10 h-10 bg-gray-400 rounded-full" />
+                                                    </div>
+                                                    <div className="ml-2">
+                                                        <h2 className="text-lg font-protest mb-2">{selectedUserName}</h2>
+                                                    </div>
                                                 </div>
-                                                <div className="ml-2">
-                                                    <h2 className="text-lg font-protest mb-2">{selectedUserName}</h2>
-                                                </div>
+                                                {selectedUser && (
+                                                    <div className='flex justify-end'>
+                                                        {!isModalOpen && (
+                                                            <button onClick={() => handleVideoCallClick(selectedUser)} className='mr-3' >
+                                                                <CiVideoOn size={30} />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
-                                            {selectedUser && (
-                                                <div className='flex justify-end'>
-                                                    {!isModalOpen && (
-                                                        <button onClick={() => handleVideoCallClick(selectedUser)} className='mr-3' >
-                                                        <CiVideoOn size={30}/> 
-                                                      </button>
-                                                    )}
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+
+                                    <div className="flex-1 overflow-y-auto no-scrollbar">
+                                        {selectedUser ? (
+                                            <>
+                                                {messages.map((msg, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className={`${msg.sender._id === userData._id || msg.sender === userData._id ? "text-right" : "text-left"
+                                                            }`}
+                                                    >
+                                                        <div className={`bg-${msg.sender._id === userData._id || msg.sender === userData._id ? "green" : "green"}-500 text-white p-2 rounded-lg inline-block mb-2`}>
+                                                            {msg.content}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                {isTyping && (
+                                                   <p className="text-gray-500 flex justify-start pl-4 font-protest">
+                                                   {selectedUserName} is typing...
+                                               </p>
+                                               
+                                                )}
+                                            </>
+                                        ) : (
+                                            <p className="text-gray-500 flex justify-center text-center mt-52 font-protest">
+                                                Select a user to start chatting.
+                                            </p>
+                                        )}
+                                    </div>
+
+
+                                    {selectedUser && (
+                                        <div className="flex items-center mt-4">
+                                            <input
+                                                type="text"
+                                                value={messageInput}
+                                                onChange={(e) => setMessageInput(e.target.value)}
+                                                placeholder="Type a message..."
+                                                onFocus={startTyping}
+                                                onBlur={stopTyping}
+                                                className="w-full border border-gray-300 rounded-md p-2 mr-2"
+                                            />
+                                            <button
+                                                onClick={sendMessage}
+                                                className="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-md"
+                                            >
+                                                Send
+                                            </button>
                                         </div>
                                     )}
                                 </div>
-
-                                <div className="flex-1 overflow-y-auto no-scrollbar">
-                                    {selectedUser ? (
-                                        messages.map((msg, index) => (
-                                            <div
-                                                key={index}
-                                                className={`${msg.sender._id === userData._id || msg.sender === userData._id ? "text-right" : "text-left"
-                                                    }`}
-                                            >
-                                                <div className={`bg-${msg.sender._id === userData._id || msg.sender === userData._id ? "green" : "green"}-500 text-white p-2 rounded-lg inline-block mb-2`}>
-                                                    {msg.content}
-                                                </div>
-
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p className="text-gray-500 flex justify-center text-center mt-52 font-protest">
-                                            Select a user to start chatting.
-                                        </p>
-
-                                    )}
-
-                                </div>
-                                {selectedUser && (
-                                    <div className="flex items-center mt-4">
-                                        <input
-                                            type="text"
-                                            value={messageInput}
-                                            onChange={(e) => setMessageInput(e.target.value)}
-                                            placeholder="Type a message..."
-                                            className="w-full border border-gray-300 rounded-md p-2 mr-2"
-                                        />
-                                        <button
-                                            onClick={sendMessage}
-                                            className="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-md"
-                                        >
-                                            Send
-                                        </button>
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </div>
-                </div>
                 )}
             </div>
         </>
