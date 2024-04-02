@@ -5,6 +5,8 @@ import { Axios } from '../../axios/userInstance.js';
 import { useSelector } from 'react-redux';
 import VideoCall from '../../Components/userSide/VideoCall.jsx';
 import { CiVideoOn } from "react-icons/ci";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const Inbox = () => {
@@ -86,6 +88,7 @@ const Inbox = () => {
 
         const newMessage = {
             sender: userData._id,
+            senderName:userData.name,
             receiver: selectedUser,
             content: messageInput.trim(),
         };
@@ -96,6 +99,9 @@ const Inbox = () => {
 
     const handleMessage = (message) => {
         setMessages(prevMessages => [...prevMessages, message]);
+        if (message.sender !== userData._id) {
+            toast.info(`${message.senderName} sent you a new message`);
+        }
     };
 
     const fetchUsers = async () => {

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { setAuthenticated, selectIsAuthenticated } from './redux/slices/userSlices/authSlice.js';
 import { setAdminAuthenticated, selectIsAdminAuthenticated } from './redux/slices/adminSlices/adminAuthSlice.js';
 import UserRoutes from './routes/UserRoutes.jsx';
@@ -41,6 +43,7 @@ function App() {
 
   return (
     <>
+    <ToastContainer/>
       <UserRoutes isAuthenticated={isAuthenticated} />
       <AdminRoutes isAdminAuthenticated={isAdminAuthenticated} />
     </>

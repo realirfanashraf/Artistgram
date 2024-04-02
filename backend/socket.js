@@ -32,10 +32,11 @@ io.on('connection', (socket) => {
     });
 
     socket.on('message', (data) => {
-        const { sender, receiver, content } = data;
-        const message = new messageSchema({ sender, receiver, content });
+        const { sender, receiver, content, senderName } = data;
+        const message = new messageSchema({ sender, receiver, content, senderName });
         message.save();
-        io.emit('message', message);
+        const userSocketId = users[receiver];
+        io.to(userSocketId).emit('message', message);
     });
 
     socket.on('typing', ({ receiver, isTyping }) => {
