@@ -20,7 +20,7 @@ export const authenticateUser = async (req, res, next) => {
 };
 
 export const authenticateAdmin = async (req, res, next) => {
-    const token = req.cookies.jwtAdmin;
+    const token = req.cookies.jwtadmin;
     if (!token) {
         return res.status(401).json({ message: "No token provided" });
     }
