@@ -108,6 +108,7 @@ const Inbox = () => {
             senderName:userData.name,
             receiver: selectedUser,
             content: messageInput.trim(),
+            timestamp: new Date()
         };
         socket.current.emit('message', newMessage);
         setMessages(prevMessages => [...prevMessages, newMessage]);
@@ -245,32 +246,43 @@ const Inbox = () => {
                                     </div>
 
                                     <div className="flex-1 overflow-y-auto no-scrollbar" ref={messageContainerRef}>
-                                        {selectedUser ? (
-                                            <>
-                                                {messages.map((msg, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className={`${msg.sender._id === userData._id || msg.sender === userData._id ? "text-right" : "text-left"
-                                                            }`}
-                                                    >
-                                                        <div className={`bg-${msg.sender._id === userData._id || msg.sender === userData._id ? "green" : "green"}-500 text-white p-2 rounded-lg inline-block mb-2`}>
-                                                            {msg.content}
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                                {isTyping && (
-                                                   <p className="text-gray-500 flex justify-start pl-4 font-protest">
-                                                   {selectedUserName} is typing...
-                                               </p>
-                                               
-                                                )}
-                                            </>
-                                        ) : (
-                                            <p className="text-gray-500 flex justify-center text-center mt-52 font-protest">
-                                                Select a user to start chatting.
-                                            </p>
-                                        )}
-                                    </div>
+    {selectedUser ? (
+        <>
+            {messages.map((msg, index) => {
+                // Check if the date has changed since the previous message
+                const showDate = index === 0 || new Date(messages[index - 1].timestamp).toDateString() !== new Date(msg.timestamp).toDateString();
+                
+                return (
+                    <div key={index}>
+                        {showDate && (
+                            <p className="text-center text-gray-500 font-protest my-2">
+                                {new Date(msg.timestamp).toDateString()}
+                            </p>
+                        )}
+                        <div className={`${msg.sender._id === userData._id || msg.sender === userData._id ? "text-right" : "text-left"
+                            }`}
+                        >
+                            <div className={`bg-${msg.sender._id === userData._id || msg.sender === userData._id ? "green" : "green"}-500 text-white p-2 rounded-lg inline-block mb-2`}>
+                                <p>{msg.content}</p>
+                                <p className="text-xs text-gray-300">{new Date(msg.timestamp).toLocaleTimeString()}</p> {/* Show time */}
+                            </div>
+                        </div>
+                    </div>
+                );
+            })}
+            {isTyping && (
+                <p className="text-gray-500 flex justify-start pl-4 font-protest">
+                    {selectedUserName} is typing...
+                </p>
+            )}
+        </>
+    ) : (
+        <p className="text-gray-500 flex justify-center text-center mt-52 font-protest">
+            Select a user to start chatting.
+        </p>
+    )}
+</div>
+
 
 
                                     {selectedUser && (
