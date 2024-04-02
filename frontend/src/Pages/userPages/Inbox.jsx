@@ -25,6 +25,7 @@ const Inbox = () => {
     const [isIncomingCall, setIsIncomingCall] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isTyping, setIsTyping] = useState(false);
+    const messageContainerRef = useRef(null)
 
 
     useEffect(() => {
@@ -34,6 +35,16 @@ const Inbox = () => {
             socket.current.disconnect();
         };
     }, []);
+
+    useEffect(() => {
+        scrollToBottom();
+      }, [messages]);
+    
+      const scrollToBottom = () => {
+        if (messageContainerRef.current) {
+          messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+        }
+      };
 
 
     useEffect(() => {
@@ -93,13 +104,16 @@ const Inbox = () => {
             content: messageInput.trim(),
         };
         socket.current.emit('message', newMessage);
+        setMessages(prevMessages => [...prevMessages, newMessage]);
         setMessageInput("");
     };
 
 
     const handleMessage = (message) => {
+        console.log("handlemessafge")
         setMessages(prevMessages => [...prevMessages, message]);
         if (message.sender !== userData._id) {
+           
             toast.info(`${message.senderName} sent you a new message`);
         }
     };
@@ -224,7 +238,7 @@ const Inbox = () => {
                                         )}
                                     </div>
 
-                                    <div className="flex-1 overflow-y-auto no-scrollbar">
+                                    <div className="flex-1 overflow-y-auto no-scrollbar" ref={messageContainerRef}>
                                         {selectedUser ? (
                                             <>
                                                 {messages.map((msg, index) => (
