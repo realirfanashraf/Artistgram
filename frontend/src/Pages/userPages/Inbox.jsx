@@ -25,6 +25,8 @@ const Inbox = () => {
     const [isIncomingCall, setIsIncomingCall] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isTyping, setIsTyping] = useState(false);
+    const [messageReciever, setMessageReciever] = useState(null)
+
     const messageContainerRef = useRef(null)
 
 
@@ -76,6 +78,7 @@ const Inbox = () => {
 
     const startTyping = () => {
         if (!isTyping) {
+            
           socket.current.emit('typing', { receiver: selectedUser, isTyping: true });
         }
       };
@@ -86,8 +89,11 @@ const Inbox = () => {
     
       useEffect(() => {
         if (socket.current) {
-          socket.current.on('typing', ({ isTyping }) => {
-            console.log("inside useeffect the typing is woring" ,isTyping)
+            
+          socket.current.on('typing', ({ isTyping ,receiver}) => {
+            scrollToBottom();
+            console.log(receiver,"message to")
+            setMessageReciever(receiver)
             setIsTyping(isTyping);
           });
         }
