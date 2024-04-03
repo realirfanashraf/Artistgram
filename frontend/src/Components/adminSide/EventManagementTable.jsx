@@ -9,7 +9,7 @@ const EventManagementTable = () => {
     const [view, setView] = useState('');
     const [showEventModal, setShowEventModal] = useState(false);
 
-    const handleViewEvent = async (eventId) => {
+    const handleEditEvent = async (eventId) => {
         try {
             const response = await Axios.get(`/api/getEventId/${eventId}`);
             setView(response.data);
@@ -97,10 +97,10 @@ const EventManagementTable = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-center">
                                 <button
-                                    onClick={() => handleViewEvent(event._id)}
+                                    onClick={() => handleEditEvent(event._id)}
                                     className="px-2 py-1 bg-primary hover:bg-secondary text-white text-sm font-protest rounded-md focus:outline-none"
                                 >
-                                    View
+                                    Edit
                                 </button>
                             </td>
 
