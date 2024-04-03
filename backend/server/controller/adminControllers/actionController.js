@@ -87,3 +87,27 @@ export const deleteEvent = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 }
+
+export const editEvent = async (req, res) => {
+    try {
+        const { eventId } = req.params;
+        const editedEvent = req.body;
+        
+        const event = await eventSchema.findOneAndUpdate({ _id: eventId }, {
+            $set: {
+                location: editedEvent.location,
+                description: editedEvent.description,
+                date: editedEvent.date
+            }
+        }, { new: true });
+
+        if (!event) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+
+        res.status(200).json({ message: "Event updated successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
