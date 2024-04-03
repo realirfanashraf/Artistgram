@@ -82,8 +82,9 @@ io.on('connection', (socket) => {
 
 
       socket.on("callEnded", (data) => {
-        const userSocketId = users[data]
-    
+        const {userId} = data
+        const userSocketId = users[userId]
+    console.log(userSocketId,"socketId")
         if (userSocketId) {
           io.to(userSocketId).emit("callEnded");
         } else {
