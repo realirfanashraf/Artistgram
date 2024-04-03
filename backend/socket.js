@@ -40,13 +40,11 @@ io.on('connection', (socket) => {
     });
 
     socket.on('typing', ({ receiver, isTyping }) => {
-      console.log("user typing socket");
-      console.log(receiver,isTyping,"comes from the fromtend")
+      
       const userSocketId = users[receiver];
-      console.log(users,"users list")
-      console.log(userSocketId,"socket id")
+      console.log(userSocketId,"sokcetid is here")
       if (userSocketId) {
-        io.to(userSocketId).emit('typing', { isTyping });
+        io.to(userSocketId).emit('typing', { isTyping, receiver });
       }
     });
 

@@ -25,6 +25,9 @@ const Inbox = () => {
     const [isIncomingCall, setIsIncomingCall] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isTyping, setIsTyping] = useState(false);
+    const [messageReciever, setMessageReciever] = useState(null)
+
+    const messageContainerRef = useRef(null)
 
 
     useEffect(() => {
@@ -34,6 +37,16 @@ const Inbox = () => {
             socket.current.disconnect();
         };
     }, []);
+
+    useEffect(() => {
+        scrollToBottom();
+      }, [messages]);
+    
+      const scrollToBottom = () => {
+        if (messageContainerRef.current) {
+          messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+        }
+      };
 
 
     useEffect(() => {
@@ -65,6 +78,7 @@ const Inbox = () => {
 
     const startTyping = () => {
         if (!isTyping) {
+            
           socket.current.emit('typing', { receiver: selectedUser, isTyping: true });
         }
       };
@@ -75,8 +89,11 @@ const Inbox = () => {
     
       useEffect(() => {
         if (socket.current) {
-          socket.current.on('typing', ({ isTyping }) => {
-            console.log("inside useeffect the typing is woring" ,isTyping)
+            
+          socket.current.on('typing', ({ isTyping ,receiver}) => {
+            scrollToBottom();
+            console.log(receiver,"message to")
+            setMessageReciever(receiver)
             setIsTyping(isTyping);
           });
         }
@@ -91,15 +108,19 @@ const Inbox = () => {
             senderName:userData.name,
             receiver: selectedUser,
             content: messageInput.trim(),
+            timestamp: new Date()
         };
         socket.current.emit('message', newMessage);
+        setMessages(prevMessages => [...prevMessages, newMessage]);
         setMessageInput("");
     };
 
 
     const handleMessage = (message) => {
+        console.log("handlemessafge")
         setMessages(prevMessages => [...prevMessages, message]);
         if (message.sender !== userData._id) {
+           
             toast.info(`${message.senderName} sent you a new message`);
         }
     };
@@ -224,33 +245,44 @@ const Inbox = () => {
                                         )}
                                     </div>
 
-                                    <div className="flex-1 overflow-y-auto no-scrollbar">
-                                        {selectedUser ? (
-                                            <>
-                                                {messages.map((msg, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className={`${msg.sender._id === userData._id || msg.sender === userData._id ? "text-right" : "text-left"
-                                                            }`}
-                                                    >
-                                                        <div className={`bg-${msg.sender._id === userData._id || msg.sender === userData._id ? "green" : "green"}-500 text-white p-2 rounded-lg inline-block mb-2`}>
-                                                            {msg.content}
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                                {isTyping && (
-                                                   <p className="text-gray-500 flex justify-start pl-4 font-protest">
-                                                   {selectedUserName} is typing...
-                                               </p>
-                                               
-                                                )}
-                                            </>
-                                        ) : (
-                                            <p className="text-gray-500 flex justify-center text-center mt-52 font-protest">
-                                                Select a user to start chatting.
-                                            </p>
-                                        )}
-                                    </div>
+                                    <div className="flex-1 overflow-y-auto no-scrollbar" ref={messageContainerRef}>
+    {selectedUser ? (
+        <>
+            {messages.map((msg, index) => {
+                // Check if the date has changed since the previous message
+                const showDate = index === 0 || new Date(messages[index - 1].timestamp).toDateString() !== new Date(msg.timestamp).toDateString();
+                
+                return (
+                    <div key={index}>
+                        {showDate && (
+                            <p className="text-center text-gray-500 font-protest my-2">
+                                {new Date(msg.timestamp).toDateString()}
+                            </p>
+                        )}
+                        <div className={`${msg.sender._id === userData._id || msg.sender === userData._id ? "text-right" : "text-left"
+                            }`}
+                        >
+                            <div className={`bg-${msg.sender._id === userData._id || msg.sender === userData._id ? "green" : "green"}-500 text-white p-2 rounded-lg inline-block mb-2`}>
+                                <p>{msg.content}</p>
+                                <p className="text-xs text-gray-300">{new Date(msg.timestamp).toLocaleTimeString()}</p> {/* Show time */}
+                            </div>
+                        </div>
+                    </div>
+                );
+            })}
+            {isTyping && (
+                <p className="text-gray-500 flex justify-start pl-4 font-protest">
+                    {selectedUserName} is typing...
+                </p>
+            )}
+        </>
+    ) : (
+        <p className="text-gray-500 flex justify-center text-center mt-52 font-protest">
+            Select a user to start chatting.
+        </p>
+    )}
+</div>
+
 
 
                                     {selectedUser && (
