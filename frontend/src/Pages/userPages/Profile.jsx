@@ -13,6 +13,9 @@ import EditProfileModal from '../../modal/userModal/EditProfileModal.jsx';
 import NewPostModal from '../../modal/userModal/NewPostModal.jsx';
 import { getPosts, logout } from '../../API/apiCalls.js';
 import EditPostModal from '../../Components/userSide/profile/EditPostModal.jsx';
+import { Axios } from '../../axios/userInstance.js';
+import Swal from 'sweetalert2';
+import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from '../../helper/sweetalert.js'
 
 
 const Profile = () => {
@@ -77,6 +80,18 @@ const Profile = () => {
       });
   };
 
+  const fetchPostsAfterDeletion = () => {
+    const userId = userData._id;
+    getPosts(userId)
+      .then(response => {
+        console.log(response);
+        setPosts(response.data.posts);
+      })
+      .catch(error => {
+        console.error('Error fetching posts:', error);
+      });
+  };
+
 
   const handleEditProfile = () => {
     setShowDropdown(false)
@@ -97,9 +112,31 @@ const Profile = () => {
     setSelectedPost(postId)
     setShowEditPostModal(true)
   }
-  const handleDeletePost = () => {
-
-  }
+  const handleDeletePost = async (postId) => {
+    try {
+      const result = await showConfirmationDialog(
+        "Are you sure?",
+        "You won't be able to revert this!",
+        "Yes, delete it!",
+        "No, cancel!"
+      );
+  
+      if (result.isConfirmed) {
+        await deletePost(postId);
+        showSuccessDialog("Deleted!", "Your file has been deleted.");
+        fetchPostsAfterDeletion();
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        showErrorDialog("Cancelled", "Your imaginary file is safe :)");
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+      showErrorDialog("Error", "An error occurred while deleting the post.");
+    }
+  };
+  
+  const deletePost = async (postId) => {
+    await Axios.delete(`/action/deletePost/${postId}`);
+  };
 
   return (
     <>
@@ -148,13 +185,13 @@ const Profile = () => {
                     <div className="absolute top-0 right-0">
                       <button
                         onClick={() => handleUpdatePost(post._id)}
-                        className="text-xs text-white bg-blue-500 py-1 px-2 rounded-tl-lg rounded-br-lg"
+                        className="text-xs text-white bg-primary hover:bg-secondary py-1 px-2 rounded-tl-lg rounded-br-lg"
                       >
-                        Update
+                        Edit
                       </button>
                       <button
                         onClick={() => handleDeletePost(post._id)}
-                        className="text-xs text-white bg-red-500 py-1 px-2 rounded-tr-lg rounded-bl-lg"
+                        className="text-xs text-white bg-red-500 hover:bg-red-900 py-1 px-2 rounded-tr-lg rounded-bl-lg"
                       >
                         Delete
                       </button>
