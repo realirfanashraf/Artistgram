@@ -12,6 +12,7 @@ import ChangePasswordModal from '../../modal/userModal/ChangePasswordModal.jsx';
 import EditProfileModal from '../../modal/userModal/EditProfileModal.jsx';
 import NewPostModal from '../../modal/userModal/NewPostModal.jsx';
 import { getPosts, logout } from '../../API/apiCalls.js';
+import EditPostModal from '../../Components/userSide/profile/EditPostModal.jsx';
 
 
 const Profile = () => {
@@ -19,7 +20,9 @@ const Profile = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [showEditProfileModal, setShowEditProfileModal] = useState(false)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
+  const [showEditPostModal, setShowEditPostModal] = useState(false)
   const [posts, setPosts] = useState([]);
+  const [selectedPost,setSelectedPost] = useState(null)
   const userData = useSelector((state) => state.userInfo.user);
   const navigate = useNavigate()
   const dispatch = useDispatch();
@@ -43,6 +46,9 @@ const Profile = () => {
   const handleNewPostModal = () => {
     setShowNewPostModal(false)
   }
+  const handleEditPostModal = ()=>{
+    setShowEditPostModal(false)
+  }
 
   const handleCloseChangePasswordModal = () => {
     setShowChangePasswordModal(false);
@@ -51,7 +57,7 @@ const Profile = () => {
   const handleCloseEditProfileModal = () => {
     setShowEditProfileModal(false)
   }
- 
+
   const handleNewPost = () => {
     setShowNewPostModal(true)
     setShowDropdown(false)
@@ -86,6 +92,14 @@ const Profile = () => {
   const updatePosts = (newPost) => {
     setPosts(prevPosts => [newPost, ...prevPosts]);
   };
+
+  const handleUpdatePost = (postId) => {
+    setSelectedPost(postId)
+    setShowEditPostModal(true)
+  }
+  const handleDeletePost = () => {
+
+  }
 
   return (
     <>
@@ -125,17 +139,37 @@ const Profile = () => {
           <div className="bg-primary w-full h-8 block">
             <p className="text-center font-protest text-white p-1">Gallery</p>
           </div>
-          <div className="mt-2 grid grid-cols-3 gap-4">
-            {posts?.length > 0 ? (
-              posts?.map((post) => (
-                <div key={post?._id} className="bg-thirdShade rounded-lg shadow-md p-2">
-                  <img src={post?.image} alt="" className="w-full h-full object-cover" />
+          {posts?.length > 0 ? (
+            <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {posts?.map((post) => (
+                <div key={post?._id} className="relative">
+                  <div className="bg-thirdShade rounded-lg shadow-md overflow-hidden" style={{ width: '250px', height: '200px' }}> {/* Set fixed dimensions */}
+                    <img src={post?.image} alt="" className="w-full h-full object-cover" /> {/* Maintain aspect ratio */}
+                    <div className="absolute top-0 right-0">
+                      <button
+                        onClick={() => handleUpdatePost(post._id)}
+                        className="text-xs text-white bg-blue-500 py-1 px-2 rounded-tl-lg rounded-br-lg"
+                      >
+                        Update
+                      </button>
+                      <button
+                        onClick={() => handleDeletePost(post._id)}
+                        className="text-xs text-white bg-red-500 py-1 px-2 rounded-tr-lg rounded-bl-lg"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              ))
-            ) : (
-              <p>No posts</p>
-            )}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p>No posts</p>
+          )}
+
+
+
+
         </div>
       </div>
       {showChangePasswordModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
@@ -151,6 +185,11 @@ const Profile = () => {
       {showNewPostModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
         <div className=" rounded-lg shadow-md">
           <NewPostModal isOpen={showNewPostModal} onClose={handleNewPostModal} updatePosts={updatePosts} />
+        </div>
+      </div>}
+      {showEditPostModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+        <div className=" rounded-lg shadow-md">
+          <EditPostModal isOpen={showEditPostModal} onClose={handleEditPostModal} postId={selectedPost} />
         </div>
       </div>}
     </>

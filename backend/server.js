@@ -14,6 +14,7 @@ import apiRoutes from './server/router/adminRoutes/apiRoutes.js'
 import userApiRoute from './server/router/userRoutes/userApiRoute.js'
 import actionRoute from './server/router/adminRoutes/actionRoute.js'
 import initializeSocket from './socket.js';
+import userActionRoute from './server/router/userRoutes/userActionRoutes.js'
 
 const app = express();
 const server = http.createServer(app);
@@ -37,6 +38,7 @@ connectDB()
 app.use('/', userRoute)
 app.use('/api', userApiRoute)
 app.use('/upload', uploadRoutes)
+app.use('/action',userActionRoute)
 app.use('/admin', adminRoute)
 app.use('/admin/api', apiRoutes)
 app.use('/admin/action/', actionRoute)
