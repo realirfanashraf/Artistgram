@@ -5,11 +5,11 @@ import { useState, useEffect } from 'react';
 import { Axios } from '../../axios/userInstance.js';
 import PostContainer from "../../Components/userSide/home/PostContainer.jsx";
 import { useSelector } from "react-redux";
-
-
-
+import { CiSquarePlus } from "react-icons/ci";
+import NewPostModal from '../../modal/userModal/NewPostModal.jsx';
 
 const Home = () => {
+  const [hovered, setHovered] = useState(false);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
@@ -18,60 +18,64 @@ const Home = () => {
   const [postLoading, setPostLoading] = useState(false)
   const [posts, setPosts] = useState([])
   const [postListFinished, setPostListFinished] = useState(false)
-
-
-
-
-
-
+  const [showNewPostModal, setShowNewPostModal] = useState(false)
+  const [initialLoadDone, setInitialLoadDone] = useState(false); 
 
   const fetchData = () => {
     setLoading(true);
     Axios.get(`/api/users?page=${page}`)
       .then(response => {
         if (response.data.length === 0) {
-          setUsers(prevUsers => [...prevUsers]);
-          setLoading(false);
           setListFinished(true);
         } else {
           setUsers(prevUsers => [...prevUsers, ...response.data]);
-          setLoading(false);
         }
       })
       .catch(error => {
         console.error('Error fetching data:', error);
+      })
+      .finally(() => {
         setLoading(false);
+        setInitialLoadDone(true); // Mark initial load as done
       });
   };
-
-
-  const fetchPostData = () => {
-    setPostLoading(true);
-    Axios.get(`/api/posts?postPage=${postPage}`)
-      .then(response => {
-        if (response.data.length === 0) {
-          setPosts(prevPosts => [...prevPosts]);
-          setPostLoading(false);
-          setPostListFinished(true);
-        } else {
-          setPosts(prevPosts => [...prevPosts, ...response.data]);
-          setPostLoading(false);
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        setPostLoading(false);
-      });
-  };
-
 
   useEffect(() => {
     fetchData();
   }, [page]);
 
+  const handleNewPost = () => {
+    setShowNewPostModal(true)
+    
+  };
+  const handleNewPostModal = () => {
+    setShowNewPostModal(false)
+  }
+
+  const fetchPostData = () => {
+    setPostLoading(true);
+    Axios.get(`/api/posts?postPage=${postPage}`)
+      .then(response => {
+        console.log(response.data,"posts")
+        if (response.data.length === 0) {
+          setPostListFinished(true);
+        } else {
+          setPosts(prevPosts => [...prevPosts, ...response.data]);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      })
+      .finally(() => {
+        setPostLoading(false);
+      });
+  };
+
   useEffect(() => {
-    fetchPostData();
-  }, [postPage])
+    if (initialLoadDone) { // Only fetch post data after initial load is done
+      fetchPostData();
+    }
+  }, [postPage, initialLoadDone]);
 
   const handleScroll = event => {
     console.log("scrolling works")
@@ -96,22 +100,31 @@ const Home = () => {
 
   return (
     <>
-      <Navbar />
-      <div className="flex flex-col items-center mt-3 w-full sm:w-auto shadow-2xl">
-        {/* <SearchBar /> */}
-        <div className=" absolute top-28 right-10 w-60  shadow-xl h-72 rounded-md bg-inherit p-4 overflow-y-auto no-scrollbar" onScroll={handleScroll}>
-          <SuggestionBox users={users} loading={loading} listFinished={listFinished} />
-        </div>
-        <div className="flex flex-col justify-center mt-2" style={{ maxHeight: '30rem' }}>
-          <div className="overflow-y-scroll no-scrollbar" onScroll={handleScrollPost}>
-            <PostContainer posts={posts} postLoading={postLoading} postListFinished={postListFinished} />
-          </div>
-        </div>
-
-
+  <Navbar />
+  <div className="flex flex-col items-center mt-3 w-full sm:w-auto shadow-2xl">
+    {/* <SearchBar /> */}
+    <div className="absolute top-28 right-10 w-60 shadow-xl h-72 rounded-md bg-inherit p-4 overflow-y-auto no-scrollbar" onScroll={handleScroll}>
+      <SuggestionBox users={users} loading={loading} listFinished={listFinished} />
+    </div>
+    <div className="flex flex-col justify-center mt-2" style={{ maxHeight: '30rem' }}>
+      <div className="overflow-y-scroll no-scrollbar" onScroll={handleScrollPost}>
+        <PostContainer posts={posts} postLoading={postLoading} postListFinished={postListFinished} />
       </div>
+    </div>
+    <button 
+  className="flex items-center bg-primary hover:bg-secondary text-white font-bold py-2 px-2 rounded  fixed bottom-10 right-80 "
+  onClick={handleNewPost}
+>
+  <CiSquarePlus size={26}  />
+</button>
+  </div>
+  {showNewPostModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+        <div className=" rounded-lg shadow-md">
+          <NewPostModal isOpen={showNewPostModal} onClose={handleNewPostModal}  />
+        </div>
+      </div>}
+</>
 
-    </>
   );
 };
 

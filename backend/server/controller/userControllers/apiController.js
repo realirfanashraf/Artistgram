@@ -29,7 +29,7 @@ export const usersList = async (req, res) => {
 
 export const postsList = async (req, res) => {
   const page = parseInt(req.query.postPage) || 1;
-  const limit = 5;
+  const limit = 3;
   const skip = (page - 1) * limit;
   try {
     const posts = await postSchema.find({ isBlocked: false }).skip(skip).limit(limit).populate({
