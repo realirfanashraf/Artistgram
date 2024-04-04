@@ -32,14 +32,21 @@ export const postsList = async (req, res) => {
   const limit = 3;
   const skip = (page - 1) * limit;
   try {
-    const posts = await postSchema.find({ isBlocked: false }).skip(skip).limit(limit).populate({
-      path: 'postedBy'
-    })
-    res.json(posts)
+    const posts = await postSchema
+      .find({ isBlocked: false })
+      .sort({ createdAt: -1 }) 
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: 'postedBy'
+      });
+    res.json(posts);
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
-}
+};
+
 
 
 export const followersList = async (req, res) => {
