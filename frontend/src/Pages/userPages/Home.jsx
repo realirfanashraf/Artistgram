@@ -21,9 +21,9 @@ const Home = () => {
 
 
 
- 
 
-  
+
+
 
   const fetchData = () => {
     setLoading(true);
@@ -71,7 +71,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchPostData();
-  },[postPage])
+  }, [postPage])
 
   const handleScroll = event => {
     console.log("scrolling works")
@@ -98,16 +98,19 @@ const Home = () => {
     <>
       <Navbar />
       <div className="flex flex-col items-center mt-3 w-full sm:w-auto shadow-2xl">
-        <SearchBar />
+        {/* <SearchBar /> */}
         <div className=" absolute top-28 right-10 w-60  shadow-xl h-72 rounded-md bg-inherit p-4 overflow-y-auto no-scrollbar" onScroll={handleScroll}>
           <SuggestionBox users={users} loading={loading} listFinished={listFinished} />
         </div>
-        <div className="flex flex-col justify-center overflow-y-scroll h-[30rem] no-scrollbar mt-4"onScroll={handleScrollPost} >
-          <PostContainer posts = {posts} postLoading={postLoading} postListFinished={postListFinished}/>
+        <div className="flex flex-col justify-center mt-2" style={{ maxHeight: '30rem' }}>
+          <div className="overflow-y-scroll no-scrollbar" onScroll={handleScrollPost}>
+            <PostContainer posts={posts} postLoading={postLoading} postListFinished={postListFinished} />
+          </div>
         </div>
 
+
       </div>
-      
+
     </>
   );
 };
