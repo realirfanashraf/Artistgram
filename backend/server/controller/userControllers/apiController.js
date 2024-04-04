@@ -6,6 +6,7 @@ import reportSchema from '../../model/adminModels/reportModel.js'
 import messageSchema from '../../model/userModels/messageModel.js';
 import ratingSchema from '../../model/userModels/ratingModel.js';
 import eventSchema from '../../model/adminModels/eventModel.js'
+import mongoose from 'mongoose';
 
 
 
@@ -16,7 +17,7 @@ export const usersList = async (req, res) => {
   const skip = (page - 1) * limit;
 
   try {
-    const currentUser = await getUserByEmail(email); 
+    const currentUser = await getUserByEmail(email);
     const users = await userSchema.find({ email: { $ne: currentUser.email } }).skip(skip).limit(limit); // Exclude current user
     res.json(users);
   } catch (error) {
@@ -26,13 +27,13 @@ export const usersList = async (req, res) => {
 };
 
 
-export const postsList = async (req,res)=>{
+export const postsList = async (req, res) => {
   const page = parseInt(req.query.postPage) || 1;
   const limit = 5;
   const skip = (page - 1) * limit;
   try {
     const posts = await postSchema.find({ isBlocked: false }).skip(skip).limit(limit).populate({
-      path:'postedBy'
+      path: 'postedBy'
     })
     res.json(posts)
   } catch (error) {
@@ -45,8 +46,8 @@ export const followersList = async (req, res) => {
   const { userId } = req.query;
   try {
     const followers = await followSchema.find({ followingId: userId }).populate('followerId');
-    const following = await followSchema.find({ followerId: userId}).populate('followingId');
-    res.status(200).json({followers,following})
+    const following = await followSchema.find({ followerId: userId }).populate('followingId');
+    res.status(200).json({ followers, following })
   } catch (error) {
     console.error('Error fetching followers:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -54,11 +55,11 @@ export const followersList = async (req, res) => {
 };
 
 
-export const followingList = async(req,res)=>{
+export const followingList = async (req, res) => {
   const { userId } = req.query;
 
   try {
-    const following = await followSchema.find({ followerId: userId}).populate('followingId');
+    const following = await followSchema.find({ followerId: userId }).populate('followingId');
     res.status(200).json(following);
   } catch (error) {
     console.error('Error fetching following:', error);
@@ -68,12 +69,12 @@ export const followingList = async(req,res)=>{
 
 
 export const reportPost = async (req, res) => {
-  const { postId, message ,userId} = req.body;
+  const { postId, message, userId } = req.body;
   try {
     const report = new reportSchema({
       post: postId,
       message: message,
-      user:userId
+      user: userId
     });
     await report.save();
     res.status(200).json({ message: 'success' });
@@ -128,7 +129,7 @@ export const submitRating = async (req, res) => {
     const { postId } = req.params;
     const email = req.query.email;
     const user = await userSchema.findOne({ email: email });
-    
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -160,8 +161,8 @@ export const submitRating = async (req, res) => {
 
 export const followUser = async (req, res) => {
   try {
-    const followerId = req.params.followerId; 
-    const { userId } = req.query; 
+    const followerId = req.params.followerId;
+    const { userId } = req.query;
     const followingId = userId
 
     const existingFollow = await followSchema.findOne({ followerId: followingId, followingId: followerId });
@@ -217,3 +218,102 @@ export const getEvents = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+
+// export const usersToChat = async (req, res) => {
+//   try {
+//     const { userId } = req.query;
+
+//     // Find all messages where the given userId is either the sender or the receiver
+//     const messages = await messageSchema.find({
+//       $or: [
+//         { sender: userId },
+//         { receiver: userId }
+//       ]
+//     });
+
+//     // Sorting messages based on timestamp
+//     const sortedMessages = messages.sort((a, b) => b.timestamp - a.timestamp);
+
+//     console.log(sortedMessages, "Sorted messages");
+
+//     const userIds = new Set();
+
+//     sortedMessages.forEach(message => {
+//       if (message.sender.toString() !== userId.toString()) {
+//         userIds.add(message.sender.toString());
+//       }
+//       if (message.receiver.toString() !== userId.toString()) {
+//         userIds.add(message.receiver.toString());
+//       }
+//     });
+
+//     // Find the following users
+//     const following = await followSchema.find({ followerId: userId });
+//     const followingIds = following.map(item => item.followingId.toString());
+
+//     // Add followingIds to userIds
+//     followingIds.forEach(followingId => {
+//       userIds.add(followingId);
+//     });
+
+//     // Convert userIds to an array
+//     const userIdsArray = Array.from(userIds);
+
+//     // Populate user documents for the userIds
+//     const usersToChat = await userSchema.find({ _id: { $in: userIdsArray } }).populate();
+
+//     console.log(usersToChat, "List of users to chat");
+
+//     res.status(200).json(usersToChat);
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+
+
+export const usersToChat = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const messages = await messageSchema.find({
+      $or: [{ sender: userId }, { receiver: userId }],
+    }).sort({ timestamp: -1 });
+
+    console.log(messages, "messages");
+
+    const receiverIds = [];
+    const uniqueGroups = new Set();
+    messages.forEach((message) => {
+      const sender = message.sender.toString(); // Convert ObjectId to string
+      const receiver = message.receiver.toString(); // Convert ObjectId to string
+      const group = `${sender}-${receiver}`;
+      uniqueGroups.add(group);
+    });
+
+    // Extract unique receiver IDs from uniqueGroups set
+    uniqueGroups.forEach((group) => {
+      const [, receiverId] = group.split('-');
+      if (receiverId !== userId && !receiverIds.includes(receiverId)) {
+        receiverIds.push(receiverId);
+      }
+    });
+
+    // console.log(uniqueGroups, "uniquegroupus");
+    console.log(receiverIds, "receiverIds");
+
+    // Now you can use the receiverIds array for further processing
+    const users = await userSchema.find({ _id: { $in: receiverIds } });
+    console.log(users,"wejfkljf")
+    res.status(200).json(users)
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+
+  
+  

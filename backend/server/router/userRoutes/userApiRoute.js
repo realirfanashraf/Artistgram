@@ -1,6 +1,6 @@
 import express from 'express'
 const route = express.Router()
-import { usersList ,getEvents, followersList,followingList ,followUser,unfollowUser, postsList,reportPost,getMessages,getRating,submitRating} from '../../controller/userControllers/apiController.js'
+import { usersList ,getEvents,usersToChat, followersList,followingList ,followUser,unfollowUser, postsList,reportPost,getMessages,getRating,submitRating} from '../../controller/userControllers/apiController.js'
 import authorize from '../../middleware/authorize.js'
 import isBlocked from '../../middleware/isBlocked.js'
 import { authenticateUser } from '../../middleware/authMiddleware.js'
@@ -16,5 +16,6 @@ route.post('/ratePost/:postId',authorize('user'),authenticateUser,isBlocked,subm
 route.post('/follow/:followerId',followUser)
 route.post('/unfollow/:followerId',unfollowUser)
 route.get('/getEvents',getEvents)
+route.get('/usersToChat',usersToChat)
 
 export default route
