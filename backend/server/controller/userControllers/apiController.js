@@ -214,8 +214,8 @@ export const unfollowUser = async (req, res) => {
 
 export const getEvents = async (req, res) => {
   try {
-    const events = await eventSchema.find();
-    if (events) {
+    const events = await eventSchema.find({ isBlocked: false });
+    if (events.length > 0) {
       res.status(200).json(events);
     } else {
       res.status(404).json({ message: "No events found" });
@@ -225,6 +225,7 @@ export const getEvents = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 
