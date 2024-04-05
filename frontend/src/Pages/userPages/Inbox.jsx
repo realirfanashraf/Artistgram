@@ -127,7 +127,7 @@ const Inbox = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await Axios.get("/api/usersToChat");
+            const response = await Axios.get("/api/following");
             console.log(response.data,"fklasdj;")
             if (Array.isArray(response.data)) {
                 setUsers(response.data);
@@ -143,10 +143,10 @@ const Inbox = () => {
         try {
             const response = await Axios.get(`/api/messages/${selectedUserId}`)
             setMessages(response.data);
-            const selectedUser = users.find(user => user?._id === selectedUserId);
+            const selectedUser = users.find(user => user?.followingId._id === selectedUserId);
             if (selectedUser) {
-                setSelectedUserName(selectedUser?.name);
-                setSelectedUserProfilePicture(selectedUser?.ProfilePicture);
+                setSelectedUserName(selectedUser?.followingId.name);
+                setSelectedUserProfilePicture(selectedUser?.followingId.ProfilePicture);
             }
         } catch (error) {
             console.error("Error fetching messages:", error);
@@ -207,14 +207,14 @@ const Inbox = () => {
                                     key={index}
                                     className="flex items-center mb-2 cursor-pointer hover:bg-gray-200 rounded-lg  p-2"
                                     onClick={() => {
-                                        setSelectedUser(user._id);
-                                        fetchMessages(user._id);
+                                        setSelectedUser(user.followingId._id);
+                                        fetchMessages(user.followingId._id);
                                     }}
                                 >
                                     <div className="">
-                                        <img src={user.ProfilePicture} alt="" className="w-10 h-10 bg-gray-400 rounded-full" />
+                                        <img src={user.followingId.ProfilePicture} alt="" className="w-10 h-10 bg-gray-400 rounded-full" />
                                     </div>
-                                    <span className="ml-2 hidden md:inline-block font-protest">{user.name}</span>
+                                    <span className="ml-2 hidden md:inline-block font-protest">{user.followingId.name}</span>
                                 </div>
                             ))}
                         </div>
