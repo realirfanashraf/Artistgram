@@ -1,18 +1,26 @@
-import express from 'express'
-import { getUserData, getPostData, getUsersDetail,getReports,reportPostData,getEventId,getEvents } from '../../controller/adminControllers/apiController.js'
-import authorize from '../../middleware/authorize.js'
-import { authenticateAdmin } from '../../middleware/authMiddleware.js'
-const route = express.Router()
+import express from 'express';
+import { 
+    getUserData, 
+    getPostData, 
+    getUsersDetail, 
+    getReports, 
+    reportPostData, 
+    getEventId, 
+    getEvents 
+} from '../../controller/adminControllers/apiController.js';
 
-route.get('/usersData',authorize('admin'),authenticateAdmin,getUserData)
-route.get('/postsData',authorize('admin'),authenticateAdmin, getPostData)
-route.get('/getUsersDetail',authorize('admin'),authenticateAdmin, getUsersDetail)
-route.get('/getReports',authorize('admin'),authenticateAdmin,getReports)
-route.get('/getReportData/:reportId',authorize('admin'),authenticateAdmin, reportPostData)
-route.get('/getEventId/:eventId',authorize('admin'),authenticateAdmin,getEventId)
-route.get('/getEvents',authorize('admin'),authenticateAdmin,getEvents)
+import { authenticateAndAuthorize } from '../../middleware/auth.js';
 
+const router = express.Router();
 
+const adminAuthMiddleware = authenticateAndAuthorize('admin');
 
+router.get('/usersData', adminAuthMiddleware, getUserData);
+router.get('/postsData', adminAuthMiddleware, getPostData);
+router.get('/getUsersDetail', adminAuthMiddleware, getUsersDetail);
+router.get('/getReports', adminAuthMiddleware, getReports);
+router.get('/getReportData/:reportId', adminAuthMiddleware, reportPostData);
+router.get('/getEventId/:eventId', adminAuthMiddleware, getEventId);
+router.get('/getEvents', adminAuthMiddleware, getEvents);
 
-export default route
+export default router;

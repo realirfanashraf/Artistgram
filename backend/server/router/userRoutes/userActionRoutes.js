@@ -1,9 +1,12 @@
 import express from "express";
-import { editPost ,deletePost} from "../../controller/userControllers/userActionController.js";
-const route = express.Router()
+import { editPost, deletePost } from "../../controller/userControllers/userActionController.js";
+import { authenticateAndAuthorize } from "../../middleware/auth.js";
 
+const router = express.Router();
 
-route.put('/posts/:postId',editPost)
-route.delete('/deletePost/:postId',deletePost)
+const userAuthMiddleware = authenticateAndAuthorize('user');
 
-export default route
+router.put('/posts/:postId', userAuthMiddleware, editPost);
+router.delete('/deletePost/:postId', userAuthMiddleware, deletePost);
+
+export default router;
