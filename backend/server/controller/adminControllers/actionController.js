@@ -74,14 +74,41 @@ export const addEvent = async (req, res) => {
 
 
 
-export const deleteEvent = async (req, res) => {
+export const blockEvent = async (req, res) => {
     try {
         const { eventId } = req.params;
-        const event = await eventSchema.findOneAndDelete({ _id: eventId });
-        if (!event) {
+        const updatedEvent = await eventSchema.findOneAndUpdate(
+            { _id: eventId },
+            { isBlocked: true },
+            { new: true } 
+        );
+        console.log(updatedEvent,"updates event is here")
+        if (!updatedEvent) {
             return res.status(404).json({ message: "Event not found" });
         }
-        res.status(200).json({ message: "Event deleted successfully" });
+        
+        res.status(200).json({ message: "Event blocked successfully", updatedEvent });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+
+export const unblockEvent = async (req, res) => {
+    try {
+        const { eventId } = req.params;
+        const updatedEvent = await eventSchema.findOneAndUpdate(
+            { _id: eventId },
+            { isBlocked: false },
+            { new: true } 
+        );
+        console.log(updatedEvent,"updates event is here")
+        if (!updatedEvent) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+        
+        res.status(200).json({ message: "Event unblocked successfully", updatedEvent });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });

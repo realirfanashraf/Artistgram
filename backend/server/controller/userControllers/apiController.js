@@ -6,7 +6,7 @@ import reportSchema from '../../model/adminModels/reportModel.js'
 import messageSchema from '../../model/userModels/messageModel.js';
 import ratingSchema from '../../model/userModels/ratingModel.js';
 import eventSchema from '../../model/adminModels/eventModel.js'
-import mongoose from 'mongoose';
+
 
 
 
@@ -214,8 +214,8 @@ export const unfollowUser = async (req, res) => {
 
 export const getEvents = async (req, res) => {
   try {
-    const events = await eventSchema.find();
-    if (events) {
+    const events = await eventSchema.find({ isBlocked: false });
+    if (events.length > 0) {
       res.status(200).json(events);
     } else {
       res.status(404).json({ message: "No events found" });
@@ -225,6 +225,7 @@ export const getEvents = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 
@@ -337,6 +338,25 @@ export const postDetails = async (req, res) => {
   } catch (error) {
     console.error('Error fetching post details:', error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+
+export const remoteUserDetails = async (req, res) => {
+  try {
+      const userId = req.params.userId
+      const userData = await userSchema.findById(userId);
+      const postsData = await postSchema.find({ postedBy: userId });
+      if (userData) {
+          res.status(200).json({ userData, postsData });
+      } else {
+          res.status(404).json({ error: 'User not found' });
+      }
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Internal server error' });
   }
 };
 
