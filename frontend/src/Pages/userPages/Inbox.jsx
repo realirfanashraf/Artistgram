@@ -128,6 +128,7 @@ const Inbox = () => {
     const fetchUsers = async () => {
         try {
             const response = await Axios.get("/api/following");
+            console.log(response.data,"fklasdj;")
             if (Array.isArray(response.data)) {
                 setUsers(response.data);
             } else {
@@ -142,10 +143,10 @@ const Inbox = () => {
         try {
             const response = await Axios.get(`/api/messages/${selectedUserId}`)
             setMessages(response.data);
-            const selectedUser = users.find(user => user.followingId._id === selectedUserId);
+            const selectedUser = users.find(user => user?.followingId._id === selectedUserId);
             if (selectedUser) {
-                setSelectedUserName(selectedUser.followingId.name);
-                setSelectedUserProfilePicture(selectedUser.followingId.ProfilePicture);
+                setSelectedUserName(selectedUser?.followingId.name);
+                setSelectedUserProfilePicture(selectedUser?.followingId.ProfilePicture);
             }
         } catch (error) {
             console.error("Error fetching messages:", error);

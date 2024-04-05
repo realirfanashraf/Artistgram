@@ -1,20 +1,38 @@
-import express from 'express'
-const route = express.Router()
-import { usersList ,getEvents, followersList,followingList ,followUser,unfollowUser, postsList,reportPost,getMessages,getRating,submitRating} from '../../controller/userControllers/apiController.js'
-import authorize from '../../middleware/authorize.js'
-import isBlocked from '../../middleware/isBlocked.js'
-import { authenticateUser } from '../../middleware/authMiddleware.js'
+import express from 'express';
+import { 
+    usersList,
+    getEvents,
+    usersToChat,
+    postDetails,
+    followersList,
+    followingList,
+    followUser,
+    unfollowUser,
+    postsList,
+    reportPost,
+    getMessages,
+    getRating,
+    submitRating 
+} from '../../controller/userControllers/apiController.js';
 
-route.get('/users',authorize('user'),authenticateUser,isBlocked,usersList)
-route.get('/posts',authorize('user'),authenticateUser,isBlocked,postsList)
-route.get('/followers',authorize('user'),authenticateUser,isBlocked,followersList)
-route.get('/following',authorize('user'),authenticateUser,isBlocked,followingList)
-route.post('/reportPost',authorize('user'),authenticateUser,isBlocked,reportPost)
-route.get('/messages/:userId',authorize('user'),authenticateUser,isBlocked,getMessages)
-route.get('/rating/:postId',authorize('user'),authenticateUser,isBlocked,getRating)
-route.post('/ratePost/:postId',authorize('user'),authenticateUser,isBlocked,submitRating)
-route.post('/follow/:followerId',followUser)
-route.post('/unfollow/:followerId',unfollowUser)
-route.get('/getEvents',getEvents)
+import { authenticateAndAuthorize } from '../../middleware/auth.js';
 
-export default route
+const router = express.Router();
+
+const userAuthMiddleware = authenticateAndAuthorize('user');
+
+router.get('/users', userAuthMiddleware, usersList);
+router.get('/posts', userAuthMiddleware, postsList);
+router.get('/followers', userAuthMiddleware, followersList);
+router.get('/following', userAuthMiddleware, followingList);
+router.post('/reportPost', userAuthMiddleware, reportPost);
+router.get('/messages/:userId', userAuthMiddleware, getMessages);
+router.get('/rating/:postId', userAuthMiddleware, getRating);
+router.post('/ratePost/:postId', userAuthMiddleware, submitRating);
+router.post('/follow/:followerId', userAuthMiddleware, followUser);
+router.post('/unfollow/:followerId', userAuthMiddleware, unfollowUser);
+router.get('/getEvents', userAuthMiddleware, getEvents);
+router.get('/usersToChat', userAuthMiddleware, usersToChat);
+router.get('/posts/:postId', userAuthMiddleware, postDetails);
+
+export default router;

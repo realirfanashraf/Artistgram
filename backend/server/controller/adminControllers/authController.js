@@ -7,7 +7,7 @@ export const Login = async (req, res) => {
     try {
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
             const adminId = process.env.ADMIN_ID;
-            await generateTokenAdmin(res, adminId);
+            await generateTokenAdmin(res, adminId,email);
             res.status(200).json({ message: "Admin login successful",email });
         } else {
             res.status(401).json({ error: "Invalid credentials" });
