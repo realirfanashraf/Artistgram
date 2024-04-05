@@ -11,7 +11,7 @@ export const showSuccessMessage = (message) => {
 };
 
 export const showErrorMessage = (error) => {
-  let errorMessage = "An error occurred.";
+  let errorMessage = error.message
   if (error.response && error.response.data && error.response.data.error) {
     errorMessage = error.response.data.error;
   }

@@ -2,16 +2,17 @@ import { useState } from 'react';
 import axios from 'axios';
 import swal from 'sweetalert';
 import { Axios } from '../../axios/adminInstance.js';
+import { showErrorMessage } from '../../helper/sweetalert.js';
 
 const EventAddModal = ({ isOpen, onClose, updateEvents }) => {
-    const PRESET_KEY = import.meta.env.VITE_PRESET_KEY
-    const CLOUD_NAME = import.meta.env.VITE_CLOUD_NAME
-    const CLOUD_UPLOAD_URL = import.meta.env.VITE_CLOUD_UPLOAD_URL
+  const PRESET_KEY = import.meta.env.VITE_PRESET_KEY;
+  const CLOUD_NAME = import.meta.env.VITE_CLOUD_NAME;
+  const CLOUD_UPLOAD_URL = import.meta.env.VITE_CLOUD_UPLOAD_URL;
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [image, setImage] = useState(null);
-  const [location, setLocation] =useState('')
+  const [location, setLocation] = useState('');
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -21,12 +22,20 @@ const EventAddModal = ({ isOpen, onClose, updateEvents }) => {
     setDescription(e.target.value);
   };
 
-  const handleLocationChange = (e)=>{
+  const handleLocationChange = (e) => {
     setLocation(e.target.value);
-  }
+  };
 
   const handleDateChange = (e) => {
-    setDate(e.target.value);
+    const selectedDate = new Date(e.target.value);
+    const currentDate = new Date();
+
+    if (selectedDate < currentDate) {
+      showErrorMessage({ message: "Please provide a valid future date." });
+      setDate('');
+    } else {
+      setDate(e.target.value);
+    }
   };
 
   const handleImageChange = (e) => {
@@ -37,18 +46,17 @@ const EventAddModal = ({ isOpen, onClose, updateEvents }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!image || !title || !description || !date) {
+    if (!image || !title || !description || !date || !location) {
       return swal('Error', 'Please provide all details.', 'error');
     }
 
     try {
       const formData = new FormData();
       formData.append('file', image);
-      formData.append('upload_preset', `${PRESET_KEY}`);
-      formData.append('cloud_name', `${CLOUD_NAME}`);
-      const response = await axios.post(`${CLOUD_UPLOAD_URL}`, formData);
-        console.log(response)
-
+      formData.append('upload_preset', PRESET_KEY);
+      formData.append('cloud_name', CLOUD_NAME);
+      const response = await axios.post(CLOUD_UPLOAD_URL, formData);
+      
       if (response.status === 200) {
         await Axios.post('/action/addEvent', {
           title,
@@ -57,7 +65,6 @@ const EventAddModal = ({ isOpen, onClose, updateEvents }) => {
           date,
           imageUrl: response.data.url,
         });
-        // updateEvents();
         swal('Event Added!', 'Your event has been successfully added.', 'success');
         onClose();
       } else {
