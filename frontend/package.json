@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@material-tailwind/react": "^2.1.9",
     "@reduxjs/toolkit": "^2.2.1",
     "axios": "^1.6.7",
     "chart.js": "^4.4.2",
@@ -19,6 +20,7 @@
     "react-icons": "^5.0.1",
     "react-redux": "^9.1.0",
     "react-router-dom": "^6.22.0",
+    "react-toastify": "^10.0.5",
     "simple-peer": "^9.11.1",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",

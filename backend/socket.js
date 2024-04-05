@@ -32,20 +32,19 @@ io.on('connection', (socket) => {
     });
 
     socket.on('message', (data) => {
-        const { sender, receiver, content } = data;
-        const message = new messageSchema({ sender, receiver, content });
+        const { sender, receiver, content, senderName } = data;
+        const message = new messageSchema({ sender, receiver, content, senderName });
         message.save();
-        io.emit('message', message);
+        const userSocketId = users[receiver];
+        io.to(userSocketId).emit('message', message);
     });
 
     socket.on('typing', ({ receiver, isTyping }) => {
-      console.log("user typing socket");
-      console.log(receiver,isTyping,"comes from the fromtend")
+      
       const userSocketId = users[receiver];
-      console.log(users,"users list")
-      console.log(userSocketId,"socket id")
+      console.log(userSocketId,"sokcetid is here")
       if (userSocketId) {
-        io.to(userSocketId).emit('typing', { isTyping });
+        io.to(userSocketId).emit('typing', { isTyping, receiver });
       }
     });
 
@@ -83,8 +82,9 @@ io.on('connection', (socket) => {
 
 
       socket.on("callEnded", (data) => {
-        const userSocketId = users[data]
-    
+        const {userId} = data
+        const userSocketId = users[userId]
+    console.log(userSocketId,"socketId")
         if (userSocketId) {
           io.to(userSocketId).emit("callEnded");
         } else {

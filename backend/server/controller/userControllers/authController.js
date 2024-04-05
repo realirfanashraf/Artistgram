@@ -29,8 +29,9 @@ export const signin = async (req, res) => {
   const { email, password } = req.body;
   try {
     const result = await signinUser(email, password);
+    console.log(result)
     if (result.success) {
-      await generateTokenUser(res, result.user._id);
+      await generateTokenUser(res, result.user._id,result.user.email);
       return res.status(200).json({
         message: "Successfully Signed In",
         user: result.user

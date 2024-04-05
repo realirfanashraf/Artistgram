@@ -43,7 +43,7 @@ const NewPostModal = ({ isOpen, onClose, updatePosts }) => {
           imageUrl: response.data.url,
           id: user?._id
         });
-        updatePosts({
+        updatePosts?.({
           _id: response.data.postId,
           caption,
           image: response.data.url

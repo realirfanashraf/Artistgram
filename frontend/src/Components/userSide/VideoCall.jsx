@@ -1,4 +1,4 @@
-import  { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IoMdCall } from "react-icons/io";
 import { MdCallEnd } from "react-icons/md";
 import { CiMicrophoneOn } from "react-icons/ci";
@@ -44,7 +44,7 @@ const VideoCall = ({
         }
       }
     };
-    
+
     initializeVideoCall();
 
     return () => {
@@ -238,35 +238,40 @@ const VideoCall = ({
         peerConnectionRef.current = null;
       }
       onClose();
+      
+      
     });
   }, [socket.current, stream]);
 
   const handleCallEnd = () => {
-    console.log("inside cal end");
     onClose();
-
+  
     if (stream) {
+      
       stream.getTracks().forEach((track) => {
         track.stop();
       });
     }
-
+  
     if (myVideo.current) {
       myVideo.current.srcObject = null;
     }
-
+  
     if (userVideo.current) {
       userVideo.current.srcObject = null;
     }
-
+  
     if (peerConnectionRef.current) {
       peerConnectionRef.current.close();
       peerConnectionRef.current = null;
     }
+  
     setCallEnded(true);
-
+  
     socket.current.emit("callEnded", { userId: receiverId });
+   
   };
+  
 
   const toggleAudioMute = async () => {
     const tracks = await myVideo.current.srcObject.getAudioTracks();
@@ -283,78 +288,81 @@ const VideoCall = ({
 
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-  <div id="video-call-modal">
-    {isIncomingCall ? "Incoming Video Call" : "Ongoing Video Call"}
-  </div>
-
-  <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-    {stream && (
-      <>
-        <video
-          playsInline
-          ref={myVideo}
-          autoPlay
-          style={{
-            width: callAccepted ? "150px" : "100%", // Adjusted width for responsiveness
-            maxWidth: "800px", // Max width for larger screens
-            marginBottom: "1rem",
-            position: callAccepted && !callEnded ? "absolute" : "static",
-            top: callAccepted && !callEnded ? "140px" : "auto", // Adjusted top position
-            right: callAccepted && !callEnded ? "130px" : "auto", // Adjusted right position
-            zIndex: callAccepted && !callEnded ? 1 : "auto",
-            border: callAccepted && !callEnded ? "1px solid red" : "none",
-            borderRadius: callAccepted && !callEnded ? "8px" : "0",
-            boxShadow: callAccepted && !callEnded ? "5px" : "none",
-          }}
-        />
-        {!isIncomingCall && !callAccepted && <h4>Calling....</h4>}
-      </>
-    )}
-    {isIncomingCall && !callAccepted && (
-      <div>
-        <h1>{name} is calling...</h1>
+    <div className="flex flex-col items-center">
+      <div className='font-protest mt-3 mb-3'>
+        {isIncomingCall ? "Incoming Video Call" : "Ongoing Video Call"}
       </div>
-    )}
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <button
-        color={isAudioMuted ? "primary" : "secondary"}
-        onClick={toggleAudioMute}
-      >
-        {isAudioMuted ? <CiMicrophoneOn size={30} /> : <CiMicrophoneOff size={30}/>}
-      </button>
-      {isIncomingCall && !callAccepted && (
-        <button
-          color="primary"
-          onClick={() => answerCall(caller, callerSignal)}
-        >
-          <IoMdCall size={27}/>
-        </button>
-      )}
-      <button
-        color="secondary"
-        onClick={handleCallEnd}
-      >
-        <MdCallEnd size={27}/>
-      </button>
-    </div>
-  </div>
+      <div>
+        {stream && (
+          <>
+            <video
+              playsInline
+              ref={myVideo}
+              autoPlay
+              style={{
+                width: callAccepted ? "150px" : "100%",
+                maxWidth: "450px",
+                marginBottom: "1rem",
+                position: callAccepted && !callEnded ? "absolute" : "static",
+                top: callAccepted && !callEnded ? "140px" : "auto",
+                right: callAccepted && !callEnded ? "130px" : "auto",
+                zIndex: callAccepted && !callEnded ? 1 : "auto",
+                border: callAccepted && !callEnded ? "1px solid red" : "none",
+                borderRadius: callAccepted && !callEnded ? "8px" : "0",
+                boxShadow: callAccepted && !callEnded ? "5px" : "none",
+              }}
+            />
+            {!isIncomingCall && !callAccepted && <h4>Calling....</h4>}
+          </>
+        )}
+        {isIncomingCall && !callAccepted && (
+          <div>
+            <h1 className='font-protest'>{name} is calling...</h1>
+          </div>
+        )}
 
-  <div style={{ display: callAccepted && !callEnded ? "block" : "none", width: "100%", maxWidth: "400px" }}>
-    <video
-      style={{
-        width: "100%",
-        height: "300px",
-        border: "1px solid red",
-        borderRadius: "8px",
-      }}
-      playsInline
-      ref={userVideo}
-      autoPlay
-      muted
-    />
-  </div>
-</div>
+        
+        <div className="flex justify-center space-x-4">
+          <button
+            className={`btn ${isAudioMuted ? "btn-primary" : "btn-secondary"} rounded-full bg-white hover:bg-thirdShade`}
+            onClick={toggleAudioMute}
+          >
+            {isAudioMuted ? <CiMicrophoneOn size={30} /> : <CiMicrophoneOff size={30} />}
+          </button>
+          {isIncomingCall && !callAccepted && (
+            <button
+              className="btn btn-primary rounded-full bg-white hover:bg-thirdShade"
+              onClick={() => answerCall(caller, callerSignal)}
+            >
+              <IoMdCall size={27} />
+            </button>
+          )}
+          <button
+            className="btn btn-secondary rounded-full bg-white hover:bg-thirdShade"
+            onClick={handleCallEnd}
+          >
+            <MdCallEnd size={27} />
+          </button>
+        </div>
+
+
+      </div>
+
+      <div style={{ display: callAccepted && !callEnded ? "block" : "none", width: "100%", maxWidth: "400px" }}>
+        <video
+          style={{
+            width: "100%",
+            height: "300px",
+            border: "1px solid red",
+            borderRadius: "8px",
+          }}
+          playsInline
+          ref={userVideo}
+          autoPlay
+          muted
+        />
+      </div>
+    </div>
 
 
 
