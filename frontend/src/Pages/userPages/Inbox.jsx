@@ -34,13 +34,13 @@ const Inbox = () => {
 
     useEffect(() => {
         if (data && data._id) {
-          console.log(data,"inside the useEffect");
+            console.log(data, "inside the useEffect");
             setUsers([data])
-          setSelectedUser(data._id);
-          fetchMessages(data._id);
-          location.state = null;
+            setSelectedUser(data._id);
+            fetchMessages(data._id);
+            location.state = null;
         }
-      }, []);
+    }, []);
 
     useEffect(() => {
         const socketServerUrl = import.meta.env.VITE_SOCKET_SERVER_URL
@@ -127,6 +127,7 @@ const Inbox = () => {
         socket.current.emit('message', newMessage);
         setMessages(prevMessages => [...prevMessages, newMessage]);
         setMessageInput("");
+        fetchUsers()
     };
 
 
@@ -141,13 +142,22 @@ const Inbox = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await Axios.get("/api/following");
-            console.log(response.data,"fetching users....")
-            if (Array.isArray(response.data)) {
-                setUsers(prevUsers => [...prevUsers, ...response.data]);
-            } else {
-                console.error("Invalid response format: Expected an array");
-            }
+            const response = await Axios.get("/api/usersToChat");
+            console.log(response.data, "fetching users....")
+            const data = response.data
+            const filtered = data.filter(d => d.userId._id != userData._id)
+            console.log(filtered, "filtered")
+            const usergetting = filtered.map(item => {
+                // Create a new object for userId
+                return {
+                    ...item.userId,
+                    lastMessage: item.latestMessage.content
+                };
+            });
+
+            console.log(usergetting, "final output");
+            setUsers(usergetting)
+
         } catch (error) {
             console.error("Error fetching following:", error);
         }
@@ -192,8 +202,6 @@ const Inbox = () => {
 
     return (
         <>
-        
-
             <Navbar />
             {isModalOpen && (
                 <VideoCall
@@ -226,7 +234,12 @@ const Inbox = () => {
                                     <div className="">
                                         <img src={user.ProfilePicture} alt="" className="w-10 h-10 bg-gray-400 rounded-full" />
                                     </div>
-                                    <span className="ml-2 hidden md:inline-block font-protest">{user.name}</span>
+                                    <div className='flex flex-col  items-start '>
+                                        <span className="ml-2 mb-2 md:mb-0 md:mr-2 font-protest">{user.name}</span>
+                                        <p className="ml-2">{user.lastMessage}</p>
+                                    </div>
+
+
                                 </div>
                             ))}
                         </div>

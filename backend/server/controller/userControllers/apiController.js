@@ -286,40 +286,54 @@ export const getEvents = async (req, res) => {
 export const usersToChat = async (req, res) => {
   try {
     const { userId } = req.query;
-    const messages = await messageSchema.find({
-      $or: [{ sender: userId }, { receiver: userId }],
-    }).sort({ timestamp: -1 });
 
-    console.log(messages, "messages");
+    // Fetch all unique users
+    const senders = await messageSchema.distinct('sender');
+    const receivers = await messageSchema.distinct('receiver');
+    const users = [...new Set([...senders, ...receivers])];
 
-    const receiverIds = [];
-    const uniqueGroups = new Set();
-    messages.forEach((message) => {
-      const sender = message.sender.toString(); // Convert ObjectId to string
-      const receiver = message.receiver.toString(); // Convert ObjectId to string
-      const group = `${sender}-${receiver}`;
-      uniqueGroups.add(group);
-    });
+    // Find the latest message for each user
+    const latestMessages = {};
+    for (const userId of users) {
+      const latestMessage = await messageSchema.findOne({ $or: [{ sender: userId }, { receiver: userId }] })
+        .sort({ timestamp: -1 });
+      latestMessages[userId] = latestMessage ? latestMessage : null;
+    }
 
-    // Extract unique receiver IDs from uniqueGroups set
-    uniqueGroups.forEach((group) => {
-      const [, receiverId] = group.split('-');
-      if (receiverId !== userId && !receiverIds.includes(receiverId)) {
-        receiverIds.push(receiverId);
+    // Construct the response with unique users
+    const uniqueUsersWithLatestMessage = {};
+    for (const userId of users) {
+      if (!(userId in uniqueUsersWithLatestMessage)) {
+        uniqueUsersWithLatestMessage[userId] = {
+          userId,
+          latestMessage: latestMessages[userId]
+        };
       }
-    });
+    }
 
-    // console.log(uniqueGroups, "uniquegroupus");
-    console.log(receiverIds, "receiverIds");
+    // Convert the object to an array
+    const usersArray = Object.values(uniqueUsersWithLatestMessage);
 
-    // Now you can use the receiverIds array for further processing
-    const users = await userSchema.find({ _id: { $in: receiverIds } });
-    console.log(users,"wejfkljf")
-    res.status(200).json(users)
+    // Sort users based on the timestamp of their latest message
+    usersArray.sort((a, b) => (b.latestMessage?.timestamp || 0) - (a.latestMessage?.timestamp || 0));
+
+    console.log(usersArray, "unique users with latest message");
+    for(let users of usersArray){
+      const user = await userSchema.findById(users.userId)
+      users.userId = user
+    }
+    console.log(usersArray,"after populating")
+    // Send the response
+    res.status(200).json(usersArray);
   } catch (error) {
-    console.log(error);
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
+
+
 
 
 
