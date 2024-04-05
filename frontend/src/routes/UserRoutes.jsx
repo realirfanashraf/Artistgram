@@ -7,6 +7,7 @@ import ForgotPassword from '../Pages/userPages/authPages/ForgotPassword';
 import Profile from '../Pages/userPages/Profile';
 import Inbox from '../Pages/userPages/Inbox';
 import Event from '../Pages/userPages/Event';
+import RemoteUserProfile from '../Pages/userPages/RemoteUserProfile'
 import { AuthRoute, PrivateRoute } from '../Components/userSide/RouteHandler';
 
 function UserRoutes({ isAuthenticated }) {
@@ -20,6 +21,8 @@ function UserRoutes({ isAuthenticated }) {
       <Route path="/profile" element={<PrivateRoute component={Profile} isAuthenticated={isAuthenticated} />} />
       <Route path="/inbox" element={<PrivateRoute component={Inbox} isAuthenticated={isAuthenticated} />} />
       <Route path="/event" element={<PrivateRoute component={Event} isAuthenticated={isAuthenticated} />} />
+      <Route path="/remoteUserProfile/:userId" element={<PrivateRoute component={RemoteUserProfile} isAuthenticated={isAuthenticated} />} />
+
     </Routes>
   );
 }

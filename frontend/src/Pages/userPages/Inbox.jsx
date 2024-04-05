@@ -6,10 +6,13 @@ import { useSelector } from 'react-redux';
 import VideoCall from '../../Components/userSide/VideoCall.jsx';
 import { CiVideoOn } from "react-icons/ci";
 import { toast } from 'react-toastify';
+import { useLocation } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 
 
+
 const Inbox = () => {
+    const location = useLocation();
     const socket = useRef(null);
     const [selectedUser, setSelectedUser] = useState(null);
     const [messageInput, setMessageInput] = useState("");
@@ -26,9 +29,18 @@ const Inbox = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isTyping, setIsTyping] = useState(false);
     const [messageReciever, setMessageReciever] = useState(null)
-
+    const { data } = location.state || {};
     const messageContainerRef = useRef(null)
 
+    useEffect(() => {
+        if (data && data._id) {
+          console.log(data,"inside the useEffect");
+            setUsers([data])
+          setSelectedUser(data._id);
+          fetchMessages(data._id);
+          location.state = null;
+        }
+      }, []);
 
     useEffect(() => {
         const socketServerUrl = import.meta.env.VITE_SOCKET_SERVER_URL
@@ -47,6 +59,8 @@ const Inbox = () => {
             messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
         }
     };
+
+
 
 
     useEffect(() => {
@@ -128,9 +142,9 @@ const Inbox = () => {
     const fetchUsers = async () => {
         try {
             const response = await Axios.get("/api/following");
-            console.log(response.data,"fklasdj;")
+            console.log(response.data,"fetching users....")
             if (Array.isArray(response.data)) {
-                setUsers(response.data);
+                setUsers(prevUsers => [...prevUsers, ...response.data]);
             } else {
                 console.error("Invalid response format: Expected an array");
             }
@@ -143,10 +157,10 @@ const Inbox = () => {
         try {
             const response = await Axios.get(`/api/messages/${selectedUserId}`)
             setMessages(response.data);
-            const selectedUser = users.find(user => user?.followingId._id === selectedUserId);
+            const selectedUser = users.find(user => user?._id === selectedUserId);
             if (selectedUser) {
-                setSelectedUserName(selectedUser?.followingId.name);
-                setSelectedUserProfilePicture(selectedUser?.followingId.ProfilePicture);
+                setSelectedUserName(selectedUser?.name);
+                setSelectedUserProfilePicture(selectedUser?.ProfilePicture);
             }
         } catch (error) {
             console.error("Error fetching messages:", error);
@@ -167,8 +181,6 @@ const Inbox = () => {
             });
         }
     }, [socket.current]);
-
-
 
     const handleVideoCallClick = (selectedUser) => {
         setIsModalOpen(true);
@@ -207,14 +219,14 @@ const Inbox = () => {
                                     key={index}
                                     className="flex items-center mb-2 cursor-pointer hover:bg-gray-200 rounded-lg  p-2"
                                     onClick={() => {
-                                        setSelectedUser(user.followingId._id);
-                                        fetchMessages(user.followingId._id);
+                                        setSelectedUser(user._id);
+                                        fetchMessages(user._id);
                                     }}
                                 >
                                     <div className="">
-                                        <img src={user.followingId.ProfilePicture} alt="" className="w-10 h-10 bg-gray-400 rounded-full" />
+                                        <img src={user.ProfilePicture} alt="" className="w-10 h-10 bg-gray-400 rounded-full" />
                                     </div>
-                                    <span className="ml-2 hidden md:inline-block font-protest">{user.followingId.name}</span>
+                                    <span className="ml-2 hidden md:inline-block font-protest">{user.name}</span>
                                 </div>
                             ))}
                         </div>

@@ -12,7 +12,8 @@ import {
     reportPost,
     getMessages,
     getRating,
-    submitRating 
+    submitRating,
+    remoteUserDetails 
 } from '../../controller/userControllers/apiController.js';
 
 import { authenticateAndAuthorize } from '../../middleware/auth.js';
@@ -34,5 +35,6 @@ router.post('/unfollow/:followerId', userAuthMiddleware, unfollowUser);
 router.get('/getEvents', userAuthMiddleware, getEvents);
 router.get('/usersToChat', userAuthMiddleware, usersToChat);
 router.get('/posts/:postId', userAuthMiddleware, postDetails);
+router.get('/remoteUserDetails/:userId',userAuthMiddleware,remoteUserDetails)
 
 export default router;
