@@ -6,9 +6,11 @@ import { Axios } from '../../axios/userInstance.js';
 import PostContainer from "../../Components/userSide/home/PostContainer.jsx";
 import { useSelector } from "react-redux";
 import { CiSquarePlus } from "react-icons/ci";
+import {useNavigate} from 'react-router-dom'
 import NewPostModal from '../../modal/userModal/NewPostModal.jsx';
 
 const Home = () => {
+  const navigate = useNavigate()
   const [hovered, setHovered] = useState(false);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -36,7 +38,7 @@ const Home = () => {
       })
       .finally(() => {
         setLoading(false);
-        setInitialLoadDone(true); // Mark initial load as done
+        setInitialLoadDone(true); 
       });
   };
 
@@ -65,6 +67,7 @@ const Home = () => {
       })
       .catch(error => {
         console.error('Error fetching data:', error);
+        
       })
       .finally(() => {
         setPostLoading(false);

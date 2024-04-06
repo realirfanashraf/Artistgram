@@ -59,22 +59,23 @@ const UserManagementTable = () => {
     }, []);
 
     return (
-        <div className="bg-gray-300 p-4 rounded-md mx-10 my-10">
-            <div className='flex justify-center mb-4'>
-                <div className="flex items-center rounded-md bg-gray-100 shadow-sm sm:px-2 sm:py-1" style={{ width: '50%' }}>
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="flex-grow outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md px-2 py-1"
-                        value={searchQuery}
-                        onChange={handleSearch}
-                    />
-                    <div className="ml-1 p-1 rounded-md hover:bg-gray-200 focus:outline-none sm:h-8 sm:w-8" style={{ height: '24px' }}>
-                        <IoSearch size={16} className="text-gray-500" />
-                    </div>
+        <div className="bg-gray-300 p-4 rounded-md mx-10 my-10 " style={{ overflow: 'hidden' }}>
+        <div className='flex justify-center mb-4'>
+            <div className="flex items-center rounded-md bg-gray-100 shadow-sm sm:px-2 sm:py-1" style={{ width: '50%' }}>
+                <input
+                    type="text"
+                    placeholder="Search..."
+                    className="flex-grow outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md px-2 py-1"
+                    value={searchQuery}
+                    onChange={handleSearch}
+                />
+                <div className="ml-1 p-1 rounded-md hover:bg-gray-200 focus:outline-none sm:h-8 sm:w-8" style={{ height: '24px' }}>
+                    <IoSearch size={16} className="text-gray-500" />
                 </div>
             </div>
-
+        </div>
+    
+        <div className="overflow-y-auto no-scrollbar" style={{ maxHeight: '370px' }}>
             <table className="min-w-full divide-y divide-gray-200 rounded-lg">
                 <thead className="bg-gray-50">
                     <tr>
@@ -92,6 +93,7 @@ const UserManagementTable = () => {
                         </th>
                     </tr>
                 </thead>
+    
                 <tbody className="bg-white divide-y divide-gray-200">
                     {users.map((user, index) => (
                         <tr key={user._id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
@@ -118,9 +120,10 @@ const UserManagementTable = () => {
                         </tr>
                     ))}
                 </tbody>
-
             </table>
         </div>
+    </div>
+    
     );
 };
 

@@ -48,11 +48,11 @@ const Event = () => {
       </button>
     </div>
   </div>
-  <div className="container mx-auto mt-8 grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
+  <div className="container mx-auto mt-8 grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
     {filteredEvents.map((event) => (
       <div key={event._id} className="max-w-md mx-auto bg-white rounded-lg overflow-hidden shadow-md">
         <img
-          className="w-full h-64 object-cover object-center"
+          className="w-80 h-64 object-cover object-center"
           src={event.image}
           alt="Event"
         />

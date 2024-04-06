@@ -12,7 +12,7 @@ const UserManagement = () => {
       <AdminSideBar />
     </div>
     
-    <div className="flex-grow">
+    <div className="grow">
       <UserManagementTable />
     </div>
   </div>

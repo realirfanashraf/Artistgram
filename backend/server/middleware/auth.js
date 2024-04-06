@@ -36,6 +36,7 @@ export const authenticateAndAuthorize = (requiredRole) => async (req, res, next)
                 }
 
                 if (user.isBlocked) {
+                    res.clearCookie('jwtuser')
                     return res.status(403).json({ message: 'User is blocked' });
                 }
                 return next(); 
