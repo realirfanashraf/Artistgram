@@ -26,7 +26,7 @@ const Rating = ({ postId }) => {
     try {
       if (rating !== null) {
         await Axios.post(`/api/ratePost/${postId}`, { rating });
-        await fetchRatingData(); // Update average rating after submitting rating
+        await fetchRatingData(); 
       }
     } catch (error) {
       console.log(error);
@@ -50,7 +50,7 @@ const Rating = ({ postId }) => {
               color={currentRating <= (hover || rating) ? "#ffc107" : "#e4e5e9"}
               onMouseEnter={() => setHover(currentRating)}
               onMouseLeave={() => setHover(null)}
-              onClick={handleRatingSubmit} // Call handleRatingSubmit on click
+              onClick={handleRatingSubmit} 
             />
           </label>
         );

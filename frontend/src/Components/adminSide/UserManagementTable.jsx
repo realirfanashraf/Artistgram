@@ -3,8 +3,6 @@ import { Axios } from "../../axios/adminInstance";
 import { IoSearch } from "react-icons/io5";
 import { showSuccessMessage, showErrorMessage } from "../../helper/sweetalert.js"
 
-
-
 const UserManagementTable = () => {
     const [users, setUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");

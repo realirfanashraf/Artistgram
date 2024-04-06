@@ -19,14 +19,12 @@ const Navbar = () => {
           </div>
           <div className="flex items-center">
             <div className="hidden md:block">
-              {/* Desktop navigation links */}
               <Link to='/home' className='navLinks'>Home</Link>
               <Link to='/event' className='navLinks'>Event</Link>
               <Link to='/inbox' className='navLinks'>Inbox</Link>
               <Link to='/profile' className='navLinks'>Profile</Link>
             </div>
             <div className="md:hidden">
-              {/* Mobile menu button */}
               <button onClick={toggleNavbar} className="text-gray-300 hover:text-white focus:outline-none focus:text-white px-4 py-2">
                 {isOpen ? (
                   <svg className="h-6 w-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -42,11 +40,9 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-      {/* Mobile menu */}
       {isOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {/* Mobile navigation links */}
             <Link to='/home' className='navLinks block'>Home</Link>
             <Link to='/event' className='navLinks block'>Event</Link>
             <Link to='/inbox' className='navLinks block'>Inbox</Link>
