@@ -10,7 +10,6 @@ const ReportManagementTable = () => {
     const [reportedPost, setReportedPost] = useState('')
     const [currentReportId, setCurrentReportId] = useState('')
 
-
     const handleViewReport = async (reportId) => {
         try {
             const response = await Axios.get(`/api/getReportData/${reportId}`);

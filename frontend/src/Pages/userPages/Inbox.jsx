@@ -43,7 +43,7 @@ const Inbox = () => {
     }, []);
 
     useEffect(() => {
-        const socketServerUrl = import.meta.env.VITE_SOCKET_SERVER_URL
+        const socketServerUrl = import.meta.env.VITE_SERVER_URL
         socket.current = socketIOClient(socketServerUrl);
         return () => {
             socket.current.disconnect();
