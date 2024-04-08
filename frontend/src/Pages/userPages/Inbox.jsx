@@ -60,9 +60,6 @@ const Inbox = () => {
         }
     };
 
-
-
-
     useEffect(() => {
         fetchUsers();
     }, []);
@@ -79,7 +76,7 @@ const Inbox = () => {
         return () => {
             socket.current.off('message', handleMessage);
         };
-    }, []);
+    }, [selectedUser]);
 
     useEffect(() => {
         socket.current.on("myID", (id) => {
@@ -132,10 +129,10 @@ const Inbox = () => {
 
 
     const handleMessage = (message) => {
-        console.log("handlemessafge")
-        setMessages(prevMessages => [...prevMessages, message]);
+       if(selectedUser == message.sender){
+           setMessages(prevMessages => [...prevMessages, message]);
+       }
         if (message.sender !== userData._id) {
-
             toast.info(`${message.senderName} sent you a new message`);
         }
     };
@@ -148,14 +145,11 @@ const Inbox = () => {
             const filtered = data.filter(d => d.userId._id != userData._id)
             console.log(filtered, "filtered")
             const usergetting = filtered.map(item => {
-                // Create a new object for userId
                 return {
                     ...item.userId,
                     lastMessage: item.latestMessage.content
                 };
             });
-
-            console.log(usergetting, "final output");
             setUsers(usergetting)
 
         } catch (error) {
