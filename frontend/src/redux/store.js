@@ -3,11 +3,13 @@ import authReducer from './slices/userSlices/authSlice.js'
 import adminAuthReducer from './slices/adminSlices/adminAuthSlice.js'
 import userInfoReducer from './slices/userSlices/userInfoSlice.js'
 import adminInfoReducer from './slices/adminSlices/adminInfoSlice.js'
+import selectedUserReducer from './slices/userSlices/selectedUser.js';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     userInfo: userInfoReducer,
+    selectedUser:selectedUserReducer,
     adminAuth: adminAuthReducer,
     adminInfo: adminInfoReducer
   },

@@ -6,7 +6,7 @@ import reportSchema from '../../model/adminModels/reportModel.js'
 import messageSchema from '../../model/userModels/messageModel.js';
 import ratingSchema from '../../model/userModels/ratingModel.js';
 import eventSchema from '../../model/adminModels/eventModel.js'
-import mongoose from 'mongoose';
+
 
 
 
@@ -214,8 +214,8 @@ export const unfollowUser = async (req, res) => {
 
 export const getEvents = async (req, res) => {
   try {
-    const events = await eventSchema.find();
-    if (events) {
+    const events = await eventSchema.find({ isBlocked: false });
+    if (events.length > 0) {
       res.status(200).json(events);
     } else {
       res.status(404).json({ message: "No events found" });
@@ -225,6 +225,7 @@ export const getEvents = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 
@@ -285,40 +286,54 @@ export const getEvents = async (req, res) => {
 export const usersToChat = async (req, res) => {
   try {
     const { userId } = req.query;
-    const messages = await messageSchema.find({
-      $or: [{ sender: userId }, { receiver: userId }],
-    }).sort({ timestamp: -1 });
 
-    console.log(messages, "messages");
+    // Fetch all unique users
+    const senders = await messageSchema.distinct('sender');
+    const receivers = await messageSchema.distinct('receiver');
+    const users = [...new Set([...senders, ...receivers])];
 
-    const receiverIds = [];
-    const uniqueGroups = new Set();
-    messages.forEach((message) => {
-      const sender = message.sender.toString(); // Convert ObjectId to string
-      const receiver = message.receiver.toString(); // Convert ObjectId to string
-      const group = `${sender}-${receiver}`;
-      uniqueGroups.add(group);
-    });
+    // Find the latest message for each user
+    const latestMessages = {};
+    for (const userId of users) {
+      const latestMessage = await messageSchema.findOne({ $or: [{ sender: userId }, { receiver: userId }] })
+        .sort({ timestamp: -1 });
+      latestMessages[userId] = latestMessage ? latestMessage : null;
+    }
 
-    // Extract unique receiver IDs from uniqueGroups set
-    uniqueGroups.forEach((group) => {
-      const [, receiverId] = group.split('-');
-      if (receiverId !== userId && !receiverIds.includes(receiverId)) {
-        receiverIds.push(receiverId);
+    // Construct the response with unique users
+    const uniqueUsersWithLatestMessage = {};
+    for (const userId of users) {
+      if (!(userId in uniqueUsersWithLatestMessage)) {
+        uniqueUsersWithLatestMessage[userId] = {
+          userId,
+          latestMessage: latestMessages[userId]
+        };
       }
-    });
+    }
 
-    // console.log(uniqueGroups, "uniquegroupus");
-    console.log(receiverIds, "receiverIds");
+    // Convert the object to an array
+    const usersArray = Object.values(uniqueUsersWithLatestMessage);
 
-    // Now you can use the receiverIds array for further processing
-    const users = await userSchema.find({ _id: { $in: receiverIds } });
-    console.log(users,"wejfkljf")
-    res.status(200).json(users)
+    // Sort users based on the timestamp of their latest message
+    usersArray.sort((a, b) => (b.latestMessage?.timestamp || 0) - (a.latestMessage?.timestamp || 0));
+
+    console.log(usersArray, "unique users with latest message");
+    for(let users of usersArray){
+      const user = await userSchema.findById(users.userId)
+      users.userId = user
+    }
+    console.log(usersArray,"after populating")
+    // Send the response
+    res.status(200).json(usersArray);
   } catch (error) {
-    console.log(error);
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
+
+
 
 
 
@@ -337,6 +352,25 @@ export const postDetails = async (req, res) => {
   } catch (error) {
     console.error('Error fetching post details:', error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+
+export const remoteUserDetails = async (req, res) => {
+  try {
+      const userId = req.params.userId
+      const userData = await userSchema.findById(userId);
+      const postsData = await postSchema.find({ postedBy: userId });
+      if (userData) {
+          res.status(200).json({ userData, postsData });
+      } else {
+          res.status(404).json({ error: 'User not found' });
+      }
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Internal server error' });
   }
 };
 

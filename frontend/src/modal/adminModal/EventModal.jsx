@@ -23,9 +23,15 @@ const EventModal = ({ isOpen, onClose, event, fetchEvents }) => {
     }
   };
 
-  const handleDeleteEvent = async () => {
+  const handleActionEvent = async (actionType) => {
     try {
-      const response = await Axios.post(`/action/deleteEvent/${editedEvent._id}`);
+      let response;
+      if (actionType === 'block') {
+        response = await Axios.post(`/action/blockEvent/${editedEvent._id}`);
+      } else if (actionType === 'unblock') {
+        response = await Axios.post(`/action/unblockEvent/${editedEvent._id}`);
+      }
+      
       if (response.status === 200) {
         showSuccessMessage(response.data.message);
         fetchEvents();
@@ -37,52 +43,62 @@ const EventModal = ({ isOpen, onClose, event, fetchEvents }) => {
   };
 
   return (
-    <div className={`modal ${isOpen ? 'is-active' : ''}`}>
-      <div className="bg-thirdShade rounded-lg overflow-hidden py-8 px-16 max-w-md mx-auto">
-        <h2 className="text-2xl font-protest mb-3 text-center">Event Details</h2>
-        <div className='flex flex-col items-center'>
-          {/* Assuming event.image is the image URL */}
-          <div className="h-56 w-full mb-3">
-            <img src={editedEvent.image} alt="Event" className="max-w-full max-h-full rounded-lg" />
-          </div>
-          <div className="field mb-3 text-center">
-            <label className="block text-sm font-protest">Description</label>
-            <input
-              type="text"
-              name="description"
-              value={editedEvent.description}
-              onChange={handleInputChange}
-              className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          <div className="field mb-3 text-center">
-            <label className="block text-sm font-protest">Location</label>
-            <input
-              type="text"
-              name="location"
-              value={editedEvent.location}
-              onChange={handleInputChange}
-              className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          <div className="field mb-3 text-center">
-            <label className="block text-sm font-protest">Date</label>
-            <input
-              type="date"
-              name="date"
-              value={editedEvent.date ? editedEvent.date.substring(0, 10) : ''}
-              onChange={handleInputChange}
-              className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
+    <div className={`modal ${isOpen ? 'is-active' : ''} `}>
+  <div className="bg-thirdShade rounded-lg overflow-hidden py-8 px-16 max-w-md mx-auto">
+    <h2 className="text-2xl font-protest mb-6 text-center">Event Details</h2>
+    <div className="flex flex-col space-y-4">
+      <div className="card relative w-full h-48 rounded-lg overflow-hidden">
+        <img src={editedEvent.image} alt="Event" className="object-cover w-full h-full absolute top-0 left-0" />
+      </div>
+      <div className="w-full">
+        <div className="field mb-4">
+          <label className="block text-sm font-protest mb-1">Description</label>
+          <input
+            type="text"
+            name="description"
+            value={editedEvent.description}
+            onChange={handleInputChange}
+            className="input"
+          />
         </div>
-        <footer className="border-t pt-4 mt-2 flex flex-col sm:flex-row sm:justify-between">
-          <button className="button block w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mb-2 sm:mb-0 sm:mr-2" onClick={onClose}>Cancel</button>
-          <button className="button block w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded mb-2 sm:mb-0 sm:mr-2" onClick={handleDeleteEvent}>Delete</button>
-          <button className="button block w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={handleEditEvent}>Save</button>
-        </footer>
+        <div className="field mb-4">
+          <label className="block text-sm font-protest mb-1">Location</label>
+          <input
+            type="text"
+            name="location"
+            value={editedEvent.location}
+            onChange={handleInputChange}
+            className="input"
+          />
+        </div>
+        <div className="field mb-4">
+          <label className="block text-sm font-protest mb-1">Date</label>
+          <input
+            type="date"
+            name="date"
+            value={editedEvent.date ? editedEvent.date.substring(0, 10) : ''}
+            onChange={handleInputChange}
+            className="input"
+          />
+        </div>
+        {editedEvent.isBlocked && (
+          <p className="text-red-500 text-center ">This event is blocked</p>
+        )}
       </div>
     </div>
+    <footer className="border-t pt-4 flex flex-col sm:flex-row sm:justify-between">
+      <button className="button w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mb-2 sm:mb-0 sm:mr-2" onClick={onClose}>Cancel</button>
+      {editedEvent.isBlocked ? (
+        <button className="button w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded mb-2 sm:mb-0 sm:mr-2" onClick={() => handleActionEvent('unblock')}>Unblock</button>
+      ) : (
+        <button className="button w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded mb-2 sm:mb-0 sm:mr-2" onClick={() => handleActionEvent('block')}>Block</button>
+      )}
+      <button className="button w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={handleEditEvent}>Save</button>
+    </footer>
+  </div>
+</div>
+
+  
   );
 };
 

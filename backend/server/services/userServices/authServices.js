@@ -36,6 +36,10 @@ export async function signinUser(email, password) {
     const passwordMatched = await bcrypt.compare(password, user.password);
 
     if (passwordMatched) {
+      if (user.isBlocked) {
+        return { success: false, error: "Your account is blocked" };
+      }
+
       return {
         success: true,
         user: {
@@ -55,6 +59,7 @@ export async function signinUser(email, password) {
     return { success: false, error: "Internal server error" };
   }
 }
+
 
 
 export const forgotPasswordService = async (email) => {

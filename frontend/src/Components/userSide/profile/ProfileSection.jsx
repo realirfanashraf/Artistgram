@@ -40,14 +40,14 @@ const ProfileSection = () => {
         </div>
       </div>
       {showFollowerModal && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+        <div className=" fixed z-10 top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
           <div className="rounded-lg shadow-md">
             <FollowerModal isOpen={showFollowerModal} onClose={handleCloseFollowerModal} />
           </div>
         </div>
       )}
       {showFollowingModal && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="fixed z-10 top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
           <div className="rounded-lg shadow-md">
             <FollowingModal isOpen={showFollowingModal} onClose={handleCloseFollowingModal} />
           </div>

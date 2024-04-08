@@ -2,7 +2,7 @@ import axios from "axios";
 import {store} from '../redux/store.js'
 
 const Axios =  axios.create({
-    baseURL: "http://localhost:3000/admin",
+    baseURL: import.meta.env.VITE_SERVER_URL_ADMIN,
     withCredentials:true
   });
 

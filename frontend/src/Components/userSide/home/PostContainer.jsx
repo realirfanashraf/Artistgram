@@ -18,7 +18,6 @@ const PostContainer = ({ posts, postLoading, postListFinished }) => {
     setShowReportModal(true)
     setReportedPostId(postId)
     setPostedById(userId)
-
   }
 
   const handleReportModal = (e) => {
