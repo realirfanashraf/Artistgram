@@ -15,6 +15,10 @@ const eventSchema = new Schema({
         type:String,
         required:true
     },
+    amount:{
+        type:Number,
+        required:true
+    },
     image:{
         type:String,
         required:true
