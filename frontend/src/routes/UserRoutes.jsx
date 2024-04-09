@@ -11,6 +11,7 @@ import Profile from '../Pages/userPages/Profile';
 import Inbox from '../Pages/userPages/Inbox';
 import Event from '../Pages/userPages/Event';
 import RemoteUserProfile from '../Pages/userPages/RemoteUserProfile';
+import Success from '../Components/userSide/Success';
 
 function UserRoutes({ isAuthenticated }) {
   return (
@@ -50,6 +51,10 @@ function UserRoutes({ isAuthenticated }) {
       <Route
         path={routePaths.remoteUserProfile}
         element={<PrivateRoute component={RemoteUserProfile} isAuthenticated={isAuthenticated} />}
+      />
+      <Route
+        path={routePaths.success}
+        element={<PrivateRoute component={Success} isAuthenticated={isAuthenticated} />}
       />
     </Routes>
   );

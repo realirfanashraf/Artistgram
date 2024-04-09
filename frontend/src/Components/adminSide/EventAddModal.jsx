@@ -13,6 +13,7 @@ const EventAddModal = ({ isOpen, onClose, updateEvents }) => {
   const [date, setDate] = useState('');
   const [image, setImage] = useState(null);
   const [location, setLocation] = useState('');
+  const [amount, setAmount] = useState(null)
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -25,6 +26,9 @@ const EventAddModal = ({ isOpen, onClose, updateEvents }) => {
   const handleLocationChange = (e) => {
     setLocation(e.target.value);
   };
+  const handleAmountChange = (e)=>{
+    setAmount(e.target.value);
+  }
 
   const handleDateChange = (e) => {
     const selectedDate = new Date(e.target.value);
@@ -45,11 +49,11 @@ const EventAddModal = ({ isOpen, onClose, updateEvents }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!image || !title || !description || !date || !location) {
+  
+    if (!image || !title || !description || !date || !location || !amount) {
       return swal('Error', 'Please provide all details.', 'error');
     }
-
+  
     try {
       const formData = new FormData();
       formData.append('file', image);
@@ -63,6 +67,7 @@ const EventAddModal = ({ isOpen, onClose, updateEvents }) => {
           location,
           description,
           date,
+          amount, // Include amount in the request payload
           imageUrl: response.data.url,
         });
         swal('Event Added!', 'Your event has been successfully added.', 'success');
@@ -75,6 +80,7 @@ const EventAddModal = ({ isOpen, onClose, updateEvents }) => {
       swal('Error', 'Failed to add event. Please try again later.', 'error');
     }
   };
+  
 
   return (
     <div className={`modal ${isOpen ? 'is-active' : ''}`}>
@@ -100,6 +106,16 @@ const EventAddModal = ({ isOpen, onClose, updateEvents }) => {
               placeholder="Enter event Location"
               value={location}
               onChange={handleLocationChange}
+            />
+          </div>
+          <div className="field mb-4">
+            <label className="block text-sm font-protest">Registration Fee</label>
+            <input
+              type="number"
+              className="inputfield"
+              placeholder="Enter Event Registration Fee"
+              value={amount}
+              onChange={handleAmountChange}
             />
           </div>
           <div className="field mb-4">

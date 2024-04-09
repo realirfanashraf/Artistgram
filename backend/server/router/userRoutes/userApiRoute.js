@@ -37,4 +37,5 @@ router.get('/usersToChat', userAuthMiddleware, usersToChat);
 router.get('/posts/:postId', userAuthMiddleware, postDetails);
 router.get('/remoteUserDetails/:userId',userAuthMiddleware,remoteUserDetails)
 
+
 export default router;

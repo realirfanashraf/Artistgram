@@ -51,7 +51,7 @@ export const blockPost = async (req, res) => {
 
 export const addEvent = async (req, res) => {
     try {
-        const { title, description, imageUrl, date, location } = req.body;
+        const { title, description, imageUrl, date, location,amount } = req.body;
 
        
         const event = new eventSchema({
@@ -59,7 +59,8 @@ export const addEvent = async (req, res) => {
             description: description,
             image: imageUrl,
             date: date,
-            location,location
+            location:location,
+            amount:amount
         });
 
        
