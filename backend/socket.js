@@ -16,7 +16,6 @@ const users = {};
 io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
     socket.emit("myID", socket.id);
-
     socket.on('newUser', (userId) => {
         users[userId] = socket.id;
         console.log(users,"Active Users List")

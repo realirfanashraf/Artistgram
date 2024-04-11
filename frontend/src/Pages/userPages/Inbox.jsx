@@ -8,12 +8,13 @@ import { CiVideoOn } from "react-icons/ci";
 import { toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSocket } from '../../SocketContext.jsx';
 
 
 
 const Inbox = () => {
     const location = useLocation();
-    const socket = useRef(null);
+    const socket = useSocket()
     const [selectedUser, setSelectedUser] = useState(null);
     const [messageInput, setMessageInput] = useState("");
     const [messages, setMessages] = useState([]);
@@ -21,7 +22,8 @@ const Inbox = () => {
     const [selectedUserName, setSelectedUserName] = useState("");
     const [selectedUserProfilePicture, setSelectedUserProfilePicture] = useState("");
     const userData = useSelector((state) => state.userInfo.user);
-    const [myID, setMyID] = useState('');
+    console.log(userData,"sdat is her")
+    
     const [videoCall, setVideoCall] = useState(false)
     const [caller, setCaller] = useState("")
     const [callerSignal, setCallerSignal] = useState()
@@ -42,13 +44,7 @@ const Inbox = () => {
         }
     }, []);
 
-    useEffect(() => {
-        const socketServerUrl = import.meta.env.VITE_SERVER_URL
-        socket.current = socketIOClient(socketServerUrl);
-        return () => {
-            socket.current.disconnect();
-        };
-    }, []);
+
 
     useEffect(() => {
         scrollToBottom();
@@ -78,13 +74,7 @@ const Inbox = () => {
         };
     }, [selectedUser]);
 
-    useEffect(() => {
-        socket.current.on("myID", (id) => {
-            console.log(id, "my socket id");
-            setMyID(id);
-        });
-        socket.current.emit('newUser', userData._id);
-    }, []);
+    
 
 
     const startTyping = () => {
