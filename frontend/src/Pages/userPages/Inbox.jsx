@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import Navbar from "../../Components/userSide/NavBar";
-import socketIOClient from 'socket.io-client';
 import { Axios } from '../../axios/userInstance.js';
 import { useSelector } from 'react-redux';
 import VideoCall from '../../Components/userSide/VideoCall.jsx';
@@ -8,7 +7,8 @@ import { CiVideoOn } from "react-icons/ci";
 import { toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
-import { useSocket } from '../../SocketContext.jsx';
+import {  useSocket } from '../../customHooks.jsx'
+import { NotificationState } from '../../context/NotificationContext.jsx';
 
 
 
@@ -22,7 +22,6 @@ const Inbox = () => {
     const [selectedUserName, setSelectedUserName] = useState("");
     const [selectedUserProfilePicture, setSelectedUserProfilePicture] = useState("");
     const userData = useSelector((state) => state.userInfo.user);
-    console.log(userData,"sdat is her")
     
     const [videoCall, setVideoCall] = useState(false)
     const [caller, setCaller] = useState("")
@@ -69,10 +68,13 @@ const Inbox = () => {
 
     useEffect(() => {
         socket.current.on('message', handleMessage);
+        console.log("useeffect isnide the inbox event message")
         return () => {
             socket.current.off('message', handleMessage);
         };
     }, [selectedUser]);
+
+   
 
     
 
@@ -119,13 +121,11 @@ const Inbox = () => {
 
 
     const handleMessage = (message) => {
-       if(selectedUser == message.sender){
-           setMessages(prevMessages => [...prevMessages, message]);
-       }
-        if (message.sender !== userData._id) {
-            toast.info(`${message.senderName} sent you a new message`);
+        if (selectedUser == message.sender) {
+          setMessages(prevMessages => [...prevMessages, message]);
         }
-    };
+      }
+      
 
     const fetchUsers = async () => {
         try {

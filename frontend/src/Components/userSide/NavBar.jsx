@@ -5,6 +5,7 @@ import { CgProfile } from "react-icons/cg";
 import NotificationModal from './home/NotificationModal';
 
 const Navbar = () => {
+  
   const [isOpen, setIsOpen] = useState(false);
   const [notificationModal, setNotificationModal] = useState(false)
 
@@ -13,6 +14,10 @@ const Navbar = () => {
   };
   const handleNotificationModal = ()=> {
     setNotificationModal(true)
+  }
+
+  const handleCloseModal = ()=>{
+    setNotificationModal(false)
   }
 
   return (
@@ -63,7 +68,7 @@ const Navbar = () => {
   <div className="fixed top-0 right-0 mt-12 mr-6">
     <div className="bg-white border border-gray-300 rounded-lg shadow-md" style={{ maxHeight: "80vh", overflowY: "auto" }}>
       <div className="p-4">
-        <NotificationModal isOpen={notificationModal} />
+        <NotificationModal isOpen={notificationModal} onClose={handleCloseModal} />
       </div>
     </div>
   </div>

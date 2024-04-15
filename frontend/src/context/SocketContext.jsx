@@ -1,9 +1,7 @@
-import  { createContext, useContext, useRef, useEffect } from 'react';
+import  { createContext, useRef, useEffect } from 'react';
 import socketIOClient from 'socket.io-client';
 
-const SocketContext = createContext();
-
-export const useSocket = () => useContext(SocketContext);
+export const SocketContext = createContext();
 
 export const SocketProvider = ({ children }) => {
   const socket = useRef(null);

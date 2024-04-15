@@ -47,6 +47,15 @@ io.on('connection', (socket) => {
       }
     });
 
+    socket.on('follow', (data) => {
+      console.log(data.user, "inside follow socket");
+      const userSocketId = users[data.user];
+      if (userSocketId) {
+        io.to(userSocketId).emit('follow');
+      }
+    });
+    
+
 
 
     socket.on("callUser", (data) => {

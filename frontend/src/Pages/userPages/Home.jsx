@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { CiSquarePlus } from "react-icons/ci";
 import {useNavigate} from 'react-router-dom'
 import NewPostModal from '../../modal/userModal/NewPostModal.jsx';
-import { useSocket } from "../../SocketContext.jsx";
+import { useSocket } from '../../customHooks.jsx'
 
 const Home = () => {
   const navigate = useNavigate()
