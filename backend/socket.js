@@ -16,7 +16,6 @@ const users = {};
 io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
     socket.emit("myID", socket.id);
-
     socket.on('newUser', (userId) => {
         users[userId] = socket.id;
         console.log(users,"Active Users List")
@@ -47,6 +46,15 @@ io.on('connection', (socket) => {
         io.to(userSocketId).emit('typing', { isTyping, receiver });
       }
     });
+
+    socket.on('follow', (data) => {
+      console.log(data.user, "inside follow socket");
+      const userSocketId = users[data.user];
+      if (userSocketId) {
+        io.to(userSocketId).emit('follow');
+      }
+    });
+    
 
 
 

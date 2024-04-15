@@ -8,9 +8,11 @@ import { useSelector } from "react-redux";
 import { CiSquarePlus } from "react-icons/ci";
 import {useNavigate} from 'react-router-dom'
 import NewPostModal from '../../modal/userModal/NewPostModal.jsx';
+import { useSocket } from '../../customHooks.jsx'
 
 const Home = () => {
   const navigate = useNavigate()
+  const socket = useSocket()
   const [hovered, setHovered] = useState(false);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -22,6 +24,9 @@ const Home = () => {
   const [postListFinished, setPostListFinished] = useState(false)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
   const [initialLoadDone, setInitialLoadDone] = useState(false); 
+  const userData = useSelector(state=>state.userInfo.user)
+  console.log(userData,"userData is here")
+  
 
   const fetchData = () => {
     setLoading(true);
@@ -41,6 +46,13 @@ const Home = () => {
         setInitialLoadDone(true); 
       });
   };
+
+  useEffect(() => {
+    socket.current.on("myID", (id) => {
+        console.log(id, "my socket id");
+    });
+    socket.current.emit('newUser', userData._id);
+}, []);
 
   useEffect(() => {
     fetchData();

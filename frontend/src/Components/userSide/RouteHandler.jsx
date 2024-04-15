@@ -4,9 +4,10 @@ export const AuthRoute = ({ component: Component, isAuthenticated }) => {
   return isAuthenticated ? <Navigate to="/home" replace /> : <Component />;
 };
 
-export const PrivateRoute = ({ component: Component, isAuthenticated }) => {
+export const PrivateRoute = ({ component: Component, isAuthenticated}) => {
   return isAuthenticated ? <Component /> : <Navigate to="/signin" replace />;
 };
+
 
 export const AdminAuthRoute = ({ component: Component, isAdminAuthenticated }) => {
   return isAdminAuthenticated ? <Navigate to="/admin/dashboard" replace /> : <Component />;

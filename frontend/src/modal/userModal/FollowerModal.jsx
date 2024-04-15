@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { Axios } from "../../axios/userInstance.js";
 import { showErrorMessage, showSuccessMessage } from '../../helper/sweetalert.js'
 import { useNavigate } from 'react-router-dom';
+import {useSocket} from '../../customHooks.jsx'
 
 const FollowerModal = ({ isOpen, onClose }) => {
     const [followers, setFollowers] = useState([])
     const [following, setFollowing] = useState([])
     const navigate = useNavigate()
+    const socket = useSocket()
 
     useEffect(() => {
         if (isOpen) {
@@ -45,12 +47,15 @@ const FollowerModal = ({ isOpen, onClose }) => {
                 if (response.status === 200) {
                     showSuccessMessage(response.data.message)
                     fetchFollowersData()
+                    
                 }
             } else {
                 const response = await Axios.post(`/api/follow/${followerId}`);
                 if (response.status === 200) {
                     showSuccessMessage(response.data.message);
                     fetchFollowersData()
+                    socket.current.emit('follow',{user:response.data.user});
+
                 }
             }
         } catch (error) {
