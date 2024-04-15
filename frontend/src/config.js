@@ -8,6 +8,7 @@ export const routePaths = {
     inbox: '/inbox',
     event: '/event',
     remoteUserProfile: '/remoteUserProfile/:userId',
+    success: '/payment-success/:eventId'
 }; 
 
 export const adminRoutePaths = {

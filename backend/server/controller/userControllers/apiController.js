@@ -6,6 +6,7 @@ import reportSchema from '../../model/adminModels/reportModel.js'
 import messageSchema from '../../model/userModels/messageModel.js';
 import ratingSchema from '../../model/userModels/ratingModel.js';
 import eventSchema from '../../model/adminModels/eventModel.js'
+import paymentSchema from '../../model/adminModels/paymentModel.js'
 
 
 
@@ -214,14 +215,25 @@ export const unfollowUser = async (req, res) => {
 
 export const getEvents = async (req, res) => {
   try {
+    const { userId } = req.query;
+    
+    // Find all events that are not blocked
     const events = await eventSchema.find({ isBlocked: false });
+    
+    // Find events registered by the user
+    const registeredEvents = await paymentSchema.find({ user: userId });
+    
     if (events.length > 0) {
-      res.status(200).json(events);
+      if (registeredEvents.length > 0) {
+        res.status(200).json({ events, registeredEvents });
+      } else {
+        res.status(200).json({ events });
+      }
     } else {
       res.status(404).json({ message: "No events found" });
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
