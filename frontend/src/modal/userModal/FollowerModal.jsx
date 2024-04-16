@@ -54,7 +54,8 @@ const FollowerModal = ({ isOpen, onClose }) => {
                 if (response.status === 200) {
                     showSuccessMessage(response.data.message);
                     fetchFollowersData()
-                    socket.current.emit('follow',{user:response.data.user});
+                    console.log(response.data.data,"user is here")
+                    socket.current.emit('follow',{user:response.data.data});
 
                 }
             }

@@ -109,6 +109,7 @@ const Inbox = () => {
         const newMessage = {
             sender: userData._id,
             senderName: userData.name,
+            senderImage:userData.ProfilePicture,
             receiver: selectedUser,
             content: messageInput.trim(),
             timestamp: new Date()

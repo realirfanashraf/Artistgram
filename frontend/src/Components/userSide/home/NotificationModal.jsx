@@ -1,9 +1,40 @@
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { NotificationState } from "../../../context/NotificationContext";
 import { AiTwotoneClockCircle } from "react-icons/ai";
+import { useEffect, useState } from "react";
 
 const NotificationModal = ({ onClose }) => {
   const { notification } = NotificationState();
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
+  const timeAgo = (timestamp) => {
+    const seconds = Math.floor((currentTime - new Date(timestamp)) / 1000);
+
+    let interval = Math.floor(seconds / 31536000);
+    interval = Math.floor(seconds / 86400);
+    if (interval > 1) {
+      return `${interval} days ago`;
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval > 1) {
+      return `${interval} hours ago`;
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval > 1) {
+      return `${interval} minutes ago`;
+    }
+    return `${Math.floor(seconds)} seconds ago`;
+  };
   return (
     <div className="fixed top-20 right-12 w-300px z-9999">
       {notification.length > 0 ? (
@@ -36,7 +67,7 @@ const NotificationModal = ({ onClose }) => {
 
                   <p className="flex items-center gap-1 text-blue-gray-500">
                     <AiTwotoneClockCircle />
-                    {notif.time} ago
+                    {timeAgo(notif.timestamp)}
                   </p>
                 </div>
               </li>
@@ -45,11 +76,11 @@ const NotificationModal = ({ onClose }) => {
         </div>
       ) : (
         <div className="bg-white border rounded-md border-blue-gray-50 shadow-lg shadow-blue-gray-500/10 p-3 font-sans text-sm text-blue-gray-500 w-72">
-  <p className="text-base font-protest mb-2">No New Notfication</p>
-  <button className="absolute top-3 right-2" onClick={onClose}>
-    <IoIosCloseCircleOutline size={20}/>
-  </button>
-</div>
+          <p className="text-base font-protest mb-2">No New Notfication</p>
+          <button className="absolute top-3 right-2" onClick={onClose}>
+            <IoIosCloseCircleOutline size={20} />
+          </button>
+        </div>
 
       )}
     </div>

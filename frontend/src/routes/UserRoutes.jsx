@@ -30,20 +30,28 @@ function UserRoutes({ isAuthenticated }) {
 
     if (isNewMessage) {
       toast.info(`${message.senderName} sent you a new message`);
+      console.log(message,"mesage is here")
       const standardNotification = {
         senderName: message.senderName,
-        content: message.content,
+        content: "send you a message",
+        timestamp: Date.now(),
+        senderImage:message.senderImage
+        
       };
       setNotification((notifications) => [ standardNotification,...notifications]);
       setNotifiedMessages((prevMessages) => [...prevMessages, message]);
     }
   };
 
-  const handleFollowNotification = () => {
+  const handleFollowNotification = (data) => {
+    console.log(data,"data is here")
     toast.info("You have a new follower");
+    
     const followNotification = {
-      senderName: "New Follower",
-      content: "You have a new follower",
+      senderName: data.name,
+      content: "started following you",
+      timestamp: Date.now(),
+      senderImage:data.ProfilePicture
     };
     setNotification((notifications) => [ followNotification,...notifications]);
   };
