@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import Navbar from "../../Components/userSide/NavBar";
-import socketIOClient from 'socket.io-client';
 import { Axios } from '../../axios/userInstance.js';
 import { useSelector } from 'react-redux';
 import VideoCall from '../../Components/userSide/VideoCall.jsx';
@@ -8,12 +7,14 @@ import { CiVideoOn } from "react-icons/ci";
 import { toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
+import {  useSocket } from '../../customHooks.jsx'
+import { NotificationState } from '../../context/NotificationContext.jsx';
 
 
 
 const Inbox = () => {
     const location = useLocation();
-    const socket = useRef(null);
+    const socket = useSocket()
     const [selectedUser, setSelectedUser] = useState(null);
     const [messageInput, setMessageInput] = useState("");
     const [messages, setMessages] = useState([]);
@@ -21,7 +22,7 @@ const Inbox = () => {
     const [selectedUserName, setSelectedUserName] = useState("");
     const [selectedUserProfilePicture, setSelectedUserProfilePicture] = useState("");
     const userData = useSelector((state) => state.userInfo.user);
-    const [myID, setMyID] = useState('');
+    
     const [videoCall, setVideoCall] = useState(false)
     const [caller, setCaller] = useState("")
     const [callerSignal, setCallerSignal] = useState()
@@ -42,13 +43,7 @@ const Inbox = () => {
         }
     }, []);
 
-    useEffect(() => {
-        const socketServerUrl = import.meta.env.VITE_SERVER_URL
-        socket.current = socketIOClient(socketServerUrl);
-        return () => {
-            socket.current.disconnect();
-        };
-    }, []);
+
 
     useEffect(() => {
         scrollToBottom();
@@ -73,18 +68,15 @@ const Inbox = () => {
 
     useEffect(() => {
         socket.current.on('message', handleMessage);
+        console.log("useeffect isnide the inbox event message")
         return () => {
             socket.current.off('message', handleMessage);
         };
     }, [selectedUser]);
 
-    useEffect(() => {
-        socket.current.on("myID", (id) => {
-            console.log(id, "my socket id");
-            setMyID(id);
-        });
-        socket.current.emit('newUser', userData._id);
-    }, []);
+   
+
+    
 
 
     const startTyping = () => {
@@ -117,6 +109,7 @@ const Inbox = () => {
         const newMessage = {
             sender: userData._id,
             senderName: userData.name,
+            senderImage:userData.ProfilePicture,
             receiver: selectedUser,
             content: messageInput.trim(),
             timestamp: new Date()
@@ -129,13 +122,11 @@ const Inbox = () => {
 
 
     const handleMessage = (message) => {
-       if(selectedUser == message.sender){
-           setMessages(prevMessages => [...prevMessages, message]);
-       }
-        if (message.sender !== userData._id) {
-            toast.info(`${message.senderName} sent you a new message`);
+        if (selectedUser == message.sender) {
+          setMessages(prevMessages => [...prevMessages, message]);
         }
-    };
+      }
+      
 
     const fetchUsers = async () => {
         try {

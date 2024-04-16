@@ -16,7 +16,6 @@ const users = {};
 io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
     socket.emit("myID", socket.id);
-
     socket.on('newUser', (userId) => {
         users[userId] = socket.id;
         console.log(users,"Active Users List")
@@ -32,8 +31,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('message', (data) => {
-        const { sender, receiver, content, senderName } = data;
-        const message = new messageSchema({ sender, receiver, content, senderName });
+        const { sender, receiver, content, senderName,senderImage } = data;
+        const message = new messageSchema({ sender, receiver, content, senderName,senderImage });
         message.save();
         const userSocketId = users[receiver];
         io.to(userSocketId).emit('message', message);
@@ -47,6 +46,15 @@ io.on('connection', (socket) => {
         io.to(userSocketId).emit('typing', { isTyping, receiver });
       }
     });
+
+    socket.on('follow', (data) => {
+      console.log(data);
+      const userSocketId = users[data.user.userToSend];
+      if (userSocketId) {
+        io.to(userSocketId).emit('follow',data.user.user);
+      }
+    });
+    
 
 
 

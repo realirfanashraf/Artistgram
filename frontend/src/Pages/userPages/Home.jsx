@@ -8,9 +8,11 @@ import { useSelector } from "react-redux";
 import { CiSquarePlus } from "react-icons/ci";
 import {useNavigate} from 'react-router-dom'
 import NewPostModal from '../../modal/userModal/NewPostModal.jsx';
+import { useSocket } from '../../customHooks.jsx'
 
 const Home = () => {
   const navigate = useNavigate()
+  const socket = useSocket()
   const [hovered, setHovered] = useState(false);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -22,6 +24,9 @@ const Home = () => {
   const [postListFinished, setPostListFinished] = useState(false)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
   const [initialLoadDone, setInitialLoadDone] = useState(false); 
+  const userData = useSelector(state=>state.userInfo.user)
+  console.log(userData,"userData is here")
+  
 
   const fetchData = () => {
     setLoading(true);
@@ -41,6 +46,13 @@ const Home = () => {
         setInitialLoadDone(true); 
       });
   };
+
+  useEffect(() => {
+    socket.current.on("myID", (id) => {
+        console.log(id, "my socket id");
+    });
+    socket.current.emit('newUser', userData._id);
+}, []);
 
   useEffect(() => {
     fetchData();
@@ -106,9 +118,9 @@ const Home = () => {
   <Navbar />
   <div className="flex flex-col items-center mt-3 w-full sm:w-auto shadow-2xl">
     {/* <SearchBar /> */}
-    <div className="absolute top-28 right-10 w-60 shadow-xl h-72 rounded-md bg-inherit p-4 overflow-y-auto no-scrollbar" onScroll={handleScroll}>
+    {/* <div className="absolute top-28 right-10 w-60 shadow-xl h-72 rounded-md bg-inherit p-4 overflow-y-auto no-scrollbar" onScroll={handleScroll}>
       <SuggestionBox users={users} loading={loading} listFinished={listFinished} />
-    </div>
+    </div> */}
     <div className="flex flex-col justify-center mt-2" style={{ maxHeight: '30rem' }}>
       <div className="overflow-y-scroll no-scrollbar" onScroll={handleScrollPost}>
         <PostContainer posts={posts} postLoading={postLoading} postListFinished={postListFinished} />

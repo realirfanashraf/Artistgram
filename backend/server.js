@@ -20,7 +20,7 @@ const app = express();
 const server = http.createServer(app);
 
 const corsOptions = {
-    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    origin: process.env.FRONTED_SERVER,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     optionsSuccessStatus: 204,

@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AuthRoute, PrivateRoute } from '../Components/userSide/RouteHandler';
 import { routePaths } from '../config';
@@ -12,14 +12,64 @@ import Inbox from '../Pages/userPages/Inbox';
 import Event from '../Pages/userPages/Event';
 import RemoteUserProfile from '../Pages/userPages/RemoteUserProfile';
 import Success from '../Components/userSide/Success';
+import { useSocket } from '../customHooks';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { NotificationState } from '../context/NotificationContext';
 
 function UserRoutes({ isAuthenticated }) {
+  const { setNotification } = NotificationState();
+  const socket = useSocket();
+  const [notifiedMessages, setNotifiedMessages] = useState([]);
+
+  
+  const handleNotification = (message) => {
+    const isNewMessage = !notifiedMessages.some(
+      (msg) => msg.senderName === message.senderName && msg.content === message.content
+    );
+
+    if (isNewMessage) {
+      toast.info(`${message.senderName} sent you a new message`);
+      console.log(message,"mesage is here")
+      const standardNotification = {
+        senderName: message.senderName,
+        content: "send you a message",
+        timestamp: Date.now(),
+        senderImage:message.senderImage
+        
+      };
+      setNotification((notifications) => [ standardNotification,...notifications]);
+      setNotifiedMessages((prevMessages) => [...prevMessages, message]);
+    }
+  };
+
+  const handleFollowNotification = (data) => {
+    console.log(data,"data is here")
+    toast.info("You have a new follower");
+    
+    const followNotification = {
+      senderName: data.name,
+      content: "started following you",
+      timestamp: Date.now(),
+      senderImage:data.ProfilePicture
+    };
+    setNotification((notifications) => [ followNotification,...notifications]);
+  };
+
+  useEffect(() => {
+    socket.current.on('message', handleNotification);
+    socket.current.on('follow', handleFollowNotification);
+
+    return () => {
+      socket.current.off('message', handleNotification);
+      socket.current.off('follow', handleFollowNotification);
+    };
+  }, [socket, notifiedMessages]);
+
+
   return (
     <Routes>
-      <Route
-        path={routePaths.intro}
-        element={<AuthRoute component={Intro} isAuthenticated={isAuthenticated} />}
-      />
+      <Route path={routePaths.intro} element={<AuthRoute component={Intro} isAuthenticated={isAuthenticated} />} />
       <Route
         path={routePaths.signIn}
         element={<AuthRoute component={SignIn} isAuthenticated={isAuthenticated} />}
