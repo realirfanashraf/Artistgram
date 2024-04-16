@@ -22,33 +22,42 @@ function UserRoutes({ isAuthenticated }) {
   const socket = useSocket();
   const [notifiedMessages, setNotifiedMessages] = useState([]);
 
+  
   const handleNotification = (message) => {
-    if (!notifiedMessages.some((msg) => msg.senderName === message.senderName && msg.content === message.content)) {
+    const isNewMessage = !notifiedMessages.some(
+      (msg) => msg.senderName === message.senderName && msg.content === message.content
+    );
+
+    if (isNewMessage) {
       toast.info(`${message.senderName} sent you a new message`);
       const standardNotification = {
         senderName: message.senderName,
         content: message.content,
       };
-      setNotification((notifications) => [...notifications, standardNotification]);
-      setNotifiedMessages([...notifiedMessages, message]);
+      setNotification((notifications) => [ standardNotification,...notifications]);
+      setNotifiedMessages((prevMessages) => [...prevMessages, message]);
     }
   };
 
-    const handleFollowNotification = ()=>{
-      toast.info("you have new folower");
-    }
-
-  useEffect(()=>{
-    socket.current.on('follow',handleFollowNotification)
-  })
+  const handleFollowNotification = () => {
+    toast.info("You have a new follower");
+    const followNotification = {
+      senderName: "New Follower",
+      content: "You have a new follower",
+    };
+    setNotification((notifications) => [ followNotification,...notifications]);
+  };
 
   useEffect(() => {
     socket.current.on('message', handleNotification);
+    socket.current.on('follow', handleFollowNotification);
 
     return () => {
       socket.current.off('message', handleNotification);
+      socket.current.off('follow', handleFollowNotification);
     };
   }, [socket, notifiedMessages]);
+
 
   return (
     <Routes>
