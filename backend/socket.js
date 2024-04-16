@@ -5,7 +5,7 @@ import messageSchema from './server/model/userModels/messageModel.js';
 const initializeSocket = (httpServer) => {
     const io = new Server(httpServer, {
         cors: {
-            origin: ["http://localhost:5173", 'http://localhost:3000'],
+            origin: process.env.FRONTED_SERVER,
             methods: ["GET", "POST"],
             credentials: true,
         },
