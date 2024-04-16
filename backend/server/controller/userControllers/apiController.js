@@ -183,9 +183,14 @@ export const followUser = async (req, res) => {
       followingId: followerId
     });
     await follow.save();
+    const user = await userSchema.findById(userId)
+    const data = {
+      userToSend :followerId,
+      user:user
+    }
     
 
-    res.status(200).json({ message: 'User followed successfully',user:followerId});
+    res.status(200).json({ message: 'User followed successfully',data});
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal server error' });
