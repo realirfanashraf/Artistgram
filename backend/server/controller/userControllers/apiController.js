@@ -245,62 +245,6 @@ export const getEvents = async (req, res) => {
 };
 
 
-
-
-// export const usersToChat = async (req, res) => {
-//   try {
-//     const { userId } = req.query;
-
-//     // Find all messages where the given userId is either the sender or the receiver
-//     const messages = await messageSchema.find({
-//       $or: [
-//         { sender: userId },
-//         { receiver: userId }
-//       ]
-//     });
-
-//     // Sorting messages based on timestamp
-//     const sortedMessages = messages.sort((a, b) => b.timestamp - a.timestamp);
-
-//     console.log(sortedMessages, "Sorted messages");
-
-//     const userIds = new Set();
-
-//     sortedMessages.forEach(message => {
-//       if (message.sender.toString() !== userId.toString()) {
-//         userIds.add(message.sender.toString());
-//       }
-//       if (message.receiver.toString() !== userId.toString()) {
-//         userIds.add(message.receiver.toString());
-//       }
-//     });
-
-//     // Find the following users
-//     const following = await followSchema.find({ followerId: userId });
-//     const followingIds = following.map(item => item.followingId.toString());
-
-//     // Add followingIds to userIds
-//     followingIds.forEach(followingId => {
-//       userIds.add(followingId);
-//     });
-
-//     // Convert userIds to an array
-//     const userIdsArray = Array.from(userIds);
-
-//     // Populate user documents for the userIds
-//     const usersToChat = await userSchema.find({ _id: { $in: userIdsArray } }).populate();
-
-//     console.log(usersToChat, "List of users to chat");
-
-//     res.status(200).json(usersToChat);
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
-
-
-
 export const usersToChat = async (req, res) => {
   try {
     const { userId } = req.query;
@@ -335,12 +279,10 @@ export const usersToChat = async (req, res) => {
     // Sort users based on the timestamp of their latest message
     usersArray.sort((a, b) => (b.latestMessage?.timestamp || 0) - (a.latestMessage?.timestamp || 0));
 
-    console.log(usersArray, "unique users with latest message");
     for(let users of usersArray){
       const user = await userSchema.findById(users.userId)
       users.userId = user
     }
-    console.log(usersArray,"after populating")
     // Send the response
     res.status(200).json(usersArray);
   } catch (error) {
@@ -356,7 +298,6 @@ export const usersToChat = async (req, res) => {
 
 
 export const postDetails = async (req, res) => {
-  console.log("postDetials function")
   try {
     const postId = req.params.postId;
 
