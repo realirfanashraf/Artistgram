@@ -27,10 +27,8 @@ const server = http.createServer(app);
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTED_SERVER,
+  origin: 'https://artistgram.online',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
   credentials: true,
 }));
 app.use(express.static(path.join(__dirname, '../frontend', 'dist')));
