@@ -92,15 +92,15 @@ const Home = () => {
     }
   }, [postPage, initialLoadDone]);
 
-  const handleScroll = event => {
-    console.log("scrolling works")
-    const { scrollTop, clientHeight, scrollHeight } = event.target;
-    const bottomOfBox = scrollTop + clientHeight >= scrollHeight - 10;
+  // const handleScroll = event => {
+  //   console.log("scrolling works")
+  //   const { scrollTop, clientHeight, scrollHeight } = event.target;
+  //   const bottomOfBox = scrollTop + clientHeight >= scrollHeight - 10;
 
-    if (bottomOfBox && !loading && !listFinished) {
-      setPage(prevPage => prevPage + 1);
-    }
-  };
+  //   if (bottomOfBox && !loading && !listFinished) {
+  //     setPage(prevPage => prevPage + 1);
+  //   }
+  // };
 
   const handleScrollPost = event => {
     console.log("scrolling works for posts")
@@ -115,32 +115,35 @@ const Home = () => {
 
   return (
     <>
-  <Navbar />
-  <div className="flex flex-col items-center mt-3 w-full sm:w-auto shadow-2xl">
-    {/* <SearchBar /> */}
-    {/* <div className="absolute top-28 right-10 w-60 shadow-xl h-72 rounded-md bg-inherit p-4 overflow-y-auto no-scrollbar" onScroll={handleScroll}>
-      <SuggestionBox users={users} loading={loading} listFinished={listFinished} />
-    </div> */}
-    <div className="flex flex-col justify-center mt-2" style={{ maxHeight: '30rem' }}>
-      <div className="overflow-y-scroll no-scrollbar" onScroll={handleScrollPost}>
-        <PostContainer posts={posts} postLoading={postLoading} postListFinished={postListFinished} />
-      </div>
-    </div>
-    <button 
-  className="flex items-center bg-primary hover:bg-secondary text-white font-bold py-2 px-2 rounded  fixed bottom-10 right-80 "
-  onClick={handleNewPost}
->
-  <CiSquarePlus size={26}  />
-</button>
-  </div>
-  {showNewPostModal && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-        <div className=" rounded-lg shadow-md">
-          <NewPostModal isOpen={showNewPostModal} onClose={handleNewPostModal}  />
+      <Navbar />
+      <div className="flex flex-col items-center mt-3 w-full sm:w-auto shadow-2xl h-screen">
+        {/* <SearchBar /> */}
+        {/* <div className="absolute top-28 right-10 w-60 shadow-xl h-72 rounded-md bg-inherit p-4 overflow-y-auto no-scrollbar" onScroll={handleScroll}>
+          <SuggestionBox users={users} loading={loading} listFinished={listFinished} />
+        </div> */}
+        <div className="flex flex-col justify-center mt-2" style={{ maxHeight: 'calc(100vh - 3rem)' }}>
+          <div className="overflow-y-scroll no-scrollbar" onScroll={handleScrollPost}>
+            <PostContainer posts={posts} postLoading={postLoading} postListFinished={postListFinished} />
+          </div>
         </div>
-      </div>}
-</>
-
+        <button 
+          className="flex items-center bg-primary hover:bg-secondary text-white font-bold py-2 px-2 rounded fixed bottom-10 right-80"
+          onClick={handleNewPost}
+          style={{ height: '3rem' }}
+        >
+          <CiSquarePlus size={26} />
+        </button>
+      </div>
+      {showNewPostModal && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="rounded-lg shadow-md">
+            <NewPostModal isOpen={showNewPostModal} onClose={handleNewPostModal} />
+          </div>
+        </div>
+      )}
+    </>
   );
+  
 };
 
 export default Home;
