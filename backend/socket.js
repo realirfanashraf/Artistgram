@@ -14,7 +14,6 @@ const initializeSocket = (httpServer) => {
 const users = {};
 
 io.on('connection', (socket) => {
-    console.log('New client connected:', socket.id);
     socket.emit("myID", socket.id);
     socket.on('newUser', (userId) => {
         users[userId] = socket.id;
@@ -38,17 +37,14 @@ io.on('connection', (socket) => {
         io.to(userSocketId).emit('message', message);
     });
 
-    socket.on('typing', ({ receiver, isTyping }) => {
-      
+    socket.on('typing', ({ receiver, isTyping }) => {      
       const userSocketId = users[receiver];
-      console.log(userSocketId,"sokcetid is here")
       if (userSocketId) {
         io.to(userSocketId).emit('typing', { isTyping, receiver });
       }
     });
 
     socket.on('follow', (data) => {
-      console.log(data);
       const userSocketId = users[data.user.userToSend];
       if (userSocketId) {
         io.to(userSocketId).emit('follow',data.user.user);
@@ -70,10 +66,7 @@ io.on('connection', (socket) => {
       });
     
       socket.on("ice-candidate", ({ target, candidate }) => {
-        const userSocketId = users[target]
-        
-        console.log(userSocketId, "ice-candidate event received", target, candidate);
-    
+        const userSocketId = users[target]    
         if (userSocketId) {
           io.to(userSocketId).emit("ice-candidate", {
             candidate: candidate,
@@ -92,7 +85,6 @@ io.on('connection', (socket) => {
       socket.on("callEnded", (data) => {
         const {userId} = data
         const userSocketId = users[userId]
-    console.log(userSocketId,"socketId")
         if (userSocketId) {
           io.to(userSocketId).emit("callEnded");
         } else {

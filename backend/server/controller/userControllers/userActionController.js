@@ -48,13 +48,11 @@ export const deletePost = async (req, res) => {
 
   export const paymentSession = async (req, res) => {
 
-    console.log("data isdfli;jasdif")
       try {
           const { userId, eventId } = req.body;
           const user = await userSchema.findById(userId);
           const event = await eventSchema.findById(eventId);
           const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-          console.log(event)
   
           if (!user || !event) {
               return res.status(404).json({ success: false, message: 'User or event not found' });
@@ -63,8 +61,8 @@ export const deletePost = async (req, res) => {
           const session = await stripe.checkout.sessions.create({
               payment_method_types: ['card'],
               mode: 'payment',
-              success_url: `http://localhost:5173/payment-success/${event._id}`,
-              cancel_url: 'http://localhost:5173/payment-cancel',
+              success_url: `https://artistgram.online/payment-success/${event._id}`,
+              cancel_url: 'http://artistgram.online/payment-cancel',
               customer_email: user.email, 
               client_reference_id: eventId, 
               line_items: [
