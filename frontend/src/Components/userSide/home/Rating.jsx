@@ -26,7 +26,7 @@ const Rating = ({ postId }) => {
     try {
       if (rating !== null) {
         await Axios.post(`/api/ratePost/${postId}`, { rating });
-        await fetchRatingData(); 
+        await fetchRatingData();
       }
     } catch (error) {
       console.log(error);
@@ -34,29 +34,36 @@ const Rating = ({ postId }) => {
   };
 
   return (
-    <div className="flex">
-      {[...Array(5)].map((_, index) => {
-        const currentRating = index + 1;
-        return (
-          <label key={index}>
-            <input
-              type="radio"
-              name="rating"
-              value={currentRating}
-              onChange={() => setRating(currentRating)}
-            />
-            <FaStar
-              size={20}
-              color={currentRating <= (hover || rating) ? "#ffc107" : "#e4e5e9"}
-              onMouseEnter={() => setHover(currentRating)}
-              onMouseLeave={() => setHover(null)}
-              onClick={handleRatingSubmit} 
-            />
-          </label>
-        );
-      })}
-      <p className="ml-2">Avg: {averageRating}</p>
+    <div className="flex justify-between items-center ">
+      <div className="flex items-center">
+        {[...Array(5)].map((_, index) => {
+          const currentRating = index + 1;
+          return (
+            <label key={index}>
+              <input
+                type="radio"
+                name="rating"
+                value={currentRating}
+                onChange={() => setRating(currentRating)}
+              />
+              <FaStar
+                size={20}
+                color={currentRating <= (hover || rating) ? "#ffc107" : "#e4e5e9"}
+                onMouseEnter={() => setHover(currentRating)}
+                onMouseLeave={() => setHover(null)}
+                onClick={handleRatingSubmit}
+                className="mr-1"
+              />
+            </label>
+          );
+        })}
+      </div>
+      <div className="flex items-center">
+        <FaStar className="text-yellow-500" size={20} />
+        <p className="ml-1">{averageRating !== null ? averageRating.toFixed(1) : "N/A"}</p>
+      </div>
     </div>
+
   );
 };
 
