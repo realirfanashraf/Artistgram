@@ -2,7 +2,7 @@ import axios from 'axios';
 import { store } from '../redux/store.js';
 
 const Axios = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_URL,
+  baseURL: import.meta.env.VITE_SERVER_URL || 'https://artistgram.online',
   withCredentials: true
 });
 
