@@ -7,7 +7,7 @@ export const SocketProvider = ({ children }) => {
   const socket = useRef(null);
 
   useEffect(() => {
-    const socketServerUrl = 'https://artistgram.online';
+    const socketServerUrl = import.meta.env.VITE_SERVER_URL;
     socket.current = socketIOClient(socketServerUrl);
 
     return () => {

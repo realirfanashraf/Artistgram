@@ -27,7 +27,7 @@ const server = http.createServer(app);
 
 // Middleware
 app.use(cors({
-  origin: 'https://artistgram.online',
+  origin: process.env.FRONTED_SERVER,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
 }));
