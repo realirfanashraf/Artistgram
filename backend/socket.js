@@ -5,7 +5,7 @@ import messageSchema from './server/model/userModels/messageModel.js';
 const initializeSocket = (httpServer) => {
     const io = new Server(httpServer, {
         cors: {
-            origin: 'https://artistgram.online' ,
+            origin: process.env.FRONTED_SERVER ,
             methods: ["GET", "POST"],
             credentials: true,
         },
