@@ -25,7 +25,7 @@ const Home = () => {
   const [showNewPostModal, setShowNewPostModal] = useState(false)
   const [initialLoadDone, setInitialLoadDone] = useState(false); 
   const userData = useSelector(state=>state.userInfo.user)
-  console.log(userData,"userData is here")
+ 
   
 
   const fetchData = () => {
@@ -46,6 +46,7 @@ const Home = () => {
         setInitialLoadDone(true); 
       });
   };
+
 
   useEffect(() => {
     socket.current.on("myID", (id) => {
@@ -74,14 +75,14 @@ const Home = () => {
         if (response.data.length === 0) {
           setPostListFinished(true);
         } else {
-          setPosts(prevPosts => [...prevPosts, ...response.data]);
+          setTimeout(() => {
+            setPosts(prevPosts => [...prevPosts, ...response.data]);
+            setPostLoading(false);
+          }, 2000);
         }
       })
       .catch(error => {
         console.error('Error fetching data:', error);
-        
-      })
-      .finally(() => {
         setPostLoading(false);
       });
   };
@@ -123,7 +124,7 @@ const Home = () => {
         </div> */}
         <div className="flex flex-col justify-center mt-2" style={{ maxHeight: 'calc(100vh - 3rem)' }}>
           <div className="overflow-y-scroll no-scrollbar" onScroll={handleScrollPost}>
-            <PostContainer posts={posts} postLoading={postLoading} postListFinished={postListFinished} />
+            <PostContainer posts={posts} postLoading={postLoading} initialLoadDone={initialLoadDone} postListFinished={postListFinished} />
           </div>
         </div>
         <button 
